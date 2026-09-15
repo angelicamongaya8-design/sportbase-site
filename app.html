@@ -297,9 +297,19 @@ function prettyDate(key) {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-PH", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 }
 function toMinutes(t) {
+  /* Venues store hours as people typed them ("7:00 AM", "10:00 PM") while
+     booking rows use real time columns. Both must land on the same number
+     of minutes, or a venue that closes at ten at night closes at ten in
+     the morning. */
   if (!t) return null;
-  const [h, m] = String(t).split(":").map(Number);
-  return h * 60 + (m || 0);
+  const m = String(t).trim().match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])?/);
+  if (!m) return null;
+  let h = Number(m[1]);
+  const mins = Number(m[2]);
+  const ap = m[3] ? m[3].toLowerCase() : null;
+  if (ap === "pm" && h !== 12) h += 12;
+  if (ap === "am" && h === 12) h = 0;
+  return h * 60 + mins;
 }
 const hour24 = (h) => String(h).padStart(2, "0") + ":00:00";
 function hourLabel(h) {
@@ -531,10 +541,12 @@ async function openVenue(id) {
 function renderDays() {
   const today = todayKey();
   const strip = $("day-strip");
+  const openDays = (state.venue && state.venue.open_days) || [];
   strip.innerHTML = Array.from({ length: 7 }, (_, i) => {
     const key = addDays(today, i);
-    return '<button class="day" type="button" data-day="' + key + '" aria-pressed="' + (key === state.dateKey) + '">' +
-      (i === 0 ? "Today" : dayName(key)) + " " + key.slice(8) + '</button>';
+    const shut = openDays.length > 0 && !openDays.includes(dayNum(key));
+    return '<button class="day" type="button" data-day="' + key + '" aria-pressed="' + (key === state.dateKey) + '"' +
+      (shut ? " disabled" : "") + '>' + (i === 0 ? "Today" : dayName(key)) + " " + key.slice(8) + (shut ? " \u00b7 shut" : "") + '</button>';
   }).join("");
   strip.querySelectorAll("[data-day]").forEach((b) => {
     b.addEventListener("click", async () => {
