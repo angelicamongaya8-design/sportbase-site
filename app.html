@@ -236,6 +236,8 @@
     .navbar .wrap { justify-content: center; gap: 10px; }
     .navbtn { flex: 0 1 190px; }
   }
+
+  .build { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -321,6 +323,7 @@
     </div>
     <div class="list" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
+    <p class="note build">build 2026-09-15 16:07 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -1267,8 +1270,13 @@ function renderBasket() {
     (gearCount ? " \u00b7 " + gearCount + " item" + (gearCount === 1 ? "" : "s") : "") +
     " \u00b7 " + prettyDate(state.dateKey);
   /* One hour is not "these hours". */
-  $("basket-go").textContent = n === 1 ? "Book this hour" : "Book these " + n + " hours";
+  $("basket-go").textContent = basketLabel();
   syncDock();
+}
+
+function basketLabel() {
+  const n = state.picked.length;
+  return n === 1 ? "Book this hour" : "Book these " + n + " hours";
 }
 
 /* The page must end where the dock begins, and the dock changes height when
@@ -1337,7 +1345,7 @@ $("basket-go").addEventListener("click", async () => {
   const { data: lead, error } = await sb.from("bookings").insert(rows[0]).select("id, group_id").single();
   if (error || !lead) {
     go.disabled = false;
-    go.textContent = "Book these hours";
+    go.textContent = basketLabel();
     alert("Booking failed: " + ((error && error.message) || "unknown error"));
     return;
   }
@@ -1367,7 +1375,7 @@ $("basket-go").addEventListener("click", async () => {
   state.qty = {};
   state.promo = null;
   go.disabled = false;
-  go.textContent = "Book these hours";
+  go.textContent = basketLabel();
   openBooking(lead.id);
 });
 

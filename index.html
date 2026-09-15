@@ -825,6 +825,10 @@
     .nav-actions .nav-btn { min-width: 74px; }
     .sports { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
   }
+
+  /* A visible build stamp: when a phone insists it is showing the newest
+     version, this is how anyone can check. */
+  .build { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 </style>
 
 <header class="masthead">
@@ -1432,7 +1436,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now</span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-15 16:07 UTC</span></span>
   </div>
 </footer>
 
