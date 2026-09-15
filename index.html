@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Court booking in the Philippines. Basketball, badminton, padel and more, booked by the hour at the venue's own price. Free for players; venues pay a share of the bookings SportBase brings them.">
+<meta property="og:title" content="SportBase">
+<meta property="og:description" content="Find the hour. Book the court. Court booking in the Philippines.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%23E85D12%27/%3E%3C/svg%3E">
+<style>
+  :root { color-scheme: light dark; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>SportBase — Book a court by the hour, Philippines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground: #F2F4F0;
+    --raised: #FBFCFA;
+    --ink: #14211C;
+    --muted: #5C6D65;
+    --line: #D6DCD5;
+    --accent: #E85D12;
+    --accent-soft: #FDEDE3;
+    --taken: #DDE3DC;
+    --taken-ink: #8C9A91;
+    --peak: #FFF4E8;
+    --maxw: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1512;
+      --raised: #151F1B;
+      --ink: #E9EFEA;
+      --muted: #94A49B;
+      --line: #25322C;
+      --accent: #FF7A2E;
+      --accent-soft: #2A1A10;
+      --taken: #1D2723;
+      --taken-ink: #6C7C73;
+      --peak: #241A10;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0E1512;
+    --raised: #151F1B;
+    --ink: #E9EFEA;
+    --muted: #94A49B;
+    --line: #25322C;
+    --accent: #FF7A2E;
+    --accent-soft: #2A1A10;
+    --taken: #1D2723;
+    --taken-ink: #6C7C73;
+    --peak: #241A10;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: 24px; }
+
+  h1, h2, h3 {
+    font-family: Archivo, system-ui, sans-serif;
+    text-wrap: balance;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p { margin: 0; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .masthead {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .masthead .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 14px;
+  }
+  .wordmark {
+    font-family: Archivo, sans-serif;
+    font-weight: 900;
+    font-size: 19px;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .pip { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+  .status-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 11px;
+    white-space: nowrap;
+  }
+
+  .hero { padding-block: 72px 56px; }
+  .hero .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+  }
+  .hero h1 { font-weight: 900; font-size: clamp(40px, 6.2vw, 68px); line-height: 0.98; }
+  .hero h1 .rule { display: block; color: var(--accent); }
+  .lede { margin-top: 20px; font-size: 17px; color: var(--muted); max-width: 44ch; }
+  .cta-row { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn {
+    font-family: Archivo, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { border-color: var(--line); color: var(--ink); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .board { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .board-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .board-head strong { font-family: Archivo, sans-serif; font-size: 15px; font-weight: 700; }
+  .grid {
+    display: grid;
+    grid-template-columns: 52px repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .col-head, .row-head {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+  }
+  .col-head { justify-content: center; padding-bottom: 4px; }
+  .row-head { justify-content: flex-end; padding-right: 8px; }
+  .slot { border-radius: 6px; padding: 9px 4px; font-size: 11px; font-weight: 500; text-align: center; border: 1px solid transparent; }
+  .slot.free { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, transparent); color: var(--accent); }
+  .slot.peak { background: var(--peak); border-color: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--accent); font-weight: 600; }
+  .slot.taken { background: var(--taken); color: var(--taken-ink); }
+  .legend { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 14px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); }
+  .key { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--line); flex: 0 0 auto; }
+  .board-note { margin-top: 12px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
+
+  section { padding-block: 56px; }
+  .band { border-top: 1px solid var(--line); }
+  .sec-head { max-width: 52ch; }
+  .sec-head h2 { margin-top: 10px; font-size: clamp(26px, 3.4vw, 36px); font-weight: 700; line-height: 1.1; }
+  .sec-head p { margin-top: 12px; color: var(--muted); }
+
+  .sports { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .sport { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; color: var(--muted); }
+  .sport span { color: var(--ink); font-weight: 500; }
+
+  .steps { margin-top: 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .step-n { font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.1em; }
+  .step h3 { margin-top: 8px; font-size: 17px; font-weight: 700; }
+  .step p { margin-top: 6px; color: var(--muted); font-size: 15px; }
+
+  .plans { margin-top: 28px; width: 100%; border-collapse: collapse; font-size: 15px; }
+  .plans th, .plans td { text-align: left; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .plans thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    padding-top: 0;
+  }
+  .plans td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .plans tbody th { font-family: Archivo, sans-serif; font-weight: 700; font-size: 16px; }
+  .plans td small { display: block; color: var(--muted); font-size: 13px; }
+  .table-scroll { overflow-x: auto; }
+
+  .player-note {
+    margin-top: 32px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    background: var(--raised);
+    padding: 20px 22px;
+    max-width: 62ch;
+  }
+  .player-note h3 { font-size: 17px; font-weight: 700; }
+  .player-note p { margin-top: 8px; color: var(--muted); font-size: 15px; }
+  .player-note .price { font-family: "IBM Plex Mono", monospace; color: var(--ink); font-weight: 600; }
+
+  .closing { padding-block: 64px 40px; }
+  .closing h2 { font-size: clamp(24px, 3.2vw, 32px); font-weight: 700; }
+  .closing p { margin-top: 12px; color: var(--muted); max-width: 52ch; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-block: 24px 40px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .hero { padding-block: 48px 40px; }
+  }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="wordmark"><span class="pip" aria-hidden="true"></span>SportBase</div>
+    <div class="status-chip">In development &middot; not yet on the stores</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Court booking, Philippines</p>
+      <h1>Find the hour.<span class="rule">Book the court.</span></h1>
+      <p class="lede">
+        Basketball, badminton, padel and more, booked by the hour at venues
+        near you. You pay the venue&rsquo;s own price &mdash; booking through
+        SportBase costs a player nothing.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20list%20my%20venue">List your venue</a>
+        <a class="btn btn-ghost" href="#owners">What it costs an owner</a>
+      </div>
+    </div>
+
+    <div class="board" role="img" aria-label="Example booking grid for a Saturday: four courts across, hours down the side, showing which hours are taken and which are free.">
+      <div class="board-head">
+        <strong>Saturday 20 Sept</strong>
+        <span class="eyebrow">4 courts</span>
+      </div>
+
+      <div class="grid" aria-hidden="true">
+        <div></div>
+        <div class="col-head">C1</div>
+        <div class="col-head">C2</div>
+        <div class="col-head">C3</div>
+        <div class="col-head">C4</div>
+
+        <div class="row-head">15:00</div>
+        <div class="slot taken">taken</div>
+        <div class="slot free">₱350</div>
+        <div class="slot free">₱350</div>
+        <div class="slot taken">taken</div>
+
+        <div class="row-head">16:00</div>
+        <div class="slot taken">taken</div>
+        <div class="slot taken">taken</div>
+        <div class="slot free">₱350</div>
+        <div class="slot free">₱600</div>
+
+        <div class="row-head">17:00</div>
+        <div class="slot peak">₱480</div>
+        <div class="slot taken">taken</div>
+        <div class="slot taken">taken</div>
+        <div class="slot peak">₱900</div>
+
+        <div class="row-head">18:00</div>
+        <div class="slot taken">taken</div>
+        <div class="slot taken">taken</div>
+        <div class="slot peak">₱480</div>
+        <div class="slot taken">taken</div>
+
+        <div class="row-head">19:00</div>
+        <div class="slot peak">₱480</div>
+        <div class="slot taken">taken</div>
+        <div class="slot taken">taken</div>
+        <div class="slot taken">taken</div>
+
+        <div class="row-head">20:00</div>
+        <div class="slot peak">₱480</div>
+        <div class="slot peak">₱480</div>
+        <div class="slot taken">taken</div>
+        <div class="slot peak">₱900</div>
+      </div>
+
+      <div class="legend">
+        <span class="key"><span class="swatch" style="background:var(--accent-soft)"></span>Free</span>
+        <span class="key"><span class="swatch" style="background:var(--peak)"></span>Peak hours</span>
+        <span class="key"><span class="swatch" style="background:var(--taken)"></span>Taken</span>
+      </div>
+      <p class="board-note">Example venue &middot; peak 17:00&ndash;22:00 weekdays and weekends</p>
+    </div>
+  </div>
+</div>
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">For players</p>
+      <h2>The price you see is the venue&rsquo;s price.</h2>
+      <p>
+        No booking fee, no service charge, no markup on the hour. You see what
+        each court costs, including the venue&rsquo;s peak rate, before you
+        pick anything.
+      </p>
+    </div>
+
+    <div class="sports">
+      <span class="sport"><span>Basketball</span></span>
+      <span class="sport"><span>Badminton</span></span>
+      <span class="sport"><span>Padel</span></span>
+      <span class="sport"><span>Tennis</span></span>
+      <span class="sport"><span>Pickleball</span></span>
+      <span class="sport"><span>Volleyball</span></span>
+      <span class="sport"><span>Futsal</span></span>
+      <span class="sport"><span>Table tennis</span></span>
+      <span class="sport"><span>Swimming</span></span>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <h3>Pick your hours</h3>
+        <p>
+          Every court at the venue, hour by hour, with what is already taken
+          greyed out. Pick several at once if you want a long game.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <h3>Add what you need</h3>
+        <p>
+          Rackets, balls and the rest, if the venue rents them. A refundable
+          deposit is shown separately from the rental, never buried in a total.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <h3>Show the code</h3>
+        <p>
+          Your booking carries a QR code. The venue scans it when you arrive,
+          and that is the check-in &mdash; no list at the desk to find your
+          name on.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="owners">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">For venue owners</p>
+      <h2>Listing is free. We take a share of what we bring you.</h2>
+      <p>
+        Nothing to pay to be on SportBase. The commission comes out of
+        bookings SportBase sent you &mdash; never out of a customer who walked
+        in on their own.
+      </p>
+    </div>
+
+    <div class="table-scroll">
+      <table class="plans">
+        <thead>
+          <tr>
+            <th scope="col">Plan</th>
+            <th scope="col">Per month</th>
+            <th scope="col">Commission</th>
+            <th scope="col">What it adds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Listed</th>
+            <td class="num">₱0</td>
+            <td class="num">10%</td>
+            <td>Findable and bookable, up to 8 photos.</td>
+          </tr>
+          <tr>
+            <th scope="row">Featured</th>
+            <td class="num">₱499</td>
+            <td class="num">7%</td>
+            <td>
+              Above the fold in your city, a place in Nearby Venues, your
+              promotions on the home screen.
+              <small>Pays for itself from about ₱17,000 a month in bookings.</small>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Partner</th>
+            <td class="num">₱1,499</td>
+            <td class="num">5%</td>
+            <td>
+              Everything in Featured, a named contact for support, and a
+              monthly report on views, bookings and no-shows.
+              <small>Pays for itself from about ₱50,000 a month in bookings.</small>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="player-note">
+      <h3>And one plan for players</h3>
+      <p>
+        <span class="price">SportBase Plus, ₱129 a month</span> &mdash;
+        SportBase gives up its share of your bookings, so you pay the
+        venue&rsquo;s price and nothing on top. It pays for itself at about
+        three hours a month. Play less than that and the free account is the
+        better deal, which the app says on the page itself.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="band closing">
+  <div class="wrap">
+    <p class="eyebrow">Where things stand</p>
+    <h2>Not on the App Store yet.</h2>
+    <p>
+      SportBase is being built. Venues are being onboarded now, ahead of the
+      apps going live &mdash; if you run courts and want to be on it from the
+      first day, that is the useful thing to do today.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20list%20my%20venue">Get your venue listed</a>
+      <a class="btn btn-ghost" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Tell me when it launches</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>SportBase &middot; Philippines</span>
+    <span>angelicamongaya8@gmail.com</span>
+  </div>
+</footer>
+</body>
+</html>
