@@ -744,10 +744,15 @@
   .sport:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .sports-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
 
-  /* The footer stacks on a phone: three short lists beat two ragged ones. */
-  @media (max-width: 720px) {
-    footer .foot { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-block: 4px 24px; }
-    .foot-brand { grid-column: auto; }
+  /* On a phone the footer reads better as a block than as a column: Play
+     and Venues sit side by side, and SportBase runs underneath them both.
+     Three lists stacked one after another is a long walk to the bottom. */
+  @media (max-width: 860px) {
+    footer .foot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; padding-block: 4px 24px; }
+    .foot-brand { grid-column: 1 / -1; }
+    footer .foot > .foot-col:last-of-type { grid-column: 1 / -1; }
+    footer .foot > .foot-col:last-of-type ul { columns: 2; column-gap: 20px; }
+    footer .foot > .foot-col:last-of-type li { break-inside: avoid; }
     .foot-brand p { max-width: none; }
     .foot-col h3 { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
     .foot-col ul { margin-top: 12px; gap: 13px; }
@@ -1448,7 +1453,8 @@
   <h3>Add SportBase to your home screen</h3>
   <p>The site already works in your browser. Installing just makes it open in one tap, full screen.</p>
   <div class="prompt-row">
-    <button class="nav-btn filled" type="button" data-guide-open="auto">Show me how</button>
+    <button class="nav-btn filled" type="button" id="prompt-install" hidden>Install</button>
+    <button class="nav-btn filled" type="button" id="prompt-how" data-guide-open="auto">Show me how</button>
     <button class="nav-btn" type="button" id="prompt-later">Not now</button>
   </div>
 </div>
@@ -1937,15 +1943,40 @@
     var panel = document.getElementById("install-live");
     var btn = document.getElementById("install-now");
 
+    var promptBtn = document.getElementById("prompt-install");
+    var howBtn = document.getElementById("prompt-how");
+
     window.addEventListener("beforeinstallprompt", function (e) {
       e.preventDefault();
       deferred = e;
       if (panel) panel.hidden = false;
+      /* The browser will do it here and now, so the card offers that
+         instead of sending someone off to read four steps. */
+      if (promptBtn && howBtn) { promptBtn.hidden = false; howBtn.hidden = true; }
     });
     window.addEventListener("appinstalled", function () {
       deferred = null;
       if (panel) panel.hidden = true;
+      if (promptBtn && howBtn) { promptBtn.hidden = true; howBtn.hidden = false; }
+      var card = document.getElementById("prompt");
+      if (card) card.hidden = true;
     });
+
+    async function spend() {
+      if (!deferred) return false;
+      deferred.prompt();
+      try { await deferred.userChoice; } catch (e) {}
+      deferred = null;
+      return true;
+    }
+    if (promptBtn) {
+      promptBtn.addEventListener("click", async function () {
+        promptBtn.disabled = true;
+        var did = await spend();
+        promptBtn.disabled = false;
+        if (!did && howBtn) { promptBtn.hidden = true; howBtn.hidden = false; }
+      });
+    }
     if (btn) {
       btn.addEventListener("click", async function () {
         if (!deferred) { if (panel) panel.hidden = true; return; }
