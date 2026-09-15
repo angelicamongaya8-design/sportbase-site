@@ -359,7 +359,6 @@
   <!-- My bookings                                                       -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-bookings" class="wrap shell" hidden>
-    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>Your bookings</h1>
       <button class="btn small" type="button" id="bookings-refresh">Refresh</button>
@@ -380,7 +379,6 @@
   <!-- Owner: today                                                      -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-owner" class="wrap shell" hidden>
-    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>Your venue today</h1>
       <span class="chip" id="owner-date"></span>
@@ -394,7 +392,7 @@
   <!-- List your venue                                                   -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-apply" class="wrap shell" hidden>
-    <button class="btn small back" type="button" id="apply-back">&larr; Back to the courts</button>
+    <button class="btn small back" type="button" id="apply-back">&larr; Back</button>
     <div class="shell-head">
       <h1>List your venue</h1>
       <span class="chip" id="apply-chip" hidden></span>
@@ -453,7 +451,6 @@
   <!-- Admin: the queue                                                  -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-admin" class="wrap shell" hidden>
-    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>The queue</h1>
       <span class="chip" id="admin-count"></span>
@@ -1030,9 +1027,6 @@ $("sport-clear").addEventListener("click", () => {
   syncSportNote();
   renderVenues();
   if (!$("view-venue").hidden && state.venue) openVenue(state.venue.id);
-});
-document.querySelectorAll("[data-back]").forEach((b) => {
-  b.addEventListener("click", () => show(b.getAttribute("data-back")));
 });
 
 /* --- one venue ----------------------------------------------------- */
