@@ -64,7 +64,7 @@
   .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
   .icon-btn:hover { color: var(--ink); }
   .icon-btn svg { width: 16px; height: 16px; }
-  .nav-btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 15px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); white-space: nowrap; }
+  .nav-btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 15px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; line-height: 1.2; }
   .nav-btn.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
   .icon-btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .prompt[hidden] { display: none !important; }
@@ -137,6 +137,47 @@
   .foot-col a:hover, .foot-col .linkish:hover { color: var(--accent); }
   .foot-base { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; border-top: 1px solid var(--line); padding-block: 18px 6px; }
   @media (max-width: 860px) { footer .foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } .foot-brand { grid-column: 1 / -1; } }
+
+  .venue-grid { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .vcard { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--raised); display: flex; flex-direction: column; text-decoration: none; color: var(--ink); }
+  .vcard:hover { border-color: var(--accent); }
+  .vshot { aspect-ratio: 16 / 10; background: var(--accent-soft); display: block; width: 100%; object-fit: cover; }
+  .vshot-blank { display: grid; place-items: center; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .vbody { padding: 14px 15px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .vbody b { font-family: Archivo, sans-serif; font-size: 16px; }
+  .vbody .where { color: var(--muted); font-size: 13.5px; }
+  .vmeta { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .vtag { font-family: "IBM Plex Mono", monospace; font-size: 10px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; color: var(--muted); }
+  .vtag.rate { color: var(--accent); border-color: var(--accent); }
+  .venue-note { margin-top: 16px; font-size: 14px; color: var(--muted); }
+  .skeleton { border: 1px dashed var(--line); border-radius: 16px; min-height: 220px; display: grid; place-items: center; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .modal { overflow-y: auto; padding: 16px; }
+  .modal-card { max-height: calc(100dvh - 32px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @media (max-width: 720px) {
+    .btn, .nav-btn, .btn-store, .icon-btn { box-sizing: border-box; min-height: 44px; }
+    .hero { padding-block: 32px 28px; }
+    section { padding-block: 40px; }
+    .board { padding: 13px; }
+    .grid { grid-template-columns: 42px repeat(4, minmax(0, 1fr)); gap: 3px; }
+    .slot { padding: 8px 2px; font-size: 10px; }
+    .col-head, .row-head { font-size: 9px; }
+    .row-head { padding-right: 5px; }
+    .legend { gap: 10px; font-size: 10px; }
+    .board-note { font-size: 9px; }
+    .prompt { padding: 15px 15px 14px; border-radius: 14px; }
+    .prompt h3 { font-size: 15px; }
+    .prompt p { font-size: 13px; }
+    .cta-note { font-size: 13.5px; }
+    .plans th, .plans td { padding-right: 12px; }
+    .foot-col ul { gap: 11px; }
+  }
+  @media (max-width: 400px) {
+    .wrap { padding-inline: 16px; }
+    .wordmark { font-size: 17px; }
+    .nav-btn { font-size: 12px; padding: 9px 12px; }
+    .btn-store { padding: 9px 14px 10px; }
+    .btn-store strong { font-size: 14px; }
+  }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -310,7 +351,7 @@
   .board-note { margin-top: 12px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 
   section { padding-block: 56px; }
-  .band { border-top: 1px solid var(--line); }
+  .band { border-top: 1px solid var(--line); scroll-margin-top: 72px; }
   .sec-head { max-width: 52ch; }
   .sec-head h2 { margin-top: 10px; font-size: clamp(26px, 3.4vw, 36px); font-weight: 700; line-height: 1.1; }
   .sec-head p { margin-top: 12px; color: var(--muted); }
@@ -404,11 +445,11 @@
       <div class="stores">
         <button class="btn-store solid" type="button" data-guide-open="ios">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><path d="M12 8v7"></path><path d="M9.5 12.5 12 15l2.5-2.5"></path></svg>
-          <span class="lines"><small>Add to</small><strong>iPhone</strong></span>
+          <span class="lines"><small>Install on</small><strong>iPhone</strong></span>
         </button>
         <button class="btn-store outline" type="button" data-guide-open="android">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"></rect><path d="M12 8v7"></path><path d="M9.5 12.5 12 15l2.5-2.5"></path></svg>
-          <span class="lines"><small>Add to</small><strong>Android</strong></span>
+          <span class="lines"><small>Install on</small><strong>Android</strong></span>
         </button>
       </div>
       <p class="cta-note">Free to use &middot; you pay the venue, never us. Or <a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">book from your browser</a> &mdash; same account either way.</p>
@@ -590,6 +631,22 @@
         better deal, which the app says on the page itself.
       </p>
     </div>
+  </div>
+</section>
+
+<section class="band" id="venues">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">On SportBase now</p>
+      <h2>Venues already taking bookings.</h2>
+      <p>Live from the app, not a brochure: these are the venues that are listed today, with their own hours and their own prices. Sign in to see tonight&rsquo;s free hours and book one.</p>
+    </div>
+    <div class="venue-grid" id="venue-grid">
+      <div class="skeleton">Loading venues</div>
+      <div class="skeleton">Loading venues</div>
+      <div class="skeleton">Loading venues</div>
+    </div>
+    <p class="venue-note" id="venue-note" hidden></p>
   </div>
 </section>
 
@@ -808,7 +865,7 @@
   <p>The site already works in your browser. Installing just makes it open in one tap, full screen.</p>
   <div class="prompt-row">
     <button class="nav-btn filled" type="button" data-guide-open="auto">Show me how</button>
-    <button class="nav-btn" type="button" data-guide-open="other">On another device</button>
+    <button class="nav-btn" type="button" id="prompt-later">Not now</button>
   </div>
 </div>
 
@@ -912,18 +969,33 @@
       tabs.forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-guide") === which ? "true" : "false"); });
       panels.forEach(function (p) { p.hidden = p.getAttribute("data-guide-panel") !== which; });
     }
+    var title = document.getElementById("guide-title");
+    var say = modal.querySelector(".say");
+    var COPY = {
+      ios: { title: "Install SportBase on your iPhone.", say: "Three taps and it sits on your home screen like any other app \u2014 full screen, no browser bar. It is not on the App Store yet, so this is how it gets there today." },
+      android: { title: "Install SportBase on your Android.", say: "Chrome puts it on your home screen in three taps \u2014 full screen, no browser bar. It is not on Play Store yet, so this is how it gets there today." },
+      other: { title: "The website is the app.", say: "Booking works right here in the browser \u2014 nothing to download to use it. Installing only means it opens in one tap, full screen. The App Store and Play Store versions come later." }
+    };
+    function paintCopy(which) {
+      var copy = COPY[which] || COPY.other;
+      title.textContent = copy.title;
+      say.textContent = copy.say;
+    }
     function open(el) {
       var want = el.getAttribute("data-guide-open") || "auto";
-      show(want === "auto" ? thisDevice() : want);
+      var which = want === "auto" ? thisDevice() : want;
+      show(which);
+      paintCopy(which);
       opener = el; modal.hidden = false;
       document.documentElement.style.overflow = "hidden";
       closeBtn.focus();
+      modal.scrollTop = 0; card.scrollTop = 0;
     }
     function close() {
       modal.hidden = true; document.documentElement.style.overflow = "";
       if (opener) opener.focus();
     }
-    tabs.forEach(function (t) { t.addEventListener("click", function () { show(t.getAttribute("data-guide")); }); });
+    tabs.forEach(function (t) { t.addEventListener("click", function () { var w = t.getAttribute("data-guide"); show(w); paintCopy(w); }); });
     document.querySelectorAll("[data-guide-open]").forEach(function (el) {
       el.addEventListener("click", function (e) { e.preventDefault(); open(el); });
     });
@@ -965,10 +1037,58 @@
     }
     window.addEventListener("scroll", maybeShow, { passive: true });
     maybeShow();
-    document.getElementById("prompt-close").addEventListener("click", function () {
+    function later() {
       prompt.hidden = true; snoozed = true;
       try { localStorage.setItem("sb-prompt-until", String(Date.now() + WEEK)); } catch (e) {}
-    });
+    }
+    document.getElementById("prompt-close").addEventListener("click", later);
+    document.getElementById("prompt-later").addEventListener("click", later);
+  })();
+
+  (function () {
+    var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/";
+    var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
+    var APP = "https://angelicamongaya8-design.github.io/sportbase-site/app.html";
+    var grid = document.getElementById("venue-grid");
+    var note = document.getElementById("venue-note");
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function peso(n) { return "\u20B1" + Number(n || 0).toLocaleString("en-PH", { maximumFractionDigits: 0 }); }
+    function card(v) {
+      var courts = (v.courts || []).filter(function (c) { return c.status !== "unavailable"; });
+      var sports = [];
+      courts.forEach(function (c) { if (c.sport && sports.indexOf(c.sport) === -1) sports.push(c.sport); });
+      var cheapest = null;
+      courts.forEach(function (c) { if (c.hourly_rate != null && (cheapest == null || c.hourly_rate < cheapest)) cheapest = c.hourly_rate; });
+      var photo = v.photo_url || (v.photos && v.photos[0]) || null;
+      var hours = v.opening_time && v.closing_time ? v.opening_time + " \u2013 " + v.closing_time : (v.business_hours || "hours on the venue page");
+      return '<a class="vcard" href="' + APP + '">' +
+        (photo ? '<img class="vshot" src="' + esc(photo) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'vshot vshot-blank\',textContent:\'no photo yet\'}))">'
+               : '<span class="vshot vshot-blank">' + esc(sports[0] || "court") + '</span>') +
+        '<span class="vbody"><b>' + esc(v.name) + '</b><span class="where">' +
+        esc([v.city, v.address].filter(Boolean).join(" \u00b7 ")) + '</span><span class="vmeta">' +
+        (cheapest != null ? '<span class="vtag rate">from ' + peso(cheapest) + '/hr</span>' : "") +
+        '<span class="vtag">' + esc(hours) + '</span>' +
+        (sports.length ? '<span class="vtag">' + esc(sports.slice(0, 2).join(", ")) + '</span>' : "") +
+        '</span></span></a>';
+    }
+    var url = API + "venues?select=id,name,city,address,photo_url,photos,opening_time,closing_time,business_hours,courts(sport,hourly_rate,status)&status=eq.approved&limit=6";
+    fetch(url, { headers: { apikey: KEY, Authorization: "Bearer " + KEY } })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(String(r.status))); })
+      .then(function (rows) {
+        if (!rows || !rows.length) throw new Error("empty");
+        grid.innerHTML = rows.map(card).join("");
+        note.hidden = false;
+        note.innerHTML = 'Tap any venue to open the web app. Free hours, prices and the booking itself live in there \u2014 <a href="' + APP + '">sign in or create an account</a>.';
+      })
+      .catch(function () {
+        grid.innerHTML = '<div class="skeleton" style="grid-column:1/-1;min-height:120px">Venue list opens in the app</div>';
+        note.hidden = false;
+        note.innerHTML = 'The live list could not be loaded here. <a href="' + APP + '">Open the web app</a> to see every venue.';
+      });
   })();
 </script>
 
