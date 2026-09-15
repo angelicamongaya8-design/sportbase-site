@@ -30,7 +30,7 @@
     --accent-soft: #FDEDE3;
     --taken: #DDE3DC;
     --taken-ink: #8C9A91;
-    --peak: #FFF4E8;
+    --peak: #FFDCBB;
     --maxw: 1080px;
   }
 
@@ -42,10 +42,10 @@
       --muted: #94A49B;
       --line: #25322C;
       --accent: #FF7A2E;
-      --accent-soft: #2A1A10;
+      --accent-soft: #20150E;
       --taken: #1D2723;
       --taken-ink: #6C7C73;
-      --peak: #241A10;
+      --peak: #4A2A11;
     }
   }
 
@@ -56,10 +56,10 @@
     --muted: #94A49B;
     --line: #25322C;
     --accent: #FF7A2E;
-    --accent-soft: #2A1A10;
+    --accent-soft: #20150E;
     --taken: #1D2723;
     --taken-ink: #6C7C73;
-    --peak: #241A10;
+    --peak: #4A2A11;
   }
 
   body {
@@ -175,11 +175,14 @@
   .row-head { justify-content: flex-end; padding-right: 8px; }
   .slot { border-radius: 6px; padding: 9px 4px; font-size: 11px; font-weight: 500; text-align: center; border: 1px solid transparent; }
   .slot.free { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, transparent); color: var(--accent); }
-  .slot.peak { background: var(--peak); border-color: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--accent); font-weight: 600; }
+  .slot.peak { background: var(--peak); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .slot.taken { background: var(--taken); color: var(--taken-ink); }
   .legend { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 14px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); }
   .key { display: flex; align-items: center; gap: 6px; }
-  .swatch { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--line); flex: 0 0 auto; }
+  .swatch { width: 13px; height: 13px; border-radius: 4px; border: 1px solid transparent; flex: 0 0 auto; }
+  .swatch.free { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, transparent); }
+  .swatch.peak { background: var(--peak); border-color: var(--accent); }
+  .swatch.taken { background: var(--taken); border-color: var(--line); }
   .board-note { margin-top: 12px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 
   section { padding-block: 56px; }
@@ -322,9 +325,9 @@
       </div>
 
       <div class="legend">
-        <span class="key"><span class="swatch" style="background:var(--accent-soft)"></span>Free</span>
-        <span class="key"><span class="swatch" style="background:var(--peak)"></span>Peak hours</span>
-        <span class="key"><span class="swatch" style="background:var(--taken)"></span>Taken</span>
+        <span class="key"><span class="swatch free"></span>Free</span>
+        <span class="key"><span class="swatch peak"></span>Peak hours</span>
+        <span class="key"><span class="swatch taken"></span>Taken</span>
       </div>
       <p class="board-note">Example venue &middot; peak 17:00&ndash;22:00 weekdays and weekends</p>
     </div>
