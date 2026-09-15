@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SportBase — web app</title>
+<title>SportBase web app</title>
 <meta name="description" content="Book a court by the hour. The SportBase web app, running on the same account as the phone app.">
 <meta name="theme-color" content="#E85D12">
 <meta name="robots" content="noindex">
@@ -197,6 +197,21 @@
     .tile small { font-size: 10px; }
     .totals { font-size: 15px; }
   }
+
+  /* Buttons offered together are one decision, so they are one size. */
+  .social .btn, .tabs .tab { flex: 1 1 0; justify-content: center; }
+  .filter-note {
+    margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    border: 1px solid var(--accent); background: var(--accent-soft);
+    border-radius: 12px; padding: 10px 12px; font-size: 14px;
+  }
+  .filter-note b { color: var(--ink); }
+  .filter-note button {
+    margin-left: auto; border: 1px solid var(--line); background: transparent;
+    color: var(--ink); border-radius: 9px; padding: 6px 11px; font: inherit;
+    font-size: 13px; cursor: pointer;
+  }
+  .filter-note button:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -256,7 +271,7 @@
 
         <div class="msg" id="auth-msg" hidden></div>
         <p class="note">
-          This is the live SportBase database &mdash; a real account and real
+          This is the live SportBase database, with a real account and real
           bookings, on an app that is still being built. Read the
           <a href="./index.html">short version of what it does</a>.
         </p>
@@ -276,6 +291,10 @@
       <input id="venue-search" type="search" placeholder="Search a venue or a city" aria-label="Search venues">
       <select id="sport-filter" aria-label="Filter by sport"><option value="">Every sport</option></select>
     </div>
+    <div class="filter-note" id="sport-note" hidden>
+      <span>Showing <b id="sport-note-name">one sport</b> only. Courts for anything else are hidden.</span>
+      <button type="button" id="sport-clear">Show every sport</button>
+    </div>
     <div class="list" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
@@ -286,6 +305,10 @@
   <!-- ---------------------------------------------------------------- -->
   <section id="view-venue" class="wrap shell" hidden>
     <button class="btn small back" type="button" id="venue-back">&larr; All venues</button>
+    <div class="filter-note" id="venue-sport-note" hidden>
+      <span>Only the <b id="venue-sport-name">sport</b> courts are shown here.</span>
+      <button type="button" id="venue-sport-clear">Show every court</button>
+    </div>
     <div class="shell-head">
       <h1 id="venue-name">Venue</h1>
       <span class="chip" id="venue-hours"></span>
@@ -293,7 +316,7 @@
     <p class="note" id="venue-address"></p>
     <div class="days" id="day-strip"></div>
     <div id="court-list"></div>
-    <div class="empty" id="court-empty" hidden>This venue has no bookable court yet.</div>
+    <div class="empty" id="court-empty" hidden>No court here for that sport. Clear the filter above to see the rest.</div>
 
     <div class="extras" id="extras" hidden>
       <h2>Anything to borrow?</h2>
@@ -312,6 +335,7 @@
   <!-- My bookings                                                       -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-bookings" class="wrap shell" hidden>
+    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>Your bookings</h1>
       <button class="btn small" type="button" id="bookings-refresh">Refresh</button>
@@ -332,6 +356,7 @@
   <!-- Owner: today                                                      -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-owner" class="wrap shell" hidden>
+    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>Your venue today</h1>
       <span class="chip" id="owner-date"></span>
@@ -358,7 +383,7 @@
     <div class="card" id="apply-card">
       <p class="lede">
         Tell us what you run and who you are. An admin reads it, and once it
-        is approved your account turns into an owner account &mdash; courts,
+        is approved your account turns into an owner account: courts,
         prices, and the day&rsquo;s bookings, in the app and here.
       </p>
       <form id="apply-form" novalidate>
@@ -404,13 +429,14 @@
   <!-- Admin: the queue                                                  -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-admin" class="wrap shell" hidden>
+    <button class="btn small back" type="button" data-back="browse">&larr; Back to the courts</button>
     <div class="shell-head">
       <h1>The queue</h1>
       <span class="chip" id="admin-count"></span>
     </div>
     <div class="list" id="admin-list"></div>
     <div class="empty" id="admin-empty" hidden>Nothing is waiting. Rare, and good.</div>
-    <p class="note">Approving and rejecting stays in the phone app for now &mdash; this is the read-only view of what is waiting.</p>
+    <p class="note">Approving and rejecting stays in the phone app for now. This is the read-only view of what is waiting.</p>
   </section>
 </main>
 
@@ -453,7 +479,7 @@ const VENUE_TZ = "Asia/Manila";
 if (!window.supabase) {
   document.getElementById("auth-msg").hidden = false;
   document.getElementById("auth-msg").innerHTML =
-    "<b>Could not load the SportBase library.</b> Check the connection and reload \u2014 nothing else on this page will work until it loads.";
+    "<b>Could not load the SportBase library.</b> Check the connection and reload; nothing else on this page will work until it loads.";
   throw new Error("supabase-js did not load");
 }
 
@@ -583,7 +609,9 @@ function show(view) {
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
   const inApp = view !== "auth";
   const signedIn = !!state.session;
-  $("navbar").hidden = !inApp;
+  /* Signed out there is one tab, and a bar with one tab in it is a bar that
+     does nothing. It appears when there is somewhere else to go. */
+  $("navbar").hidden = !(inApp && signedIn);
   $("signout-btn").hidden = !(inApp && signedIn);
   $("signin-btn").hidden = !(inApp && !signedIn);
   $("role-chip").hidden = !(inApp && signedIn);
@@ -633,7 +661,7 @@ function setAuthMode(mode) {
   const up = mode === "up";
   $("auth-heading").textContent = up ? "Create account" : "Sign in";
   $("auth-lede").textContent = up
-    ? "One account for the web and the phone app. Use an email you can open — the confirmation lands there."
+    ? "One account for the web and the phone app. Use an email you can open, because the confirmation lands there."
     : "Same account as the phone app. Your bookings follow you.";
   $("name-field").hidden = !up;
   $("auth-go").textContent = up ? "Create my account" : "Sign in";
@@ -744,8 +772,16 @@ sb.auth.onAuthStateChange(async (_event, session) => {
 (async function boot() {
   const { data } = await sb.auth.getSession();
   state.session = data.session || null;
-  /* The courts are public. The front door is a list of venues, not a form. */
-  show("browse");
+  /* The courts are public, so browsing is the front door. But a person who
+     pressed "Sign in" or "Create account" asked for a form, and should get
+     the form. */
+  const door = new URLSearchParams(window.location.search).get("auth");
+  if (!state.session && (door === "in" || door === "up")) {
+    setAuthMode(door);
+    show("auth");
+  } else {
+    show("browse");
+  }
   loadVenues();
   if (state.session) {
     await loadProfile();
@@ -813,7 +849,7 @@ async function openApply() {
   } else if (row.status === "rejected") {
     applyState("<b>That application was turned down.</b>" +
       (row.rejection_reason ? " Reason given: " + escapeHtml(row.rejection_reason) + "." : "") +
-      " You can send a corrected one &mdash; <button class=\"btn small\" type=\"button\" id=\"apply-again\">try again</button>");
+      " You can send a corrected one. <button class=\"btn small\" type=\"button\" id=\"apply-again\">try again</button>");
     const again = document.getElementById("apply-again");
     if (again) again.addEventListener("click", () => applyState(""));
   }
@@ -887,7 +923,9 @@ async function loadVenues() {
     Array.from(sports).sort().map((s) => '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + "</option>").join("");
 
   /* Arriving from a sport on the landing page: "where can I play badminton?"
-     should land on badminton, not on everything. */
+     should land on badminton, and stay on badminton - inside the venue as
+     well as in the list, because a basketball court is not an answer to that
+     question. */
   const wanted = new URLSearchParams(window.location.search).get("sport");
   if (wanted) {
     const match = Array.from(sel.options).find(
@@ -895,6 +933,7 @@ async function loadVenues() {
     );
     if (match) sel.value = match.value;
   }
+  syncSportNote();
   renderVenues();
 }
 
@@ -923,8 +962,41 @@ function renderVenues() {
     b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
   });
 }
+$("venue-sport-clear").addEventListener("click", () => {
+  $("sport-filter").value = "";
+  syncSportNote();
+  renderVenues();
+  if (state.venue) openVenue(state.venue.id);
+});
 $("venue-search").addEventListener("input", renderVenues);
-$("sport-filter").addEventListener("change", renderVenues);
+$("sport-filter").addEventListener("change", () => { syncSportNote(); renderVenues(); });
+
+/* One sport means one sport. The filter follows you into the venue, so a
+   badminton search never offers you a basketball hour. */
+function currentSport() {
+  const sel = $("sport-filter");
+  return sel && sel.value ? sel.value : null;
+}
+function syncSportNote() {
+  const sport = currentSport();
+  $("sport-note").hidden = !sport;
+  if (sport) $("sport-note-name").textContent = sport;
+}
+function courtsHere(venue) {
+  const sport = currentSport();
+  return (venue.courts || [])
+    .filter((c) => c.status !== "unavailable")
+    .filter((c) => !sport || c.sport === sport);
+}
+$("sport-clear").addEventListener("click", () => {
+  $("sport-filter").value = "";
+  syncSportNote();
+  renderVenues();
+  if (!$("view-venue").hidden && state.venue) openVenue(state.venue.id);
+});
+document.querySelectorAll("[data-back]").forEach((b) => {
+  b.addEventListener("click", () => show(b.getAttribute("data-back")));
+});
 
 /* --- one venue ----------------------------------------------------- */
 async function openVenue(id) {
@@ -945,6 +1017,9 @@ async function openVenue(id) {
   state.promo = null;
   $("promo-input").value = "";
   $("promo-msg").hidden = true;
+  const sport = currentSport();
+  $("venue-sport-note").hidden = !sport;
+  if (sport) $("venue-sport-name").textContent = sport;
   show("venue");
   renderDays();
   await loadBoard();
@@ -966,7 +1041,7 @@ async function loadGear(venueId) {
 function renderGear() {
   const list = $("gear-list");
   if (!state.gear.length) {
-    list.innerHTML = '<p class="hint">This venue does not rent anything yet \u2014 bring your own.</p>';
+    list.innerHTML = '<p class="hint">This venue does not rent anything yet. Bring your own.</p>';
   } else {
     list.innerHTML = state.gear.map((g) => {
       const n = state.qty[g.id] || 0;
@@ -1053,7 +1128,7 @@ $("promo-go").addEventListener("click", async () => {
   } else {
     state.promo = found;
     msg.className = "code-msg good";
-    msg.textContent = (found.title ? found.title + " \u2014 " : "") +
+    msg.textContent = (found.title ? found.title + ": " : "") +
       (found.discount_percent != null ? found.discount_percent + "% off the court time" : peso(found.discount_amount) + " off the court time");
   }
   renderTotals();
@@ -1085,7 +1160,7 @@ function renderDays() {
 async function loadBoard() {
   const wrap = $("court-list");
   const venue = state.venue;
-  const courts = (venue.courts || []).filter((c) => c.status !== "unavailable");
+  const courts = courtsHere(venue);
   $("court-empty").hidden = courts.length > 0;
   if (!courts.length) { wrap.innerHTML = ""; return; }
 
@@ -1124,7 +1199,7 @@ function renderBoard(courts) {
         (taken || gone ? "disabled " : "") +
         "data-court='" + court.id + "' data-hour='" + h + "' data-rate='" + (rate == null ? "" : rate) + "'>" +
         hourLabel(h) + "<span class='hr'>" +
-        (taken ? "booked" : gone ? "gone" : rate == null ? "—" : peso(rate)) +
+        (taken ? "booked" : gone ? "gone" : rate == null ? "n/a" : peso(rate)) +
         "</span></button>"
       );
     }
@@ -1304,12 +1379,12 @@ async function openBooking(id, justPaid) {
     "<div class='tiles'><div class='tile'><small>Date</small><b style='font-size:15px'>" + prettyDate(data.date) + "</b></div>" +
     "<div class='tile'><small>Hours</small><b style='font-size:15px'>" + String(data.start_time).slice(0, 5) + "–" + String(data.end_time).slice(0, 5) + "</b></div>" +
     "<div class='tile'><small>Total</small><b>" + peso(data.total_amount) + "</b></div></div>" +
-    (justPaid ? "<div class='msg'><b>Back from GCash.</b> Waiting for the payment to be confirmed &mdash; this page updates itself.</div>" : "") +
+    (justPaid ? "<div class='msg'><b>Back from GCash.</b> Waiting for the payment to be confirmed. This page updates itself.</div>" : "") +
     "<div style='margin-top:18px;display:flex;gap:8px;flex-wrap:wrap'>" +
     (payable ? "<button class='btn filled' type='button' id='pay-btn'>Pay with GCash</button>" : "") +
     (data.status !== "cancelled" && data.status !== "completed" ? "<button class='btn' type='button' id='cancel-btn'>Cancel booking</button>" : "") +
     "</div>" +
-    "<p class='note'>Payments run through PayMongo, in test mode while the app is being built &mdash; use GCash's test flow, not real money.</p>";
+    "<p class='note'>Payments run through PayMongo, in test mode while the app is being built, so use GCash's test flow, not real money.</p>";
 
   if ($("pay-btn")) $("pay-btn").addEventListener("click", () => payWithGCash(data));
   if ($("cancel-btn")) $("cancel-btn").addEventListener("click", () => cancelBooking(data));

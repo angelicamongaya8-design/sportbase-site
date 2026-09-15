@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="SportBase - book a basketball, badminton, padel or tennis court by the hour at venues across the Philippines. You pay the venue's price; booking costs a player nothing.">
 <meta name="theme-color" content="#E85D12">
-<meta property="og:title" content="SportBase — book a court by the hour">
+<meta property="og:title" content="SportBase: book a court by the hour">
 <meta property="og:description" content="SportBase - book a basketball, badminton, padel or tennis court by the hour at venues across the Philippines. You pay the venue's price; booking costs a player nothing.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://angelicamongaya8-design.github.io/sportbase-site/">
@@ -33,7 +33,7 @@
   /* ---------------------------------------------------------------
      Palette: a painted court floor. Off-white with a green bias for
      the ground, deep pine for ink, chalk for the lines, and the
-     app's orange as the only accent — spent on the free hours in
+     app's orange as the only accent, spent on the free hours in
      the grid and nowhere else that matters.
      --------------------------------------------------------------- */
   :root {
@@ -507,7 +507,7 @@
      says the same thing in fewer letters rather than pushing the page
      sideways. */
   .nav-btn .short { display: none; }
-  @media (max-width: 460px) {
+  @media (max-width: 620px) {
     .nav-btn .long { display: none; }
     .nav-btn .short { display: inline; }
   }
@@ -753,6 +753,69 @@
     .foot-col ul { margin-top: 12px; gap: 13px; }
     .foot-base { flex-direction: column; gap: 6px; padding-block: 16px 4px; }
   }
+
+  /* --- two buttons offered together are one decision, so one size ----- */
+  /* A <button> is border-box by browser default and an <a> is not, which is
+     how two buttons with the same max-width ended up different widths. */
+  .btn, .nav-btn, .btn-store, .sport, .rail-btn { box-sizing: border-box; }
+  .cta-row .btn { flex: 1 1 200px; max-width: 262px; justify-content: center; text-align: center; }
+  .stores .btn-store { flex: 1 1 200px; max-width: 252px; justify-content: center; }
+  .nav-actions .nav-btn { min-width: 130px; justify-content: center; }
+  @media (max-width: 620px) { .nav-actions .nav-btn { min-width: 88px; } }
+  .roleswitch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .roleswitch .nav-btn { width: 100%; }
+  .prompt-row .nav-btn { flex: 1 1 0; justify-content: center; }
+  .modal-actions .btn { flex: 1 1 0; justify-content: center; }
+  .sports { display: grid; grid-template-columns: repeat(auto-fill, minmax(134px, 1fr)); gap: 8px; }
+  .sport { justify-content: center; text-align: center; }
+
+  /* --- a section should announce itself -------------------------------
+     Scrolled end to end, the page was one long column of the same grey.
+     Alternating ground and a rule under every opener give the eye
+     somewhere to rest, and tell you that a new subject has started. */
+  .band.alt { background: var(--raised); }
+  .sec-head .eyebrow { display: flex; align-items: center; gap: 10px; }
+  .sec-head .eyebrow::before {
+    content: ""; flex: 0 0 auto; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .sec-head { padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+
+  /* --- the venues scroll sideways, and say so ------------------------- */
+  .venue-grid {
+    margin-top: 26px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 262px;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    padding-bottom: 10px;
+  }
+  .venue-grid > * { scroll-snap-align: start; }
+  .rail-foot { margin-top: 6px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .rail-hint { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .rail-btns { display: flex; gap: 8px; }
+  .rail-btn {
+    width: 38px; height: 38px; border-radius: 11px;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    cursor: pointer; display: grid; place-items: center; font-size: 15px;
+  }
+  .rail-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .rail-btn:disabled { opacity: 0.32; cursor: default; }
+  @media (max-width: 720px) {
+    /* The next card peeks past the edge, which is how a person knows
+       there is a next card. */
+    .venue-grid { grid-auto-columns: 78%; }
+    .rail-btns { display: none; }
+  }
+  @media (min-width: 721px) { .rail-hint { display: none; } }
+  @media (max-width: 400px) {
+    .nav-actions .nav-btn { min-width: 74px; }
+    .sports { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+  }
 </style>
 
 <header class="masthead">
@@ -765,8 +828,8 @@
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
-      <a class="nav-btn ghost-first" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Sign in</a>
-      <a class="nav-btn filled" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html"><span class="long">Create account</span><span class="short">Sign up</span></a>
+      <a class="nav-btn ghost-first" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in</a>
+      <a class="nav-btn filled" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up"><span class="long">Create account</span><span class="short">Sign up</span></a>
     </div>
   </div>
 </header>
@@ -778,7 +841,7 @@
       <h1>Find the hour.<span class="rule">Book the court.</span></h1>
       <p class="lede">
         Basketball, badminton, padel and more, booked by the hour at venues
-        near you. You pay the venue&rsquo;s own price &mdash; booking through
+        near you. You pay the venue&rsquo;s own price, and booking through
         SportBase costs a player nothing.
       </p>
       <div class="stores">
@@ -805,8 +868,8 @@
       <p class="live-stat" id="live-stat">Loading what is open&hellip;</p>
       <p class="cta-note">
         Free to use &middot; you pay the venue, never us. Or
-        <a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">book from your browser</a> &mdash;
-        same account either way.
+        <a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">book from your browser</a>,
+        with the same account either way.
       </p>
     </div>
 
@@ -917,7 +980,7 @@
         <h3>Show the code</h3>
         <p>
           Your booking carries a QR code. The venue scans it when you arrive,
-          and that is the check-in &mdash; no list at the desk to find your
+          and that is the check-in. No list at the desk to find your
           name on.
         </p>
       </div>
@@ -925,14 +988,14 @@
   </div>
 </section>
 
-<section class="band" id="owners">
+<section class="band alt" id="owners">
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">For venue owners</p>
       <h2>Listing is free. We take a share of what we bring you.</h2>
       <p>
         Nothing to pay to be on SportBase. The commission comes out of
-        bookings SportBase sent you &mdash; never out of a customer who walked
+        bookings SportBase sent you, never out of a customer who walked
         in on their own.
       </p>
     </div>
@@ -981,8 +1044,7 @@
     <div class="player-note">
       <h3>And one plan for players</h3>
       <p>
-        <span class="price">SportBase Plus, ₱129 a month</span> &mdash;
-        SportBase gives up its share of your bookings, so you pay the
+        <span class="price">SportBase Plus, ₱129 a month</span>. SportBase gives up its share of your bookings, so you pay the
         venue&rsquo;s price and nothing on top. It pays for itself at about
         three hours a month. Play less than that and the free account is the
         better deal, which the app says on the page itself.
@@ -1002,22 +1064,29 @@
         see tonight&rsquo;s free hours and book one.
       </p>
     </div>
-    <div class="venue-grid" id="venue-grid">
+    <div class="venue-grid" id="venue-grid" tabindex="0" role="group" aria-label="Venues on SportBase, scrolls sideways">
       <div class="skeleton">Loading venues</div>
       <div class="skeleton">Loading venues</div>
       <div class="skeleton">Loading venues</div>
+    </div>
+    <div class="rail-foot">
+      <p class="rail-hint">Swipe for more &rarr;</p>
+      <div class="rail-btns">
+        <button class="rail-btn" type="button" data-rail="prev" aria-label="Previous venues">&larr;</button>
+        <button class="rail-btn" type="button" data-rail="next" aria-label="More venues">&rarr;</button>
+      </div>
     </div>
     <p class="venue-note" id="venue-note" hidden></p>
   </div>
 </section>
 
-<section class="band" id="rates">
+<section class="band alt" id="rates">
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">What an hour costs</p>
       <h2>The venue&rsquo;s price, out in the open.</h2>
       <p>
-        Straight from the venues listed today &mdash; the cheapest hour on
+        Straight from the venues listed today: the cheapest hour on
         SportBase for each sport. Peak hours cost what the venue says they
         cost, and the app shows that before you pick anything.
       </p>
@@ -1049,7 +1118,7 @@
           <div class="feat"><b>Favourites</b><p>The courts you keep going back to, one tap from the home screen.</p></div>
           <div class="feat"><b>Several hours at once</b><p>Book a block for a long game. Cancelling one hour leaves the rest of the booking standing.</p></div>
           <div class="feat"><b>Gear from the venue</b><p>Rackets, balls and nets, where the venue rents them. The refundable deposit sits on its own line, never folded into the price.</p></div>
-          <div class="feat"><b>Promo codes</b><p>A venue&rsquo;s discount comes off the court time &mdash; not off a deposit you are getting back anyway.</p></div>
+          <div class="feat"><b>Promo codes</b><p>A venue&rsquo;s discount comes off the court time, not off a deposit you are getting back anyway.</p></div>
           <div class="feat"><b>Tournaments</b><p>Open tournaments with the entry fee, the prize pool and the slots left in plain sight. Join with your team.</p></div>
           <div class="feat"><b>Reviews with photos</b><p>Written by people who actually played there, because the app knows they booked.</p></div>
           <div class="feat"><b>Chat, and real support</b><p>Message the venue about a booking. Support threads carry a reference number and a stated reply time.</p></div>
@@ -1061,11 +1130,11 @@
         <div class="feats">
           <div class="feat"><b>Courts and rates</b><p>Price each court by the hour with a separate peak rate, and take one off the board while the floor is being repaired.</p></div>
           <div class="feat"><b>Schedule and closures</b><p>Close a holiday or a single hour without cancelling bookings one by one.</p></div>
-          <div class="feat"><b>Today&rsquo;s board</b><p>Who is coming and when &mdash; and a scanner that checks them in from the QR code on their booking.</p></div>
+          <div class="feat"><b>Today&rsquo;s board</b><p>Who is coming and when, plus a scanner that checks them in from the QR code on their booking.</p></div>
           <div class="feat"><b>Earnings</b><p>What is expected, what is paid, and what SportBase took, per booking, at the rate agreed the day it was made rather than today&rsquo;s.</p></div>
           <div class="feat"><b>Equipment stock</b><p>Stock falls as gear goes out and comes back when it is returned, so the same racket is never rented twice.</p></div>
           <div class="feat"><b>Promotions</b><p>Run a discount over the days you choose, and it shows up where players are already looking.</p></div>
-          <div class="feat"><b>Getting listed</b><p>Apply with your permit and your venue photos. A person reviews it &mdash; nothing goes live unchecked.</p></div>
+          <div class="feat"><b>Getting listed</b><p>Apply with your permit and your venue photos. A person reviews it, so nothing goes live unchecked.</p></div>
           <div class="feat"><b>Notifications that fit the job</b><p>An owner hears about bookings, cancellations and reviews; a player hears about their own game. Separate settings, separately switched off.</p></div>
         </div>
       </div>
@@ -1073,14 +1142,14 @@
   </div>
 </section>
 
-<section class="band" id="preview">
+<section class="band alt" id="preview">
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">Signed in</p>
       <h2>Three people, three apps.</h2>
       <p>
         One account, and what opens depends on who you are. Sign in on the
-        web or on the phone &mdash; same account, same bookings, whichever
+        web or on the phone: same account, same bookings, whichever
         one is nearer to hand.
       </p>
     </div>
@@ -1108,7 +1177,7 @@
           <p>The app opens on today: who is coming, what is owed, and what is still free to sell.</p>
           <div class="role-points">
             <div><b>Today</b><p>Every booking in order, with a scanner to check people in as they walk through the door.</p></div>
-            <div><b>Money</b><p>Expected, paid, and the SportBase share &mdash; per booking, at the rate agreed the day it was made.</p></div>
+            <div><b>Money</b><p>Expected, paid, and the SportBase share, per booking, at the rate agreed the day it was made.</p></div>
             <div><b>Courts</b><p>Prices, peak hours, closures, equipment stock and promotions, all in your hands, not ours.</p></div>
           </div>
         </div>
@@ -1119,7 +1188,7 @@
           <div class="role-points">
             <div><b>Approvals</b><p>Venue listings and owner applications, with the permit attached, read by a person before anything goes live.</p></div>
             <div><b>Support</b><p>Tickets with a reference and a clock, so nobody waits a week for an answer.</p></div>
-            <div><b>People</b><p>Accounts, roles and the activity log &mdash; who changed what, and when.</p></div>
+            <div><b>People</b><p>Accounts, roles and the activity log: who changed what, and when.</p></div>
           </div>
         </div>
       </div>
@@ -1234,8 +1303,8 @@
 
         <p class="screen-note">Example screen &middot; the figures are made up</p>
         <div class="cta-row" style="margin-top:16px">
-          <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Open the real thing</a>
-          <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Create an account</a>
+          <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in and use it</a>
+          <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up">Create an account</a>
         </div>
       </div>
     </div>
@@ -1247,7 +1316,7 @@
     <div class="sec-head">
       <p class="eyebrow">Paying</p>
       <h2>GCash at checkout. The deposit comes back.</h2>
-      <p>Payments run through PayMongo &mdash; GCash today, in test mode while the app is being built. SportBase never holds your card details.</p>
+      <p>Payments run through PayMongo, with GCash today, in test mode while the app is being built. SportBase never holds your card details.</p>
     </div>
     <div class="facts">
       <div class="fact">
@@ -1269,7 +1338,7 @@
   </div>
 </section>
 
-<section class="band" id="questions">
+<section class="band alt" id="questions">
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">Questions</p>
@@ -1277,11 +1346,11 @@
     </div>
     <div class="faq">
       <div class="q"><h3>Does booking cost a player anything?</h3><p>No. You pay the venue&rsquo;s price for the hour. A free account books just as many courts as a paid one.</p></div>
-      <div class="q"><h3>Can I download it now?</h3><p>Not yet &mdash; it is still in development, and on neither store. Venues are being signed up first.</p></div>
+      <div class="q"><h3>Can I download it now?</h3><p>Not yet. It is still in development, and on neither store. Venues are being signed up first.</p></div>
       <div class="q"><h3>What does listing a venue cost?</h3><p>Nothing to be on it. SportBase takes a share of the bookings it sends you: 5% to 10%, depending on the plan.</p></div>
       <div class="q"><h3>What about a walk-in customer?</h3><p>Yours, entirely. The commission is only ever on a booking that came through the app.</p></div>
       <div class="q"><h3>Is my number visible to strangers?</h3><p>No. Your email and phone are not readable by other users; a venue sees only what it needs to serve your booking.</p></div>
-      <div class="q"><h3>Can I lock the app?</h3><p>Yes &mdash; a PIN, plus Face ID or a fingerprint where the phone has one. Owner actions that change a price or remove something ask again.</p></div>
+      <div class="q"><h3>Can I lock the app?</h3><p>Yes: a PIN, plus Face ID or a fingerprint where the phone has one. Owner actions that change a price or remove something ask again.</p></div>
     </div>
   </div>
 </section>
@@ -1292,7 +1361,7 @@
     <h2>Launching soon. Venues first.</h2>
     <p>
       SportBase is being built. Venues are being onboarded now, ahead of the
-      apps going live &mdash; if you run courts and want to be on it from the
+      apps going live. If you run courts and want to be on it from the
       first day, that is the useful thing to do today.
     </p>
     <div class="cta-row">
@@ -1306,7 +1375,7 @@
   <div class="wrap">
     <div>
       <h2>There is a free hour tonight.</h2>
-      <p>Somewhere near you, a court is standing empty. Open the board and take it &mdash; booking costs you nothing.</p>
+      <p>Somewhere near you, a court is standing empty. Open the board and take it. Booking costs you nothing.</p>
     </div>
     <div class="cta-row" style="margin-top:0">
       <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Find a court</a>
@@ -1321,7 +1390,7 @@
       <span class="name">SportBase</span>
       <p>
         Courts by the hour, across the Philippines. Book from the app or
-        straight from this browser &mdash; the venue sets the price, and
+        straight from this browser. The venue sets the price, and
         that is the price you pay.
       </p>
     </div>
@@ -1364,13 +1433,13 @@
     <button class="modal-close" type="button" data-tell-close aria-label="Close">&times;</button>
     <p class="eyebrow">Launch list</p>
     <h2 id="tell-title">We will write to you the day it lands.</h2>
-    <p class="say">Leave your address here &mdash; SportBase keeps it and sends one message when the app is on the App Store and Play Store. No newsletter, and nothing else goes to it.</p>
+    <p class="say">Leave your address here. SportBase keeps it and sends one message when the app is on the App Store and Play Store. No newsletter, and nothing else goes to it.</p>
     <div class="notify-row">
       <input id="tell-email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Your email">
       <button class="btn btn-primary" type="button" id="tell-go">Put me on the list</button>
     </div>
     <p class="notify-msg" id="tell-msg" hidden></p>
-    <p class="modal-fine">You can also just use the site &mdash; it books courts today, in this browser.</p>
+    <p class="modal-fine">You can also just use the site: it books courts today, in this browser.</p>
   </div>
 </div>
 
@@ -1390,11 +1459,11 @@
     <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
     <p class="eyebrow">Install</p>
     <h2 id="guide-title">Put SportBase on your home screen.</h2>
-    <p class="say">Not on the App Store or Play Store yet. Here is how to put it on your home screen today &mdash; it takes about a minute, and it opens full screen, like any other app.</p>
+    <p class="say">Not on the App Store or Play Store yet. Here is how to put it on your home screen today. It takes about a minute, and it opens full screen, like any other app.</p>
 
     <div class="install-live" id="install-live" hidden>
       <button class="btn btn-primary" type="button" id="install-now">Install SportBase</button>
-      <p>Your browser can do it from here &mdash; one tap, no menu.</p>
+      <p>Your browser can do it from here: one tap, no menu.</p>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Choose your device">
@@ -1405,11 +1474,11 @@
 
     <ol class="steps-ol" data-guide-panel="ios">
       <li><span class="step-num">1</span><span>Open this page in <b>Safari</b>. iPhone only lets Safari do this bit.</span></li>
-      <li><span class="step-num">2</span><span>Tap <b>Share</b> at the bottom &mdash; the square with the arrow coming out of it.</span></li>
+      <li><span class="step-num">2</span><span>Tap <b>Share</b> at the bottom, the square with the arrow coming out of it.</span></li>
       <li><span class="step-num">3</span><span>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</span></li>
       <li><span class="step-num">4</span><span>SportBase is now sitting with your other apps, and opens full screen.</span></li>
     </ol>
-    <p class="steps-note" data-guide-panel="ios"><b>Why not an Install button?</b> iPhone does not have one. Apple lets a site install itself only through Share &rarr; Add to Home Screen &mdash; that is the iPhone install.</p>
+    <p class="steps-note" data-guide-panel="ios"><b>Why not an Install button?</b> iPhone does not have one. Apple lets a site install itself only through Share &rarr; Add to Home Screen. That is the iPhone install.</p>
 
     <ol class="steps-ol" data-guide-panel="android" hidden>
       <li><span class="step-num">1</span><span>Open this page in <b>Chrome</b>.</span></li>
@@ -1422,7 +1491,7 @@
     <ol class="steps-ol" data-guide-panel="other" hidden>
       <li><span class="step-num">1</span><span>In <b>Chrome</b> or <b>Edge</b>, click the small <b>install icon</b> at the right of the address bar, then <b>Install</b>.</span></li>
       <li><span class="step-num">2</span><span>Or open the browser menu and choose <b>Install SportBase</b>.</span></li>
-      <li><span class="step-num">3</span><span>No icon and no menu item? The site works exactly the same in a normal tab &mdash; bookmark it and you have lost nothing.</span></li>
+      <li><span class="step-num">3</span><span>No icon and no menu item? The site works exactly the same in a normal tab, so bookmark it and you have lost nothing.</span></li>
     </ol>
 
     <div class="copy-row">
@@ -1431,7 +1500,7 @@
     </div>
 
         <div class="notify">
-      <p><b>Not on the App Store or Play Store yet.</b> Leave your email and SportBase writes to you on the day it lands there &mdash; one message, nothing else.</p>
+      <p><b>Not on the App Store or Play Store yet.</b> Leave your email and SportBase writes to you on the day it lands there: one message, nothing else.</p>
       <div class="notify-row">
         <input id="notify-email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Your email">
         <button class="btn" type="button" id="notify-go">Tell me</button>
@@ -1532,15 +1601,15 @@
     var COPY = {
       ios: {
         title: "Install on your iPhone.",
-        say: "Safari puts it on your home screen in three taps. Not on the App Store yet \u2014 this is how it gets on your phone today."
+        say: "Safari puts it on your home screen in three taps. Not on the App Store yet; this is how it gets on your phone today."
       },
       android: {
         title: "Install on your Android.",
-        say: "Chrome installs it properly \u2014 own icon, own window, no browser bar. Not on Play Store yet; this is how it gets on your phone today."
+        say: "Chrome installs it properly: own icon, own window, no browser bar. Not on Play Store yet; this is how it gets on your phone today."
       },
       other: {
         title: "Install on this computer.",
-        say: "Chrome and Edge can keep SportBase in its own window. Everything works in a normal tab too \u2014 the install is only for convenience."
+        say: "Chrome and Edge can keep SportBase in its own window. Everything works in a normal tab too, so the install is only for convenience."
       }
     };
     function open(el) {
@@ -1688,7 +1757,7 @@
         if (!rows || !rows.length) throw new Error("empty");
         grid.innerHTML = rows.map(card).join("");
         note.hidden = false;
-        note.innerHTML = 'Tap any venue to open the web app. Free hours, prices and the booking itself live in there \u2014 <a href="' + APP + '">sign in or create an account</a>.';
+        note.innerHTML = 'Tap any venue to open the web app. Free hours, prices and the booking itself live in there. <a href="' + APP + '?auth=in">sign in or create an account</a>.';
       })
       .catch(function () {
         grid.innerHTML = '<div class="skeleton" style="grid-column:1/-1;min-height:120px">Venue list opens in the app</div>';
@@ -1795,7 +1864,7 @@
         var email = (input.value || "").trim();
         msg.hidden = false;
         msg.className = "notify-msg";
-        if (!email || email.indexOf("@") < 1) { msg.textContent = "An email address, please \u2014 that is all we need."; return; }
+        if (!email || email.indexOf("@") < 1) { msg.textContent = "An email address, please. That is all we need."; return; }
         btn.disabled = true;
         msg.textContent = "Adding you\u2026";
         try {
@@ -1897,6 +1966,37 @@
         navigator.serviceWorker.register("sw.js").catch(function () {});
       });
     }
+  })();
+
+  /* The venue rail. On a phone it is a swipe, and the card peeking past the
+     edge is what says so; on a desktop there is nothing to swipe with, so it
+     gets arrows. Either way it is the same strip of cards. */
+  (function () {
+    var rail = document.getElementById("venue-grid");
+    if (!rail) return;
+    var prev = document.querySelector('[data-rail="prev"]');
+    var next = document.querySelector('[data-rail="next"]');
+
+    function step() {
+      var card = rail.firstElementChild;
+      var w = card ? card.getBoundingClientRect().width : 260;
+      return Math.round(w + 16);
+    }
+    function sync() {
+      if (!prev || !next) return;
+      var max = rail.scrollWidth - rail.clientWidth - 2;
+      prev.disabled = rail.scrollLeft <= 2;
+      next.disabled = rail.scrollLeft >= max;
+      var idle = max <= 2;
+      prev.hidden = idle;
+      next.hidden = idle;
+    }
+    if (prev) prev.addEventListener("click", function () { rail.scrollBy({ left: -step(), behavior: "smooth" }); });
+    if (next) next.addEventListener("click", function () { rail.scrollBy({ left: step(), behavior: "smooth" }); });
+    rail.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    new MutationObserver(sync).observe(rail, { childList: true });
+    sync();
   })();
 </script>
 
