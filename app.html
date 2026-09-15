@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SportBase — web app</title>
+<meta name="description" content="Book a court by the hour. The SportBase web app, running on the same account as the phone app.">
+<meta name="theme-color" content="#E85D12">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #F2F4F0; --raised: #FBFCFA; --ink: #14211C; --muted: #5C6D65;
+    --line: #D6DCD5; --accent: #E85D12; --accent-soft: #FDEDE3;
+    --taken: #DDE3DC; --taken-ink: #8C9A91; --peak: #FFDCBB; --maxw: 1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1512; --raised: #151F1B; --ink: #E9EFEA; --muted: #94A49B;
+      --line: #25322C; --accent: #FF7A2E; --accent-soft: #20150E;
+      --taken: #1D2723; --taken-ink: #6C7C73; --peak: #4A2A11;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1512; --raised: #151F1B; --ink: #E9EFEA; --muted: #94A49B;
+    --line: #25322C; --accent: #FF7A2E; --accent-soft: #20150E;
+    --taken: #1D2723; --taken-ink: #6C7C73; --peak: #4A2A11;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  h1, h2, h3 { font-family: Archivo, system-ui, sans-serif; margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  p { margin: 0; }
+  a { color: var(--ink); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: 20px; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .masthead { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--ground) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .masthead .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  .wordmark { display: flex; align-items: center; gap: 9px; font-family: Archivo, sans-serif; font-weight: 900; font-size: 18px; letter-spacing: -0.03em; text-decoration: none; color: var(--ink); }
+  .wordmark img { width: 24px; height: 24px; }
+  .who { display: flex; align-items: center; gap: 8px; }
+  .chip { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; color: var(--muted); white-space: nowrap; }
+  .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+  .icon-btn:hover { color: var(--ink); }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 14px; border-radius: 10px; padding: 11px 18px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.wide { width: 100%; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn:focus-visible, .icon-btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn.small { font-size: 13px; padding: 8px 14px; }
+  .linkish { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .field { margin-top: 13px; }
+  .field label { display: block; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .field input, .field select { margin-top: 6px; width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--ground); color: var(--ink); font-family: inherit; font-size: 15px; }
+  .tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; }
+  .tab { flex: 1; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; color: var(--muted); font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--accent); color: #fff; }
+  .card { border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 20px; }
+  .auth-wrap { max-width: 430px; margin: 48px auto; }
+  .auth-wrap h1 { font-size: 26px; font-weight: 700; margin-top: 8px; }
+  .auth-wrap .lede { margin-top: 8px; color: var(--muted); font-size: 15px; }
+  .or { display: flex; align-items: center; gap: 12px; margin: 18px 0 4px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .social { display: flex; gap: 8px; }
+  .social .btn { flex: 1; }
+  .msg { margin-top: 14px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 11px 13px; font-size: 14px; color: var(--muted); background: var(--ground); }
+  .msg b { color: var(--ink); }
+  .shell { padding-block: 24px 90px; }
+  .shell-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .shell-head h1 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; }
+  .navbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .navbar .wrap { display: flex; gap: 6px; justify-content: space-between; padding-block: 8px; }
+  .navbtn { flex: 1; border: 0; background: none; padding: 8px 4px; border-radius: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .navbtn[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+  .list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); text-align: left; width: 100%; font: inherit; color: var(--ink); cursor: pointer; }
+  .row:hover { border-color: var(--accent); }
+  .row.flat { cursor: default; }
+  .row.flat:hover { border-color: var(--line); }
+  .row b { font-family: Archivo, sans-serif; font-size: 15px; }
+  .row small { display: block; color: var(--muted); font-size: 13px; }
+  .pill { font-family: "IBM Plex Mono", monospace; font-size: 10px; border-radius: 999px; padding: 4px 9px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .pill.go { color: var(--accent); border-color: var(--accent); }
+  .pill.ok { color: #2F9E63; border-color: #2F9E63; }
+  .filters { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters input, .filters select { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font-family: inherit; font-size: 14px; }
+  .filters input { flex: 1; min-width: 180px; }
+  .days { margin-top: 16px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .day { border: 1px solid var(--line); border-radius: 12px; background: var(--raised); padding: 9px 12px; cursor: pointer; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .day[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .court { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 16px; }
+  .court-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .court-head b { font-family: Archivo, sans-serif; font-size: 16px; }
+  .slots { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .slot { border: 1px solid transparent; border-radius: 10px; padding: 9px 6px; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-variant-numeric: tabular-nums; text-align: center; cursor: pointer; background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, transparent); color: var(--accent); }
+  .slot .hr { display: block; font-size: 10px; color: var(--muted); }
+  .slot.peak { background: var(--peak); border-color: var(--accent); font-weight: 600; }
+  .slot.booked { background: var(--taken); border-color: var(--line); color: var(--taken-ink); cursor: not-allowed; }
+  .slot[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .slot[aria-pressed="true"] .hr { color: rgba(255,255,255,0.8); }
+  .basket { position: fixed; left: 0; right: 0; bottom: 58px; z-index: 16; border-top: 1px solid var(--line); background: var(--raised); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .basket .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  .basket b { font-family: Archivo, sans-serif; font-size: 16px; font-variant-numeric: tabular-nums; }
+  .basket small { display: block; color: var(--muted); font-size: 12px; }
+  .note { margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 700ms linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } }
+  .empty { margin-top: 20px; border: 1px dashed var(--line); border-radius: 14px; padding: 26px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+  .tiles { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: var(--raised); }
+  .tile small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .tile b { font-size: 19px; font-variant-numeric: tabular-nums; }
+  .back { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="./index.html"><img src="" id="brand-img" alt="" width="24" height="24">SportBase</a>
+    <div class="who">
+      <span class="chip" id="role-chip" hidden></span>
+      <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
+      </button>
+      <button class="btn small" type="button" id="signout-btn" hidden>Sign out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="view-auth" class="wrap">
+    <div class="auth-wrap">
+      <div class="card">
+        <p class="eyebrow">SportBase</p>
+        <h1 id="auth-heading">Sign in</h1>
+        <p class="lede" id="auth-lede">Same account as the phone app. Your bookings follow you.</p>
+        <div class="tabs" role="tablist" style="margin-top:16px">
+          <button class="tab" type="button" role="tab" aria-selected="true" data-auth-tab="in">Sign in</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-auth-tab="up">Create account</button>
+        </div>
+        <form id="auth-form" novalidate>
+          <div class="field" id="name-field" hidden>
+            <label for="f-name">Your name</label>
+            <input id="f-name" type="text" autocomplete="name" placeholder="Maria Santos">
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" type="email" autocomplete="email" placeholder="you@email.com" required>
+          </div>
+          <div class="field">
+            <label for="f-pass">Password</label>
+            <input id="f-pass" type="password" autocomplete="current-password" placeholder="At least 8 characters" required>
+          </div>
+          <div id="captcha-slot" style="margin-top:14px"></div>
+          <button class="btn filled wide" type="submit" id="auth-go" style="margin-top:16px">Sign in</button>
+        </form>
+        <div class="or">or</div>
+        <div class="social">
+          <button class="btn" type="button" data-oauth="google">Google</button>
+          <button class="btn" type="button" data-oauth="facebook">Facebook</button>
+        </div>
+        <div class="msg" id="auth-msg" hidden></div>
+        <p class="note">This is the live SportBase database &mdash; a real account and real bookings, on an app that is still being built. Read the <a href="./index.html">short version of what it does</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-browse" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>Courts near you</h1>
+      <span class="chip" id="venue-count"></span>
+    </div>
+    <div class="filters">
+      <input id="venue-search" type="search" placeholder="Search a venue or a city" aria-label="Search venues">
+      <select id="sport-filter" aria-label="Filter by sport"><option value="">Every sport</option></select>
+    </div>
+    <div class="list" id="venue-list"></div>
+    <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
+  </section>
+
+  <section id="view-venue" class="wrap shell" hidden>
+    <button class="btn small back" type="button" id="venue-back">&larr; All venues</button>
+    <div class="shell-head">
+      <h1 id="venue-name">Venue</h1>
+      <span class="chip" id="venue-hours"></span>
+    </div>
+    <p class="note" id="venue-address"></p>
+    <div class="days" id="day-strip"></div>
+    <div id="court-list"></div>
+    <div class="empty" id="court-empty" hidden>This venue has no bookable court yet.</div>
+  </section>
+
+  <section id="view-bookings" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>Your bookings</h1>
+      <button class="btn small" type="button" id="bookings-refresh">Refresh</button>
+    </div>
+    <div class="list" id="booking-list"></div>
+    <div class="empty" id="booking-empty" hidden>Nothing booked yet. Pick an hour and it lands here.</div>
+  </section>
+
+  <section id="view-booking" class="wrap shell" hidden>
+    <button class="btn small back" type="button" id="booking-back">&larr; Your bookings</button>
+    <div class="card" id="booking-card"></div>
+  </section>
+
+  <section id="view-owner" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>Your venue today</h1>
+      <span class="chip" id="owner-date"></span>
+    </div>
+    <div class="tiles" id="owner-tiles"></div>
+    <div class="list" id="owner-list"></div>
+    <div class="empty" id="owner-empty" hidden>No booking today. The board is all yours.</div>
+  </section>
+
+  <section id="view-admin" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>The queue</h1>
+      <span class="chip" id="admin-count"></span>
+    </div>
+    <div class="list" id="admin-list"></div>
+    <div class="empty" id="admin-empty" hidden>Nothing is waiting. Rare, and good.</div>
+    <p class="note">Approving and rejecting stays in the phone app for now &mdash; this is the read-only view of what is waiting.</p>
+  </section>
+</main>
+
+<div class="basket" id="basket" hidden>
+  <div class="wrap">
+    <span><b id="basket-total">&#8369;0</b><small id="basket-detail">Nothing picked</small></span>
+    <button class="btn filled" type="button" id="basket-go">Book these hours</button>
+  </div>
+</div>
+
+<nav class="navbar" id="navbar" hidden>
+  <div class="wrap">
+    <button class="navbtn" type="button" data-nav="browse" aria-current="page">Book</button>
+    <button class="navbtn" type="button" data-nav="bookings">Bookings</button>
+    <button class="navbtn" type="button" data-nav="owner" hidden>Venue</button>
+    <button class="navbtn" type="button" data-nav="admin" hidden>Queue</button>
+  </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://js.hcaptcha.com/1/api.js?render=explicit&onload=onHcaptchaLoad" async defer></script>
+<script>
+document.getElementById("brand-img").src = document.querySelector("link[rel=icon]").href;
+
+/* SportBase on the web: the same Supabase project the phone app talks to,
+   the same rules, the same rows. An account made here is an account, and an
+   hour booked here is gone from the board in the app. The database is the
+   authority; this file only asks. */
+
+const SUPABASE_URL = "https://xbhzofzpsbdrdrdkltbs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
+const HCAPTCHA_SITE_KEY = "db5ca28e-2866-4e50-ab8c-d1fec17ae1d6";
+const VENUE_TZ = "Asia/Manila";
+const PAYMONGO_PUBLIC_KEY = "pk_test_HAtbsoq8qJxuj25yrVGwRTDN";
+
+if (!window.supabase) {
+  document.getElementById("auth-msg").hidden = false;
+  document.getElementById("auth-msg").innerHTML = "<b>Could not load the SportBase library.</b> Check the connection and reload.";
+  throw new Error("supabase-js did not load");
+}
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+});
+
+const $ = (id) => document.getElementById(id);
+const peso = (n) => "\u20B1" + Number(n || 0).toLocaleString("en-PH", { maximumFractionDigits: 0 });
+function todayKey() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: VENUE_TZ }).format(new Date());
+}
+function addDays(key, n) {
+  const [y, m, d] = key.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + n);
+  return dt.toISOString().slice(0, 10);
+}
+function dayName(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-PH", { weekday: "short", timeZone: "UTC" });
+}
+function dayNum(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+function prettyDate(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-PH", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+}
+function toMinutes(t) {
+  if (!t) return null;
+  const [h, m] = String(t).split(":").map(Number);
+  return h * 60 + (m || 0);
+}
+const hour24 = (h) => String(h).padStart(2, "0") + ":00:00";
+function hourLabel(h) {
+  const suffix = h < 12 || h === 24 ? "am" : "pm";
+  const twelve = h % 12 === 0 ? 12 : h % 12;
+  return twelve + suffix;
+}
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+/* Peak pricing, mirroring rate_for_slot() in the database. */
+function isPeak(venue, dateKey, hour) {
+  const start = toMinutes(venue.peak_start);
+  const end = toMinutes(venue.peak_end);
+  if (start == null || end == null) return false;
+  const days = venue.peak_days || [];
+  if (days.length && !days.includes(dayNum(dateKey))) return false;
+  const at = hour * 60;
+  return end > start ? at >= start && at < end : at >= start || at < end;
+}
+function rateFor(court, venue, dateKey, hour) {
+  if (court.peak_rate == null) return court.hourly_rate;
+  return isPeak(venue, dateKey, hour) ? court.peak_rate : court.hourly_rate;
+}
+
+(function () {
+  const root = document.documentElement;
+  const btn = $("theme-btn");
+  const icon = $("theme-icon");
+  const SUN = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>';
+  const MOON = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"></path>';
+  const current = () => root.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  function paint() {
+    const dark = current() === "dark";
+    icon.innerHTML = dark ? SUN : MOON;
+    btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+  }
+  try {
+    const saved = localStorage.getItem("sb-theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) {}
+  paint();
+  btn.addEventListener("click", function () {
+    const next = current() === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("sb-theme", next); } catch (e) {}
+    paint();
+  });
+})();
+
+const state = { session: null, profile: null, venues: [], venue: null, dateKey: todayKey(), busy: [], picked: [], bookings: [], booking: null };
+const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin"];
+function show(view) {
+  VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
+  const inApp = view !== "auth";
+  $("navbar").hidden = !inApp;
+  $("signout-btn").hidden = !inApp;
+  $("role-chip").hidden = !inApp;
+  document.querySelectorAll("[data-nav]").forEach((b) => {
+    const nav = b.getAttribute("data-nav");
+    const on = (view === "venue" || view === "browse") ? nav === "browse" : (view === "booking" ? nav === "bookings" : nav === view);
+    if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  $("basket").hidden = !(view === "venue" && state.picked.length > 0);
+  window.scrollTo(0, 0);
+}
+function say(text, kind) {
+  const box = $("auth-msg");
+  box.hidden = !text;
+  box.innerHTML = text || "";
+  box.style.borderLeftColor = kind === "ok" ? "#2F9E63" : "var(--accent)";
+}
+
+let captchaId = null;
+function captchaReady() {
+  if (captchaId !== null || !window.hcaptcha) return;
+  try { captchaId = window.hcaptcha.render("captcha-slot", { sitekey: HCAPTCHA_SITE_KEY, theme: "dark" }); }
+  catch (e) { captchaId = null; }
+}
+window.onHcaptchaLoad = captchaReady;
+const captchaToken = () => (captchaId !== null && window.hcaptcha ? window.hcaptcha.getResponse(captchaId) || null : null);
+const captchaReset = () => { if (captchaId !== null && window.hcaptcha) window.hcaptcha.reset(captchaId); };
+
+let authMode = "in";
+function setAuthMode(mode) {
+  authMode = mode;
+  const up = mode === "up";
+  $("auth-heading").textContent = up ? "Create account" : "Sign in";
+  $("auth-lede").textContent = up
+    ? "One account for the web and the phone app. Use an email you can open \u2014 the confirmation lands there."
+    : "Same account as the phone app. Your bookings follow you.";
+  $("name-field").hidden = !up;
+  $("auth-go").textContent = up ? "Create my account" : "Sign in";
+  $("f-pass").setAttribute("autocomplete", up ? "new-password" : "current-password");
+  document.querySelectorAll("[data-auth-tab]").forEach((t) => {
+    t.setAttribute("aria-selected", t.getAttribute("data-auth-tab") === mode ? "true" : "false");
+  });
+  say("");
+}
+document.querySelectorAll("[data-auth-tab]").forEach((t) => {
+  t.addEventListener("click", () => setAuthMode(t.getAttribute("data-auth-tab")));
+});
+
+$("auth-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = $("f-email").value.trim();
+  const password = $("f-pass").value;
+  const name = $("f-name").value.trim();
+  if (!email || !password) return say("Email and password, please.");
+  if (authMode === "up" && !name) return say("What should we call you?");
+  const token = captchaToken();
+  const go = $("auth-go");
+  go.disabled = true;
+  go.innerHTML = '<span class="spinner"></span>';
+  try {
+    if (authMode === "up") {
+      const { error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { name }, captchaToken: token || undefined, emailRedirectTo: window.location.origin + window.location.pathname },
+      });
+      if (error) throw error;
+      captchaReset();
+      setAuthMode("in");
+      say("<b>Account made.</b> Check your email for the confirmation link, then sign in here.", "ok");
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email, password, options: { captchaToken: token || undefined } });
+      if (error) throw error;
+      captchaReset();
+    }
+  } catch (err) {
+    captchaReset();
+    say(escapeHtml(err.message || "That did not work."));
+  } finally {
+    go.disabled = false;
+    go.textContent = authMode === "up" ? "Create my account" : "Sign in";
+  }
+});
+
+document.querySelectorAll("[data-oauth]").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: btn.getAttribute("data-oauth"),
+      options: { redirectTo: window.location.origin + window.location.pathname },
+    });
+    if (error) say(escapeHtml(error.message));
+  });
+});
+$("signout-btn").addEventListener("click", async () => { await sb.auth.signOut(); });
+
+async function loadProfile() {
+  const { data } = await sb.rpc("my_profile");
+  state.profile = (data && data[0]) || null;
+  const role = (state.profile && state.profile.role) || "player";
+  $("role-chip").textContent = (state.profile && state.profile.name ? state.profile.name + " \u00b7 " : "") + role;
+  document.querySelector('[data-nav="owner"]').hidden = !(role === "owner" || role === "admin");
+  document.querySelector('[data-nav="admin"]').hidden = role !== "admin";
+}
+
+sb.auth.onAuthStateChange(async (_event, session) => {
+  state.session = session;
+  if (!session) { show("auth"); setAuthMode("in"); return; }
+  await loadProfile();
+  show("browse");
+  loadVenues();
+  const paid = new URLSearchParams(window.location.search).get("paid");
+  if (paid) { history.replaceState({}, "", window.location.pathname); openBooking(paid, true); }
+});
+(async function boot() {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) { show("auth"); setAuthMode("in"); }
+})();
+
+async function loadVenues() {
+  const list = $("venue-list");
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data, error } = await sb.from("venues")
+    .select("id, name, address, city, status, opening_time, closing_time, open_days, peak_start, peak_end, peak_days, courts(id, name, sport, hourly_rate, peak_rate, status)")
+    .eq("status", "approved");
+  if (error) { list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + '</div>'; return; }
+  state.venues = data || [];
+  const sports = new Set();
+  state.venues.forEach((v) => (v.courts || []).forEach((c) => c.sport && sports.add(c.sport)));
+  $("sport-filter").innerHTML = '<option value="">Every sport</option>' +
+    Array.from(sports).sort().map((s) => '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>').join("");
+  renderVenues();
+}
+function renderVenues() {
+  const q = $("venue-search").value.trim().toLowerCase();
+  const sport = $("sport-filter").value;
+  const rows = state.venues.filter((v) => {
+    const courts = (v.courts || []).filter((c) => c.status !== "unavailable");
+    if (sport && !courts.some((c) => c.sport === sport)) return false;
+    if (!q) return true;
+    return (v.name + " " + (v.city || "") + " " + (v.address || "")).toLowerCase().includes(q);
+  });
+  $("venue-count").textContent = rows.length + (rows.length === 1 ? " venue" : " venues");
+  $("venue-empty").hidden = rows.length > 0;
+  $("venue-list").innerHTML = rows.map((v) => {
+    const courts = (v.courts || []).filter((c) => c.status !== "unavailable");
+    const cheapest = courts.reduce((min, c) => (c.hourly_rate != null && (min == null || c.hourly_rate < min) ? c.hourly_rate : min), null);
+    const sportList = Array.from(new Set(courts.map((c) => c.sport).filter(Boolean))).slice(0, 3).join(", ");
+    return '<button class="row" type="button" data-venue="' + v.id + '"><span><b>' + escapeHtml(v.name) + '</b><small>' +
+      escapeHtml(sportList || "No court listed") + (v.city ? " \u00b7 " + escapeHtml(v.city) : "") +
+      '</small></span><span class="pill' + (cheapest != null ? " go" : "") + '">' +
+      (cheapest != null ? "from " + peso(cheapest) + "/hr" : "no rate yet") + '</span></button>';
+  }).join("");
+  document.querySelectorAll("[data-venue]").forEach((b) => {
+    b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
+  });
+}
+$("venue-search").addEventListener("input", renderVenues);
+$("sport-filter").addEventListener("change", renderVenues);
+
+async function openVenue(id) {
+  const venue = state.venues.find((v) => v.id === id);
+  if (!venue) return;
+  state.venue = venue;
+  state.picked = [];
+  state.dateKey = todayKey();
+  $("venue-name").textContent = venue.name;
+  $("venue-address").textContent = [venue.address, venue.city].filter(Boolean).join(", ");
+  $("venue-hours").textContent = venue.opening_time && venue.closing_time
+    ? String(venue.opening_time).slice(0, 5) + "\u2013" + String(venue.closing_time).slice(0, 5) : "hours not set";
+  show("venue");
+  renderDays();
+  await loadBoard();
+}
+function renderDays() {
+  const today = todayKey();
+  const strip = $("day-strip");
+  strip.innerHTML = Array.from({ length: 7 }, (_, i) => {
+    const key = addDays(today, i);
+    return '<button class="day" type="button" data-day="' + key + '" aria-pressed="' + (key === state.dateKey) + '">' +
+      (i === 0 ? "Today" : dayName(key)) + " " + key.slice(8) + '</button>';
+  }).join("");
+  strip.querySelectorAll("[data-day]").forEach((b) => {
+    b.addEventListener("click", async () => {
+      state.dateKey = b.getAttribute("data-day");
+      state.picked = [];
+      renderDays();
+      await loadBoard();
+    });
+  });
+}
+async function loadBoard() {
+  const wrap = $("court-list");
+  const courts = (state.venue.courts || []).filter((c) => c.status !== "unavailable");
+  $("court-empty").hidden = courts.length > 0;
+  if (!courts.length) { wrap.innerHTML = ""; return; }
+  wrap.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data: busy } = await sb.from("court_busy_slots")
+    .select("court_id, date, start_time, end_time")
+    .in("court_id", courts.map((c) => c.id))
+    .eq("date", state.dateKey);
+  state.busy = busy || [];
+  renderBoard(courts);
+}
+function renderBoard(courts) {
+  const venue = state.venue;
+  const open = toMinutes(venue.opening_time) != null ? Math.floor(toMinutes(venue.opening_time) / 60) : 6;
+  const close = toMinutes(venue.closing_time) != null ? Math.ceil(toMinutes(venue.closing_time) / 60) : 22;
+  const nowHour = state.dateKey === todayKey()
+    ? Number(new Intl.DateTimeFormat("en-GB", { timeZone: VENUE_TZ, hour: "2-digit", hour12: false }).format(new Date())) : -1;
+  $("court-list").innerHTML = courts.map((court) => {
+    const slots = [];
+    for (let h = open; h < close; h++) {
+      const rate = rateFor(court, venue, state.dateKey, h);
+      const taken = state.busy.some((b) => b.court_id === court.id && toMinutes(b.start_time) < (h + 1) * 60 && h * 60 < toMinutes(b.end_time));
+      const gone = h <= nowHour;
+      const peak = isPeak(venue, state.dateKey, h);
+      const picked = state.picked.some((p) => p.courtId === court.id && p.hour === h);
+      const cls = taken || gone ? "slot booked" : "slot" + (peak ? " peak" : "");
+      slots.push('<button class="' + cls + '" type="button" aria-pressed="' + picked + '" ' + (taken || gone ? "disabled " : "") +
+        'data-court="' + court.id + '" data-hour="' + h + '" data-rate="' + (rate == null ? "" : rate) + '">' +
+        hourLabel(h) + '<span class="hr">' + (taken ? "booked" : gone ? "gone" : rate == null ? "\u2014" : peso(rate)) + '</span></button>');
+    }
+    return '<div class="court"><div class="court-head"><b>' + escapeHtml(court.name) + '</b><span class="pill">' +
+      escapeHtml(court.sport || "court") + '</span></div><div class="slots">' + slots.join("") + '</div></div>';
+  }).join("");
+  document.querySelectorAll(".slot[data-hour]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const courtId = el.getAttribute("data-court");
+      const hour = Number(el.getAttribute("data-hour"));
+      const rateAttr = el.getAttribute("data-rate");
+      const rate = rateAttr === "" ? null : Number(rateAttr);
+      const court = (state.venue.courts || []).find((c) => c.id === courtId);
+      const at = state.picked.findIndex((p) => p.courtId === courtId && p.hour === hour);
+      if (at >= 0) state.picked.splice(at, 1);
+      else state.picked.push({ courtId, courtName: court ? court.name : "Court", date: state.dateKey, hour, rate: rate || 0 });
+      renderBoard(courts);
+    });
+  });
+  renderBasket();
+}
+function renderBasket() {
+  const n = state.picked.length;
+  $("basket").hidden = n === 0;
+  if (!n) return;
+  $("basket-total").textContent = peso(state.picked.reduce((s, p) => s + (p.rate || 0), 0));
+  $("basket-detail").textContent = n + (n === 1 ? " hour" : " hours") + " \u00b7 " + prettyDate(state.dateKey);
+}
+function mergePicked() {
+  const sorted = state.picked.slice().sort((a, b) => (a.courtId === b.courtId ? a.hour - b.hour : a.courtId.localeCompare(b.courtId)));
+  const runs = [];
+  sorted.forEach((p) => {
+    const last = runs[runs.length - 1];
+    if (last && last.courtId === p.courtId && last.date === p.date && last.endHour === p.hour) {
+      last.endHour = p.hour + 1; last.amount += p.rate || 0; last.hours += 1;
+    } else {
+      runs.push({ courtId: p.courtId, courtName: p.courtName, date: p.date, startHour: p.hour, endHour: p.hour + 1, amount: p.rate || 0, hours: 1, rate: p.rate || 0 });
+    }
+  });
+  return runs;
+}
+$("basket-go").addEventListener("click", async () => {
+  if (!state.picked.length) return;
+  const go = $("basket-go");
+  go.disabled = true;
+  go.innerHTML = '<span class="spinner"></span>';
+  const rows = mergePicked().map((r) => ({
+    player_id: state.session.user.id, court_id: r.courtId, date: r.date,
+    start_time: hour24(r.startHour), end_time: hour24(r.endHour),
+    status: "pending_payment", total_amount: r.amount, rate_at_booking: r.rate,
+  }));
+  const { data: lead, error } = await sb.from("bookings").insert(rows[0]).select("id, group_id").single();
+  if (error || !lead) {
+    go.disabled = false; go.textContent = "Book these hours";
+    alert("Booking failed: " + ((error && error.message) || "unknown error"));
+    return;
+  }
+  if (rows.length > 1) {
+    const rest = rows.slice(1).map((r) => Object.assign({}, r, { group_id: lead.group_id }));
+    const { error: restError } = await sb.from("bookings").insert(rest);
+    if (restError) alert("Some hours could not be saved: " + restError.message);
+  }
+  state.picked = [];
+  go.disabled = false; go.textContent = "Book these hours";
+  openBooking(lead.id);
+});
+
+async function loadBookings() {
+  const list = $("booking-list");
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data, error } = await sb.from("bookings")
+    .select("id, date, start_time, end_time, status, total_amount, court_id, courts(name, sport, venues(name))")
+    .eq("player_id", state.session.user.id).is("deleted_at", null).order("date", { ascending: false });
+  if (error) { list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + '</div>'; return; }
+  state.bookings = data || [];
+  $("booking-empty").hidden = state.bookings.length > 0;
+  list.innerHTML = state.bookings.map((b) => {
+    const court = b.courts || {};
+    const venue = (court.venues && court.venues.name) || "Venue";
+    return '<button class="row" type="button" data-booking="' + b.id + '"><span><b>' + escapeHtml(venue) + " \u00b7 " +
+      escapeHtml(court.name || "Court") + '</b><small>' + prettyDate(b.date) + ", " + String(b.start_time).slice(0, 5) +
+      "\u2013" + String(b.end_time).slice(0, 5) + '</small></span><span class="pill ' +
+      (b.status === "confirmed" ? "ok" : b.status === "pending_payment" ? "go" : "") + '">' +
+      escapeHtml(String(b.status).replace(/_/g, " ")) + '</span></button>';
+  }).join("");
+  list.querySelectorAll("[data-booking]").forEach((b) => {
+    b.addEventListener("click", () => openBooking(b.getAttribute("data-booking")));
+  });
+}
+$("bookings-refresh").addEventListener("click", loadBookings);
+$("booking-back").addEventListener("click", () => { show("bookings"); loadBookings(); });
+$("venue-back").addEventListener("click", () => { state.picked = []; show("browse"); });
+
+async function openBooking(id, justPaid) {
+  show("booking");
+  const card = $("booking-card");
+  card.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data, error } = await sb.from("bookings")
+    .select("id, date, start_time, end_time, status, total_amount, rate_at_booking, group_id, courts(name, sport, venues(name, address))")
+    .eq("id", id).maybeSingle();
+  if (error || !data) { card.innerHTML = '<div class="empty">Could not open that booking.</div>'; return; }
+  state.booking = data;
+  const court = data.courts || {};
+  const venue = court.venues || {};
+  const payable = data.status === "pending_payment";
+  card.innerHTML = '<p class="eyebrow">' + escapeHtml(String(data.status).replace(/_/g, " ")) + '</p>' +
+    '<h1 style="font-size:24px;font-weight:700;margin-top:6px">' + escapeHtml(venue.name || "Venue") + '</h1>' +
+    '<p class="note">' + escapeHtml(court.name || "Court") + " \u00b7 " + escapeHtml(court.sport || "") +
+    (venue.address ? "<br>" + escapeHtml(venue.address) : "") + '</p>' +
+    '<div class="tiles"><div class="tile"><small>Date</small><b style="font-size:15px">' + prettyDate(data.date) + '</b></div>' +
+    '<div class="tile"><small>Hours</small><b style="font-size:15px">' + String(data.start_time).slice(0, 5) + "\u2013" + String(data.end_time).slice(0, 5) + '</b></div>' +
+    '<div class="tile"><small>Total</small><b>' + peso(data.total_amount) + '</b></div></div>' +
+    (justPaid ? '<div class="msg"><b>Back from GCash.</b> Waiting for the payment to be confirmed \u2014 this page updates itself.</div>' : "") +
+    '<div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">' +
+    (payable ? '<button class="btn filled" type="button" id="pay-btn">Pay with GCash</button>' : "") +
+    (data.status !== "cancelled" && data.status !== "completed" ? '<button class="btn" type="button" id="cancel-btn">Cancel booking</button>' : "") +
+    '</div><p class="note">Payments run through PayMongo, in test mode while the app is being built \u2014 GCash\u2019s test flow, not real money.</p>';
+  if ($("pay-btn")) $("pay-btn").addEventListener("click", () => payWithGCash(data));
+  if ($("cancel-btn")) $("cancel-btn").addEventListener("click", () => cancelBooking(data));
+  if (justPaid) pollStatus(data.id, 0);
+}
+async function cancelBooking(booking) {
+  const why = prompt("Why are you cancelling? The venue sees this.");
+  if (why === null) return;
+  const { error } = await sb.from("bookings").update({ status: "cancelled", previous_status: booking.status, cancellation_reason: why.trim() || null }).eq("id", booking.id);
+  if (error) alert("Could not cancel: " + error.message);
+  openBooking(booking.id);
+}
+async function pollStatus(id, tries) {
+  if (tries > 10) return;
+  setTimeout(async () => {
+    const { data } = await sb.from("bookings").select("status").eq("id", id).maybeSingle();
+    if (data && data.status === "confirmed") { openBooking(id); return; }
+    pollStatus(id, tries + 1);
+  }, 2500);
+}
+
+/* Paying: the same three steps as the phone app. The edge function makes the
+   intent (only it holds the secret key), the browser makes the payment
+   method, and PayMongo takes it from there. */
+async function payWithGCash(booking) {
+  const btn = $("pay-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    const { data: intent, error } = await sb.functions.invoke("create-payment-intent", { body: { bookingId: booking.id } });
+    if (error || !intent || !intent.paymentIntentId) throw new Error("Could not start the payment.");
+    const auth = "Basic " + btoa(PAYMONGO_PUBLIC_KEY + ":");
+    const pmResp = await fetch("https://api.paymongo.com/v1/payment_methods", {
+      method: "POST", headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { attributes: { type: "gcash" } } }),
+    });
+    const pmJson = await pmResp.json();
+    if (!pmResp.ok) throw new Error("GCash could not be set up.");
+    const returnUrl = window.location.origin + window.location.pathname + "?paid=" + booking.id;
+    const attachResp = await fetch("https://api.paymongo.com/v1/payment_intents/" + intent.paymentIntentId + "/attach", {
+      method: "POST", headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { attributes: { payment_method: pmJson.data.id, client_key: intent.clientKey, return_url: returnUrl } } }),
+    });
+    const attachJson = await attachResp.json();
+    if (!attachResp.ok) throw new Error(JSON.stringify(attachJson));
+    const status = attachJson.data.attributes.status;
+    if (status === "awaiting_next_action") { window.location.href = attachJson.data.attributes.next_action.redirect.url; }
+    else if (status === "succeeded") { openBooking(booking.id, true); }
+    else throw new Error("GCash did not start.");
+  } catch (err) {
+    alert(err.message || "Payment could not start.");
+    btn.disabled = false;
+    btn.textContent = "Pay with GCash";
+  }
+}
+
+async function loadOwner() {
+  const list = $("owner-list");
+  const key = todayKey();
+  $("owner-date").textContent = prettyDate(key);
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data: venues } = await sb.from("venues").select("id, name").eq("owner_id", state.session.user.id);
+  const ids = (venues || []).map((v) => v.id);
+  if (!ids.length) {
+    list.innerHTML = ""; $("owner-tiles").innerHTML = "";
+    $("owner-empty").hidden = false;
+    $("owner-empty").textContent = "No venue is listed under this account yet.";
+    return;
+  }
+  const { data: courts } = await sb.from("courts").select("id, name, venue_id").in("venue_id", ids);
+  const courtIds = (courts || []).map((c) => c.id);
+  const { data: rows, error } = await sb.from("bookings")
+    .select("id, date, start_time, end_time, status, total_amount, commission_amount, court_id")
+    .in("court_id", courtIds.length ? courtIds : ["00000000-0000-0000-0000-000000000000"])
+    .eq("date", key).is("deleted_at", null).order("start_time", { ascending: true });
+  if (error) { list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + '</div>'; return; }
+  const live = (rows || []).filter((b) => b.status !== "cancelled");
+  const expected = live.reduce((s, b) => s + Number(b.total_amount || 0), 0);
+  const paid = live.filter((b) => b.status === "confirmed" || b.status === "completed").reduce((s, b) => s + Number(b.total_amount || 0), 0);
+  const share = live.reduce((s, b) => s + Number(b.commission_amount || 0), 0);
+  $("owner-tiles").innerHTML = '<div class="tile"><small>Expected</small><b>' + peso(expected) + '</b></div>' +
+    '<div class="tile"><small>Paid</small><b>' + peso(paid) + '</b></div>' +
+    '<div class="tile"><small>Our share</small><b>' + peso(share) + '</b></div>';
+  $("owner-empty").hidden = live.length > 0;
+  list.innerHTML = live.map((b) => {
+    const c = (courts || []).find((x) => x.id === b.court_id);
+    return '<div class="row flat"><span><b>' + String(b.start_time).slice(0, 5) + " \u00b7 " + escapeHtml(c ? c.name : "Court") +
+      '</b><small>' + peso(b.total_amount) + " \u00b7 " + escapeHtml(String(b.status).replace(/_/g, " ")) + '</small></span><span class="pill' +
+      (b.status === "confirmed" ? " ok" : "") + '">' + String(b.start_time).slice(0, 5) + "\u2013" + String(b.end_time).slice(0, 5) + '</span></div>';
+  }).join("");
+}
+
+async function loadAdmin() {
+  const list = $("admin-list");
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const [venuesRes, appsRes] = await Promise.all([
+    sb.from("venues").select("id, name, address, status, created_at").eq("status", "pending").order("created_at", { ascending: true }),
+    sb.from("owner_applications").select("id, status, created_at").eq("status", "pending").order("created_at", { ascending: true }),
+  ]);
+  const venues = venuesRes.data || [];
+  const apps = appsRes.data || [];
+  const total = venues.length + apps.length;
+  $("admin-count").textContent = total + " waiting";
+  $("admin-empty").hidden = total > 0;
+  list.innerHTML = venues.map((v) => '<div class="row flat"><span><b>' + escapeHtml(v.name) + '</b><small>New venue \u00b7 ' +
+      escapeHtml(v.address || "no address") + '</small></span><span class="pill go">venue</span></div>').join("") +
+    apps.map((a) => '<div class="row flat"><span><b>Owner application</b><small>' +
+      new Date(a.created_at).toLocaleDateString("en-PH") + '</small></span><span class="pill go">owner</span></div>').join("");
+  if (venuesRes.error && appsRes.error) list.innerHTML = '<div class="empty">Only an admin account can read this queue.</div>';
+}
+
+document.querySelectorAll("[data-nav]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const nav = btn.getAttribute("data-nav");
+    show(nav);
+    if (nav === "browse") renderVenues();
+    if (nav === "bookings") loadBookings();
+    if (nav === "owner") loadOwner();
+    if (nav === "admin") loadAdmin();
+  });
+});
+</script>
+</body>
+</html>
