@@ -241,6 +241,20 @@
     .table-scroll { overflow-x: visible; }
     .closer .wrap { padding-block: 28px; }
   }
+
+  .sport { text-decoration: none; display: inline-flex; align-items: center; min-height: 36px; }
+  .sport:hover { border-color: var(--accent); }
+  .sport:hover span { color: var(--accent); }
+  .sport:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .sports-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
+  @media (max-width: 720px) {
+    footer .foot { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-block: 4px 24px; }
+    .foot-brand { grid-column: auto; }
+    .foot-brand p { max-width: none; }
+    .foot-col h3 { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .foot-col ul { margin-top: 12px; gap: 13px; }
+    .foot-base { flex-direction: column; gap: 6px; padding-block: 16px 4px; }
+  }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -596,16 +610,17 @@
     </div>
 
     <div class="sports">
-      <span class="sport"><span>Basketball</span></span>
-      <span class="sport"><span>Badminton</span></span>
-      <span class="sport"><span>Padel</span></span>
-      <span class="sport"><span>Tennis</span></span>
-      <span class="sport"><span>Pickleball</span></span>
-      <span class="sport"><span>Volleyball</span></span>
-      <span class="sport"><span>Futsal</span></span>
-      <span class="sport"><span>Table tennis</span></span>
-      <span class="sport"><span>Swimming</span></span>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Basketball"><span>Basketball</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Badminton"><span>Badminton</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Padel"><span>Padel</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Tennis"><span>Tennis</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Pickleball"><span>Pickleball</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Volleyball"><span>Volleyball</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Futsal"><span>Futsal</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Table%20tennis"><span>Table tennis</span></a>
+      <a class="sport" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?sport=Swimming"><span>Swimming</span></a>
     </div>
+    <p class="sports-note">Tap a sport to see the venues that have it, and what an hour costs there.</p>
 
     <div class="steps">
       <div class="step">
