@@ -58,6 +58,24 @@
   .modal-fine { margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
   .modal-close { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 17px; line-height: 1; cursor: pointer; }
   .modal-close:hover { color: var(--ink); }
+
+  .mark { width: 26px; height: 26px; flex: 0 0 auto; }
+  .nav-actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+  .icon-btn:hover { color: var(--ink); }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .nav-btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 15px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); white-space: nowrap; }
+  .nav-btn.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .icon-btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .prompt[hidden] { display: none !important; }
+  .prompt { position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40; width: min(360px, calc(100vw - 32px)); box-sizing: border-box; background: var(--raised); border: 1px solid var(--line); border-radius: 16px; padding: 18px 18px 16px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3); animation: rise 220ms ease-out; }
+  .prompt h3 { font-size: 16px; font-weight: 700; padding-right: 22px; }
+  .prompt p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+  .prompt-row { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .prompt-row .nav-btn { padding: 10px 16px; font-size: 13.5px; }
+  .prompt-close { position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; }
+  .prompt-close:hover { color: var(--ink); }
+  @media (max-width: 520px) { .prompt { right: 16px; left: 16px; width: auto; } .nav-btn.ghost-first { display: none; } }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -151,7 +169,7 @@
     gap: 16px;
     padding-block: 14px;
   }
-  .wordmark {
+  .wordmark { color: var(--ink); text-decoration: none;
     font-family: Archivo, sans-serif;
     font-weight: 900;
     font-size: 19px;
@@ -298,12 +316,30 @@
 <body>
 <header class="masthead">
   <div class="wrap">
-    <div class="wordmark"><span class="pip" aria-hidden="true"></span>SportBase</div>
-    <button class="btn-chip" type="button" data-soon>Install the app</button>
+    <a class="wordmark" href="#top" aria-label="SportBase, home">
+      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="8" fill="var(--accent)"></rect>
+        <g stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.95">
+          <path d="M14 4v5"></path>
+          <path d="M14 19v5"></path>
+          <circle cx="14" cy="14" r="5"></circle>
+          <path d="M14 14l3-2"></path>
+        </g>
+        <circle cx="14" cy="14" r="1.2" fill="#fff"></circle>
+      </svg>
+      SportBase
+    </a>
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
+      </button>
+      <button class="nav-btn ghost-first" type="button" data-soon="account">Sign in</button>
+      <button class="nav-btn filled" type="button" data-soon="account">Create account</button>
+    </div>
   </div>
 </header>
 
-<div class="hero">
+<div class="hero" id="top">
   <div class="wrap">
     <div>
       <p class="eyebrow">Court booking, Philippines</p>
@@ -340,48 +376,48 @@
         <div class="col-head">C4</div>
 
         <div class="row-head">15:00</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
         <div class="slot free">₱350</div>
         <div class="slot free">₱350</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
 
         <div class="row-head">16:00</div>
-        <div class="slot taken">taken</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
+        <div class="slot taken">booked</div>
         <div class="slot free">₱350</div>
         <div class="slot free">₱600</div>
 
         <div class="row-head">17:00</div>
         <div class="slot peak">₱480</div>
-        <div class="slot taken">taken</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
+        <div class="slot taken">booked</div>
         <div class="slot peak">₱900</div>
 
         <div class="row-head">18:00</div>
-        <div class="slot taken">taken</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
+        <div class="slot taken">booked</div>
         <div class="slot peak">₱480</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
 
         <div class="row-head">19:00</div>
         <div class="slot peak">₱480</div>
-        <div class="slot taken">taken</div>
-        <div class="slot taken">taken</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
+        <div class="slot taken">booked</div>
+        <div class="slot taken">booked</div>
 
         <div class="row-head">20:00</div>
         <div class="slot peak">₱480</div>
         <div class="slot peak">₱480</div>
-        <div class="slot taken">taken</div>
+        <div class="slot taken">booked</div>
         <div class="slot peak">₱900</div>
       </div>
 
       <div class="legend">
-        <span class="key"><span class="swatch free"></span>Free</span>
-        <span class="key"><span class="swatch peak"></span>Peak hours</span>
-        <span class="key"><span class="swatch taken"></span>Taken</span>
+        <span class="key"><span class="swatch free"></span>Open</span>
+        <span class="key"><span class="swatch peak"></span>Peak rate</span>
+        <span class="key"><span class="swatch taken"></span>Booked</span>
       </div>
-      <p class="board-note">Example venue &middot; peak 17:00&ndash;22:00 weekdays and weekends</p>
+      <p class="board-note">Example venue &middot; peak 17:00&ndash;22:00 &middot; every price is the venue&rsquo;s own</p>
     </div>
   </div>
 </div>
@@ -597,13 +633,24 @@
     <span>angelicamongaya8@gmail.com</span>
   </div>
 </footer>
+
+<div class="prompt" id="prompt" hidden>
+  <button class="prompt-close" type="button" id="prompt-close" aria-label="Dismiss">&times;</button>
+  <h3>Get SportBase on your phone</h3>
+  <p>Courts near you, booked by the hour, with your bookings in your pocket.</p>
+  <div class="prompt-row">
+    <button class="nav-btn filled" type="button" data-soon="install">Install</button>
+    <button class="nav-btn" type="button" data-soon="install">Other devices</button>
+  </div>
+</div>
+
 <div class="modal" id="soon" hidden role="dialog" aria-modal="true" aria-labelledby="soon-title">
   <div class="modal-scrim" data-close></div>
   <div class="modal-card">
     <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
-    <p class="eyebrow">Almost</p>
+    <p class="eyebrow" id="soon-kicker">Almost</p>
     <h2 id="soon-title">Not on the stores yet.</h2>
-    <p class="say">SportBase is still being built, so there is nothing to install today. Venues around the country are being signed up first &mdash; so that on the day the app opens, there is already a court near you to book.</p>
+    <p class="say" id="soon-say">SportBase is still being built, so there is nothing to install today. Venues around the country are being signed up first &mdash; so that on the day the app opens, there is already a court near you to book.</p>
     <div class="modal-actions">
       <a class="btn btn-primary" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email me at launch</a>
       <a class="btn btn-ghost" href="#owners" data-close>I run a venue</a>
@@ -614,13 +661,58 @@
 
 <script>
   (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("theme-btn");
+    var icon = document.getElementById("theme-icon");
+    var SUN = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>';
+    var MOON = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"></path>';
+    function stored() { try { return localStorage.getItem("sb-theme"); } catch (e) { return null; } }
+    function current() {
+      var set = root.getAttribute("data-theme");
+      if (set) return set;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function paint() {
+      var dark = current() === "dark";
+      icon.innerHTML = dark ? SUN : MOON;
+      btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+    }
+    var saved = stored();
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+    paint();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("sb-theme", next); } catch (e) {}
+      paint();
+    });
+  })();
+
+  (function () {
     var modal = document.getElementById("soon");
     var card = modal.querySelector(".modal-card");
     var closeBtn = modal.querySelector(".modal-close");
+    var kicker = document.getElementById("soon-kicker");
+    var title = document.getElementById("soon-title");
+    var say = document.getElementById("soon-say");
     var opener = null;
-    function open(el) { opener = el; modal.hidden = false; document.documentElement.style.overflow = "hidden"; closeBtn.focus(); }
-    function close() { modal.hidden = true; document.documentElement.style.overflow = ""; if (opener) opener.focus(); }
-    document.querySelectorAll("[data-soon]").forEach(function (el) { el.addEventListener("click", function (e) { e.preventDefault(); open(el); }); });
+    var COPY = {
+      install: { kicker: "Almost", title: "Not on the stores yet.", say: "SportBase is still being built, so there is nothing to install today. Venues around the country are being signed up first \u2014 so that on the day the app opens, there is already a court near you to book." },
+      account: { kicker: "Almost", title: "Accounts open at launch.", say: "There is no sign-in yet: the app is still in development. Leave your email and you will get the invite on the first day, while the good hours are still free." }
+    };
+    function open(el) {
+      var copy = COPY[el.getAttribute("data-soon")] || COPY.install;
+      kicker.textContent = copy.kicker; title.textContent = copy.title; say.textContent = copy.say;
+      opener = el; modal.hidden = false;
+      document.documentElement.style.overflow = "hidden"; closeBtn.focus();
+    }
+    function close() {
+      modal.hidden = true; document.documentElement.style.overflow = "";
+      if (opener) opener.focus();
+    }
+    document.querySelectorAll("[data-soon]").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.preventDefault(); open(el); });
+    });
     modal.querySelectorAll("[data-close]").forEach(function (el) { el.addEventListener("click", close); });
     document.addEventListener("keydown", function (e) {
       if (modal.hidden) return;
@@ -630,6 +722,22 @@
       var first = items[0], last = items[items.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    var prompt = document.getElementById("prompt");
+    var dismissed = false;
+    try { dismissed = localStorage.getItem("sb-prompt") === "off"; } catch (e) {}
+    function maybeShow() {
+      if (dismissed) return;
+      if (window.scrollY < 320) return;
+      prompt.hidden = false;
+      window.removeEventListener("scroll", maybeShow);
+    }
+    window.addEventListener("scroll", maybeShow, { passive: true });
+    maybeShow();
+    document.getElementById("prompt-close").addEventListener("click", function () {
+      prompt.hidden = true; dismissed = true;
+      try { localStorage.setItem("sb-prompt", "off"); } catch (e) {}
     });
   })();
 </script>
