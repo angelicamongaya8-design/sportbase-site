@@ -118,6 +118,47 @@
   .tile small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
   .tile b { font-size: 19px; font-variant-numeric: tabular-nums; }
   .back { margin-bottom: 10px; }
+
+  .extras { margin-top: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 16px; }
+  .extras h2 { font-size: 16px; font-weight: 700; }
+  .extras p.hint { margin-top: 4px; color: var(--muted); font-size: 13.5px; }
+  .gear { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .gear-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--ground); }
+  .gear-row b { font-family: Archivo, sans-serif; font-size: 14.5px; }
+  .gear-row small { display: block; color: var(--muted); font-size: 12.5px; }
+  .stepper { display: flex; align-items: center; gap: 8px; }
+  .stepper button { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer; }
+  .stepper button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .stepper span { min-width: 22px; text-align: center; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .code-row { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .code-row input { flex: 1; min-width: 160px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--ground); color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 14px; text-transform: uppercase; }
+  .code-msg { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+  .code-msg.good { color: #2F9E63; }
+  .totals { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; }
+  .totals div { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+  .totals div.sum { color: var(--ink); font-weight: 600; }
+  .totals span.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  @media (max-width: 820px) {
+    body { font-size: 16.5px; line-height: 1.6; }
+    .shell-head h1 { font-size: 24px; }
+    .row b, .gear-row b { font-size: 16px; }
+    .row small, .gear-row small { font-size: 14px; }
+    .field label, .eyebrow { font-size: 11.5px; }
+    .field input, .field select, .filters input, .filters select { font-size: 16px; padding: 12px 13px; }
+    .btn, .tab { font-size: 15px; }
+    .auth-wrap { margin: 24px auto; }
+    .auth-wrap h1 { font-size: 24px; }
+    .auth-wrap .lede, .note, .extras p.hint, .code-msg { font-size: 14.5px; }
+    .chip, .pill, .vtag { font-size: 11.5px; }
+    .navbtn { font-size: 11px; }
+    .slots { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+    .slot { font-size: 12px; padding: 10px 4px; }
+    .slot .hr { font-size: 11px; }
+    .day { font-size: 12.5px; padding: 10px 13px; }
+    .tile b { font-size: 18px; }
+    .tile small { font-size: 10px; }
+    .totals { font-size: 15px; }
+  }
 </style>
 </head>
 <body>
@@ -129,6 +170,7 @@
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
+      <button class="btn small" type="button" id="signin-btn" hidden>Sign in</button>
       <button class="btn small" type="button" id="signout-btn" hidden>Sign out</button>
     </div>
   </div>
@@ -137,6 +179,7 @@
 <main>
   <section id="view-auth" class="wrap">
     <div class="auth-wrap">
+      <button class="btn small back" type="button" id="auth-back">&larr; Back to the courts</button>
       <div class="card">
         <p class="eyebrow">SportBase</p>
         <h1 id="auth-heading">Sign in</h1>
@@ -195,6 +238,18 @@
     <div class="days" id="day-strip"></div>
     <div id="court-list"></div>
     <div class="empty" id="court-empty" hidden>This venue has no bookable court yet.</div>
+
+    <div class="extras" id="extras" hidden>
+      <h2>Anything to borrow?</h2>
+      <p class="hint">Rented from the venue for this visit. A deposit, where there is one, comes back when you hand the gear in.</p>
+      <div class="gear" id="gear-list"></div>
+      <div class="code-row">
+        <input id="promo-input" type="text" placeholder="Promo code" aria-label="Promo code" autocomplete="off">
+        <button class="btn" type="button" id="promo-go">Apply</button>
+      </div>
+      <p class="code-msg" id="promo-msg" hidden></p>
+      <div class="totals" id="totals" hidden></div>
+    </div>
   </section>
 
   <section id="view-bookings" class="wrap shell" hidden>
@@ -361,14 +416,17 @@ function rateFor(court, venue, dateKey, hour) {
   });
 })();
 
-const state = { session: null, profile: null, venues: [], venue: null, dateKey: todayKey(), busy: [], picked: [], bookings: [], booking: null };
+const state = { session: null, profile: null, venues: [], venue: null, dateKey: todayKey(), busy: [], picked: [], bookings: [], booking: null, gear: [], qty: {}, promo: null };
 const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin"];
 function show(view) {
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
   const inApp = view !== "auth";
+  const signedIn = !!state.session;
   $("navbar").hidden = !inApp;
-  $("signout-btn").hidden = !inApp;
-  $("role-chip").hidden = !inApp;
+  $("signout-btn").hidden = !(inApp && signedIn);
+  $("signin-btn").hidden = !(inApp && !signedIn);
+  $("role-chip").hidden = !(inApp && signedIn);
+  document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelectorAll("[data-nav]").forEach((b) => {
     const nav = b.getAttribute("data-nav");
     const on = (view === "venue" || view === "browse") ? nav === "browse" : (view === "booking" ? nav === "bookings" : nav === view);
@@ -470,18 +528,29 @@ async function loadProfile() {
 }
 
 sb.auth.onAuthStateChange(async (_event, session) => {
+  const wasSignedOut = !state.session;
   state.session = session;
-  if (!session) { show("auth"); setAuthMode("in"); return; }
+  if (!session) {
+    document.querySelector('[data-nav="owner"]').hidden = true;
+    document.querySelector('[data-nav="admin"]').hidden = true;
+    show("browse");
+    return;
+  }
   await loadProfile();
-  show("browse");
+  if (wasSignedOut && state.venue && state.picked.length) show("venue"); else show("browse");
   loadVenues();
   const paid = new URLSearchParams(window.location.search).get("paid");
   if (paid) { history.replaceState({}, "", window.location.pathname); openBooking(paid, true); }
 });
 (async function boot() {
   const { data } = await sb.auth.getSession();
-  if (!data.session) { show("auth"); setAuthMode("in"); }
+  state.session = data.session || null;
+  show("browse");
+  loadVenues();
+  if (state.session) loadProfile();
 })();
+$("signin-btn").addEventListener("click", () => { setAuthMode("in"); say(""); show("auth"); });
+$("auth-back").addEventListener("click", () => show("browse"));
 
 async function loadVenues() {
   const list = $("venue-list");
@@ -533,11 +602,107 @@ async function openVenue(id) {
   $("venue-name").textContent = venue.name;
   $("venue-address").textContent = [venue.address, venue.city].filter(Boolean).join(", ");
   $("venue-hours").textContent = venue.opening_time && venue.closing_time
-    ? String(venue.opening_time).slice(0, 5) + "\u2013" + String(venue.closing_time).slice(0, 5) : "hours not set";
+    ? venue.opening_time + " \u2013 " + venue.closing_time : (venue.business_hours || "hours not set");
+  state.gear = []; state.qty = {}; state.promo = null;
+  $("promo-input").value = ""; $("promo-msg").hidden = true;
   show("venue");
   renderDays();
   await loadBoard();
+  await loadGear(venue.id);
 }
+
+async function loadGear(venueId) {
+  const { data } = await sb.from("equipment")
+    .select("id, name, category, sport, rental_price, deposit, quantity_available")
+    .eq("venue_id", venueId).order("name", { ascending: true });
+  state.gear = (data || []).filter((g) => (g.quantity_available ?? 0) > 0);
+  $("extras").hidden = false;
+  renderGear();
+}
+
+function renderGear() {
+  const list = $("gear-list");
+  if (!state.gear.length) {
+    list.innerHTML = '<p class="hint">This venue does not rent anything yet \u2014 bring your own.</p>';
+  } else {
+    list.innerHTML = state.gear.map((g) => {
+      const n = state.qty[g.id] || 0;
+      const deposit = Number(g.deposit || 0);
+      return '<div class="gear-row"><span><b>' + escapeHtml(g.name) + '</b><small>' + peso(g.rental_price) + ' each' +
+        (deposit ? " \u00b7 " + peso(deposit) + " deposit, refunded" : "") + " \u00b7 " + g.quantity_available + ' available</small></span>' +
+        '<span class="stepper"><button type="button" data-gear-minus="' + g.id + '" aria-label="One fewer"' + (n === 0 ? " disabled" : "") + '>&minus;</button>' +
+        '<span>' + n + '</span>' +
+        '<button type="button" data-gear-plus="' + g.id + '" aria-label="One more"' + (n >= g.quantity_available ? " disabled" : "") + '>+</button></span></div>';
+    }).join("");
+    list.querySelectorAll("[data-gear-plus]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-gear-plus");
+        const g = state.gear.find((x) => x.id === id);
+        const n = (state.qty[id] || 0) + 1;
+        if (n <= (g.quantity_available ?? 0)) state.qty[id] = n;
+        renderGear(); renderBasket();
+      });
+    });
+    list.querySelectorAll("[data-gear-minus]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-gear-minus");
+        state.qty[id] = Math.max(0, (state.qty[id] || 0) - 1);
+        renderGear(); renderBasket();
+      });
+    });
+  }
+  renderTotals();
+}
+
+/* The discount comes off the court time only: a venue discounting an hour is
+   not discounting a deposit it is going to hand back. */
+function money() {
+  const court = state.picked.reduce((sum, p) => sum + (p.rate || 0), 0);
+  let rental = 0, deposit = 0;
+  state.gear.forEach((g) => {
+    const n = state.qty[g.id] || 0;
+    rental += n * Number(g.rental_price || 0);
+    deposit += n * Number(g.deposit || 0);
+  });
+  let discount = 0;
+  if (state.promo) {
+    if (state.promo.discount_percent != null) discount = Math.round((court * Number(state.promo.discount_percent)) / 100);
+    else if (state.promo.discount_amount != null) discount = Math.min(Number(state.promo.discount_amount), court);
+  }
+  return { court, rental, deposit, discount, total: court - discount + rental + deposit };
+}
+
+function renderTotals() {
+  const box = $("totals");
+  const m = money();
+  if (!state.picked.length && !m.rental && !m.deposit) { box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = '<div><span>Court time</span><span class="num">' + peso(m.court) + '</span></div>' +
+    (m.discount ? '<div><span>Promo</span><span class="num">\u2212' + peso(m.discount) + '</span></div>' : "") +
+    (m.rental ? '<div><span>Gear</span><span class="num">' + peso(m.rental) + '</span></div>' : "") +
+    (m.deposit ? '<div><span>Deposit (refunded)</span><span class="num">' + peso(m.deposit) + '</span></div>' : "") +
+    '<div class="sum"><span>Total</span><span class="num">' + peso(m.total) + '</span></div>';
+}
+
+$("promo-go").addEventListener("click", async () => {
+  const code = $("promo-input").value.trim().toUpperCase();
+  const msg = $("promo-msg");
+  if (!code) return;
+  msg.hidden = false; msg.className = "code-msg"; msg.textContent = "Checking\u2026";
+  const { data, error } = await sb.rpc("promo_for_code", { code: code, venue: state.venue.id });
+  const found = (data || [])[0];
+  if (error || !found) {
+    state.promo = null;
+    msg.className = "code-msg";
+    msg.textContent = "That code is not running right now, or not at this venue.";
+  } else {
+    state.promo = found;
+    msg.className = "code-msg good";
+    msg.textContent = (found.title ? found.title + " \u2014 " : "") +
+      (found.discount_percent != null ? found.discount_percent + "% off the court time" : peso(found.discount_amount) + " off the court time");
+  }
+  renderTotals(); renderBasket();
+});
 function renderDays() {
   const today = todayKey();
   const strip = $("day-strip");
@@ -610,9 +775,13 @@ function renderBoard(courts) {
 function renderBasket() {
   const n = state.picked.length;
   $("basket").hidden = n === 0;
+  renderTotals();
   if (!n) return;
-  $("basket-total").textContent = peso(state.picked.reduce((s, p) => s + (p.rate || 0), 0));
-  $("basket-detail").textContent = n + (n === 1 ? " hour" : " hours") + " \u00b7 " + prettyDate(state.dateKey);
+  const m = money();
+  const gearCount = Object.values(state.qty).reduce((a, b) => a + b, 0);
+  $("basket-total").textContent = peso(m.total);
+  $("basket-detail").textContent = n + (n === 1 ? " hour" : " hours") +
+    (gearCount ? " \u00b7 " + gearCount + " item" + (gearCount === 1 ? "" : "s") : "") + " \u00b7 " + prettyDate(state.dateKey);
 }
 function mergePicked() {
   const sorted = state.picked.slice().sort((a, b) => (a.courtId === b.courtId ? a.hour - b.hour : a.courtId.localeCompare(b.courtId)));
@@ -629,13 +798,24 @@ function mergePicked() {
 }
 $("basket-go").addEventListener("click", async () => {
   if (!state.picked.length) return;
+  if (!state.session) {
+    setAuthMode("in");
+    say("<b>Nearly there.</b> Sign in (or make an account) and these hours are booked in your name.", "ok");
+    show("auth");
+    return;
+  }
   const go = $("basket-go");
   go.disabled = true;
   go.innerHTML = '<span class="spinner"></span>';
-  const rows = mergePicked().map((r) => ({
+  const m = money();
+  const rows = mergePicked().map((r, i) => ({
     player_id: state.session.user.id, court_id: r.courtId, date: r.date,
     start_time: hour24(r.startHour), end_time: hour24(r.endHour),
-    status: "pending_payment", total_amount: r.amount, rate_at_booking: r.rate,
+    status: "pending_payment",
+    total_amount: r.amount + (i === 0 ? m.rental + m.deposit - m.discount : 0),
+    rate_at_booking: r.rate,
+    promotion_id: i === 0 ? (state.promo ? state.promo.id : null) : null,
+    discount_amount: i === 0 ? m.discount : 0,
   }));
   const { data: lead, error } = await sb.from("bookings").insert(rows[0]).select("id, group_id").single();
   if (error || !lead) {
@@ -648,7 +828,19 @@ $("basket-go").addEventListener("click", async () => {
     const { error: restError } = await sb.from("bookings").insert(rest);
     if (restError) alert("Some hours could not be saved: " + restError.message);
   }
-  state.picked = [];
+  const gearRows = state.gear.filter((g) => (state.qty[g.id] || 0) > 0).map((g) => ({
+    booking_id: lead.id,
+    equipment_id: g.id,
+    quantity: state.qty[g.id],
+    price: Number(g.rental_price || 0) * state.qty[g.id],
+    deposit_held: Number(g.deposit || 0) * state.qty[g.id],
+  }));
+  if (gearRows.length) {
+    const { error: gearError } = await sb.from("equipment_bookings").insert(gearRows);
+    if (gearError) alert("The court is booked, but the gear could not be added: " + gearError.message);
+  }
+
+  state.picked = []; state.qty = {}; state.promo = null;
   go.disabled = false; go.textContent = "Book these hours";
   openBooking(lead.id);
 });
@@ -818,7 +1010,10 @@ document.querySelectorAll("[data-nav]").forEach((btn) => {
     const nav = btn.getAttribute("data-nav");
     show(nav);
     if (nav === "browse") renderVenues();
-    if (nav === "bookings") loadBookings();
+    if (nav === "bookings") {
+      if (!state.session) { setAuthMode("in"); say("Sign in to see your bookings."); show("auth"); return; }
+      loadBookings();
+    }
     if (nav === "owner") loadOwner();
     if (nav === "admin") loadAdmin();
   });
