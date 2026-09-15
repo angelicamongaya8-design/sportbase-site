@@ -64,17 +64,22 @@
 
   /* header */
   .masthead { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--ground) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-  .masthead .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  .masthead .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  /* The name gives way before the controls do; on a narrow phone the two
+     rows separate instead of printing on top of each other. */
+  .wordmark { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }
+  .who { flex: 0 0 auto; }
+  .chip { max-width: 44vw; overflow: hidden; text-overflow: ellipsis; }
   .wordmark { display: flex; align-items: center; gap: 9px; font-family: Archivo, sans-serif; font-weight: 900; font-size: 18px; letter-spacing: -0.03em; text-decoration: none; color: var(--ink); }
   .wordmark img { width: 24px; height: 24px; }
-  .who { display: flex; align-items: center; gap: 8px; }
+  .who { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .chip { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; color: var(--muted); white-space: nowrap; }
   .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
   .icon-btn:hover { color: var(--ink); }
   .icon-btn svg { width: 16px; height: 16px; }
 
   /* buttons */
-  .btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 14px; border-radius: 10px; padding: 11px 18px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn { white-space: nowrap; box-sizing: border-box; font-family: Archivo, sans-serif; font-weight: 700; font-size: 14px; border-radius: 10px; padding: 11px 18px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
   .btn.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn.wide { width: 100%; }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -103,12 +108,17 @@
   .msg b { color: var(--ink); }
 
   /* app shell */
-  .shell { padding-block: 24px 90px; }
+  .shell { padding-block: 24px 40px; }
   .shell-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .shell-head h1 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; }
-  .navbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  /* One dock at the foot of the screen holds the basket and the tab bar,
+     stacked. They used to be positioned separately, with the basket guessing
+     the bar was 58px tall - which it is not once a phone adds its home
+     indicator, so the basket floated in the middle of the board. */
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .navbar { background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
   .navbar .wrap { display: flex; gap: 6px; justify-content: space-between; padding-block: 8px; }
-  .navbtn { flex: 1; border: 0; background: none; padding: 8px 4px; border-radius: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .navbtn { flex: 1 1 0; min-width: 0; border: 0; background: none; padding: 8px 4px; border-radius: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
   .navbtn[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
 
   .list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -141,7 +151,7 @@
   .slot[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
   .slot[aria-pressed="true"] .hr { color: rgba(255,255,255,0.8); }
 
-  .basket { position: fixed; left: 0; right: 0; bottom: 58px; z-index: 16; border-top: 1px solid var(--line); background: var(--raised); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .basket { border-top: 1px solid var(--line); background: var(--raised); }
   .basket .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
   .basket b { font-family: Archivo, sans-serif; font-size: 16px; font-variant-numeric: tabular-nums; }
   .basket small { display: block; color: var(--muted); font-size: 12px; }
@@ -215,6 +225,17 @@
     font-size: 13px; cursor: pointer;
   }
   .filter-note button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Three tiles are two lines of text each on a small phone; two per row
+     lets a date and an hour range sit on one line. */
+  @media (max-width: 420px) {
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* A tab bar stretched across a laptop reads as a banner, not a bar. */
+  @media (min-width: 721px) {
+    .navbar .wrap { justify-content: center; gap: 10px; }
+    .navbtn { flex: 0 1 190px; }
+  }
 </style>
 </head>
 <body>
@@ -443,10 +464,11 @@
   </section>
 </main>
 
+<div class="dock" id="dock">
 <div class="basket" id="basket" hidden>
   <div class="wrap">
     <span><b id="basket-total">&#8369;0</b><small id="basket-detail">Nothing picked</small></span>
-    <button class="btn filled" type="button" id="basket-go">Book these hours</button>
+    <button class="btn filled" type="button" id="basket-go">Book this hour</button>
   </div>
 </div>
 
@@ -458,6 +480,7 @@
     <button class="navbtn" type="button" data-nav="admin" hidden>Queue</button>
   </div>
 </nav>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://js.hcaptcha.com/1/api.js?render=explicit&onload=onHcaptchaLoad" async defer></script>
@@ -627,7 +650,17 @@ function show(view) {
     if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
   $("basket").hidden = !(view === "venue" && state.picked.length > 0);
+  syncDock();
   window.scrollTo(0, 0);
+}
+
+/* Signed in, the front page is the one that belongs to you: an owner opens
+   on their venue's day, an admin on the queue, a player on the courts. */
+function homeView() {
+  const role = (state.profile && state.profile.role) || "player";
+  if (role === "owner") return "owner";
+  if (role === "admin") return "admin";
+  return "browse";
 }
 function say(text, kind) {
   const box = $("auth-msg");
@@ -763,7 +796,7 @@ sb.auth.onAuthStateChange(async (_event, session) => {
      hours, not to the front of the app. */
   if (wantsToApply) { openApply(); }
   else if (wasSignedOut && state.venue && state.picked.length) show("venue");
-  else show("browse");
+  else openHome();
   loadVenues();
   const paid = new URLSearchParams(window.location.search).get("paid");
   if (paid) {
@@ -789,6 +822,7 @@ sb.auth.onAuthStateChange(async (_event, session) => {
   if (state.session) {
     await loadProfile();
     if (wantsToApply) openApply();
+    else openHome();
   } else if (wantsToApply) {
     askForAccountFirst();
   }
@@ -1238,7 +1272,20 @@ function renderBasket() {
   $("basket-detail").textContent = n + (n === 1 ? " hour" : " hours") +
     (gearCount ? " \u00b7 " + gearCount + " item" + (gearCount === 1 ? "" : "s") : "") +
     " \u00b7 " + prettyDate(state.dateKey);
+  /* One hour is not "these hours". */
+  $("basket-go").textContent = n === 1 ? "Book this hour" : "Book these " + n + " hours";
+  syncDock();
 }
+
+/* The page must end where the dock begins, and the dock changes height when
+   the basket appears, so the padding is measured rather than guessed. */
+function syncDock() {
+  const dock = document.getElementById("dock");
+  if (!dock) return;
+  const h = dock.getBoundingClientRect().height;
+  document.body.style.paddingBottom = (h ? Math.round(h) + 18 : 24) + "px";
+}
+window.addEventListener("resize", syncDock);
 
 /* Contiguous hours on one court become one booking, exactly as the phone
    app groups them: one row per run of hours, all sharing a group id. */
@@ -1541,6 +1588,14 @@ async function loadAdmin() {
 }
 
 /* --- navigation ---------------------------------------------------- */
+/* Opening the home view also has to fetch what that view shows. */
+function openHome() {
+  const home = homeView();
+  show(home);
+  if (home === "owner") loadOwner();
+  else if (home === "admin") loadAdmin();
+}
+
 document.querySelectorAll("[data-nav]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const nav = btn.getAttribute("data-nav");
