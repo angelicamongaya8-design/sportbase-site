@@ -76,6 +76,45 @@
   .prompt-close { position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; }
   .prompt-close:hover { color: var(--ink); }
   @media (max-width: 520px) { .prompt { right: 16px; left: 16px; width: auto; } .nav-btn.ghost-first { display: none; } }
+
+  .roleswitch { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .preview { margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 40px; align-items: start; }
+  .role-copy h3 { font-size: 20px; font-weight: 700; }
+  .role-copy > p { margin-top: 10px; color: var(--muted); }
+  .role-points { margin-top: 18px; display: flex; flex-direction: column; gap: 13px; }
+  .role-points b { font-size: 15px; }
+  .role-points p { margin-top: 2px; color: var(--muted); font-size: 14.5px; }
+  .screen { border: 1px solid var(--line); border-radius: 20px; background: var(--raised); padding: 14px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16); }
+  .screen-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 2px 4px 12px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tile { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--ground); }
+  .tile small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .tile b { font-size: 17px; font-variant-numeric: tabular-nums; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 11px; border: 1px solid var(--line); border-radius: 12px; margin-top: 8px; background: var(--ground); }
+  .row b { font-size: 14px; font-family: Archivo, sans-serif; }
+  .row small { display: block; color: var(--muted); font-size: 12px; }
+  .pill { font-family: "IBM Plex Mono", monospace; font-size: 10px; border-radius: 999px; padding: 4px 9px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .pill.go { color: var(--accent); border-color: var(--accent); }
+  .tabbar { margin-top: 12px; display: flex; justify-content: space-between; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .tabbar .on { color: var(--accent); }
+  .screen-note { margin-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
+  .tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; margin-top: 14px; }
+  .tab { flex: 1; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; color: var(--muted); font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--accent); color: #fff; }
+  .field { margin-top: 13px; }
+  .field label { display: block; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .field input { margin-top: 6px; width: 100%; box-sizing: border-box; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--ground); color: var(--ink); font-family: inherit; font-size: 15px; }
+  .field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .roles { display: flex; gap: 8px; margin-top: 6px; }
+  .role { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; background: transparent; color: var(--ink); font-family: inherit; font-size: 13.5px; text-align: left; cursor: pointer; }
+  .role span { display: block; color: var(--muted); font-size: 11.5px; }
+  .role[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .auth-submit { margin-top: 18px; width: 100%; justify-content: center; border: 0; font-family: Archivo, sans-serif; font-weight: 700; font-size: 14px; border-radius: 10px; padding: 13px 20px; background: var(--accent); color: #fff; cursor: pointer; }
+  .auth-fine { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+  .auth-fine a { color: var(--ink); }
+  .linkish { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  [hidden] { display: none !important; }
+  @media (max-width: 860px) { .preview { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -317,24 +356,15 @@
 <header class="masthead">
   <div class="wrap">
     <a class="wordmark" href="#top" aria-label="SportBase, home">
-      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true">
-        <rect x="1" y="1" width="26" height="26" rx="8" fill="var(--accent)"></rect>
-        <g stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.95">
-          <path d="M14 4v5"></path>
-          <path d="M14 19v5"></path>
-          <circle cx="14" cy="14" r="5"></circle>
-          <path d="M14 14l3-2"></path>
-        </g>
-        <circle cx="14" cy="14" r="1.2" fill="#fff"></circle>
-      </svg>
+      <img class="mark" src="data:image/png;base64,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" alt="" width="26" height="26">
       SportBase
     </a>
     <div class="nav-actions">
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
-      <button class="nav-btn ghost-first" type="button" data-soon="account">Sign in</button>
-      <button class="nav-btn filled" type="button" data-soon="account">Create account</button>
+      <button class="nav-btn ghost-first" type="button" data-auth="in">Sign in</button>
+      <button class="nav-btn filled" type="button" data-auth="up">Create account</button>
     </div>
   </div>
 </header>
@@ -359,7 +389,7 @@
           <span class="lines"><small>Install on</small><strong>Android</strong></span>
         </button>
       </div>
-      <p class="cta-note">Free to download &middot; you pay the venue, never us. Run courts? <a href="#owners">See what listing costs</a>.</p>
+      <p class="cta-note">Free to download &middot; you pay the venue, never us. Or <button class="linkish" type="button" data-auth="in">book from your browser</button> &mdash; same account either way.</p>
     </div>
 
     <div class="board" role="img" aria-label="Example booking grid for a Saturday: four courts across, hours down the side, showing which hours are taken and which are free.">
@@ -579,6 +609,87 @@
   </div>
 </section>
 
+<section class="band" id="preview">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Signed in</p>
+      <h2>Three people, three apps.</h2>
+      <p>One account, and what opens depends on who you are. Sign in on the web or on the phone &mdash; same account, same bookings, whichever one is nearer to hand.</p>
+    </div>
+    <div class="roleswitch" role="tablist" aria-label="Choose a role">
+      <button class="nav-btn filled" type="button" role="tab" aria-selected="true" data-role="player">Player</button>
+      <button class="nav-btn" type="button" role="tab" aria-selected="false" data-role="owner">Venue owner</button>
+      <button class="nav-btn" type="button" role="tab" aria-selected="false" data-role="admin">Admin</button>
+    </div>
+    <div class="preview">
+      <div>
+        <div class="role-copy" data-panel="player">
+          <h3>You came to play.</h3>
+          <p>The app opens on the courts near you, with tonight&rsquo;s free hours already on the screen.</p>
+          <div class="role-points">
+            <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map, with the hour you want already filtered.</p></div>
+            <div><b>Book</b><p>Pick the hours, add gear if you need it, pay with GCash. The price is the venue&rsquo;s own.</p></div>
+            <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in.</p></div>
+          </div>
+        </div>
+        <div class="role-copy" data-panel="owner" hidden>
+          <h3>You came to fill the courts.</h3>
+          <p>The app opens on today: who is coming, what is owed, and what is still free to sell.</p>
+          <div class="role-points">
+            <div><b>Today</b><p>Every booking in order, with a scanner to check people in as they walk through the door.</p></div>
+            <div><b>Money</b><p>Expected, paid, and the SportBase share &mdash; per booking, at the rate agreed the day it was made.</p></div>
+            <div><b>Courts</b><p>Prices, peak hours, closures, equipment stock and promotions, all in your hands, not ours.</p></div>
+          </div>
+        </div>
+        <div class="role-copy" data-panel="admin" hidden>
+          <h3>You came to keep it honest.</h3>
+          <p>The app opens on the queue: what is waiting for a decision, and what is running out of time.</p>
+          <div class="role-points">
+            <div><b>Approvals</b><p>Venue listings and owner applications, with the permit attached, read by a person before anything goes live.</p></div>
+            <div><b>Support</b><p>Tickets with a reference and a clock, so nobody waits a week for an answer.</p></div>
+            <div><b>People</b><p>Accounts, roles and the activity log &mdash; who changed what, and when.</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="screen" data-panel="player">
+          <div class="screen-bar"><span>Near you &middot; Saturday</span><span>19:00</span></div>
+          <div class="row"><span><b>Ateneo Courts</b><small>Badminton &middot; 1.2 km</small></span><span class="pill go">&#8369;350/hr</span></div>
+          <div class="row"><span><b>Vertex Padel</b><small>Padel &middot; 2.8 km</small></span><span class="pill go">&#8369;900/hr</span></div>
+          <div class="row"><span><b>Gomez Gym</b><small>Basketball &middot; 3.1 km</small></span><span class="pill">full tonight</span></div>
+          <div class="row"><span><b>Your next booking</b><small>Sat 20 Sept, 19:00 &middot; Court C1</small></span><span class="pill go">QR ready</span></div>
+          <div class="tabbar"><span class="on">Home</span><span>Map</span><span>Bookings</span><span>Chats</span><span>Profile</span></div>
+        </div>
+        <div class="screen" data-panel="owner" hidden>
+          <div class="screen-bar"><span>Your venue &middot; today</span><span>6 bookings</span></div>
+          <div class="tiles">
+            <div class="tile"><small>Expected</small><b>&#8369;4,320</b></div>
+            <div class="tile"><small>Paid</small><b>&#8369;2,880</b></div>
+            <div class="tile"><small>Our share</small><b>&#8369;302</b></div>
+          </div>
+          <div class="row"><span><b>19:00 &middot; Court C1</b><small>Miguel R. &middot; 2 hours</small></span><span class="pill go">checked in</span></div>
+          <div class="row"><span><b>20:00 &middot; Court C2</b><small>Dana L. &middot; 1 hour</small></span><span class="pill">arriving</span></div>
+          <div class="row"><span><b>Court C3</b><small>Peak rate 17:00&ndash;22:00</small></span><span class="pill">&#8369;900/hr</span></div>
+          <div class="tabbar"><span class="on">Today</span><span>Courts</span><span>Earnings</span><span>Chats</span><span>Profile</span></div>
+        </div>
+        <div class="screen" data-panel="admin" hidden>
+          <div class="screen-bar"><span>Queue</span><span>4 waiting</span></div>
+          <div class="tiles">
+            <div class="tile"><small>Pending</small><b>4</b></div>
+            <div class="tile"><small>Venues</small><b>38</b></div>
+            <div class="tile"><small>Players</small><b>1,204</b></div>
+          </div>
+          <div class="row"><span><b>Vertex Padel</b><small>New venue &middot; permit attached</small></span><span class="pill go">review</span></div>
+          <div class="row"><span><b>R. Santos</b><small>Owner application &middot; 2 venues</small></span><span class="pill go">review</span></div>
+          <div class="row"><span><b>Ticket SB-2291</b><small>Refund question &middot; 2h left to answer</small></span><span class="pill">open</span></div>
+          <div class="tabbar"><span class="on">Approvals</span><span>Venues</span><span>People</span><span>Support</span><span>Log</span></div>
+        </div>
+        <p class="screen-note">Example screen &middot; the figures are made up</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="band" id="paying">
   <div class="wrap">
     <div class="sec-head">
@@ -644,6 +755,50 @@
   </div>
 </div>
 
+<div class="modal" id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="modal-scrim" data-close-auth></div>
+  <div class="modal-card">
+    <button class="modal-close" type="button" data-close-auth aria-label="Close">&times;</button>
+    <div id="auth-form-wrap">
+      <p class="eyebrow">SportBase</p>
+      <h2 id="auth-title">Sign in</h2>
+      <div class="tabs" role="tablist" aria-label="Sign in or create an account">
+        <button class="tab" type="button" role="tab" aria-selected="true" data-auth-tab="in">Sign in</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-auth-tab="up">Create account</button>
+      </div>
+      <form id="auth-form" novalidate>
+        <div class="field" id="name-field" hidden>
+          <label for="auth-name">Your name</label>
+          <input id="auth-name" name="name" type="text" autocomplete="name" placeholder="Maria Santos">
+        </div>
+        <div class="field">
+          <label for="auth-email">Email</label>
+          <input id="auth-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+        </div>
+        <div class="field" id="role-field" hidden>
+          <label id="role-label">I am here to</label>
+          <div class="roles" role="group" aria-labelledby="role-label">
+            <button class="role" type="button" aria-pressed="true" data-role-pick="player">Play<span>Book courts</span></button>
+            <button class="role" type="button" aria-pressed="false" data-role-pick="owner">Run a venue<span>List my courts</span></button>
+          </div>
+        </div>
+        <button class="auth-submit" type="submit" id="auth-submit">Email me a sign-in link</button>
+      </form>
+      <p class="auth-fine">No password to remember &mdash; SportBase emails you a link that signs you in. Prefer the phone? <a href="#top" data-close-auth>Install the app</a>.</p>
+    </div>
+    <div id="auth-done" hidden>
+      <p class="eyebrow">Almost</p>
+      <h2>Accounts open at launch.</h2>
+      <p class="say" id="auth-done-say">The app is still being built, so there is no account to sign in to yet. Venues are being signed up first, and players are let in the day the app opens.</p>
+      <div class="modal-actions">
+        <a class="btn btn-primary" id="auth-mail" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email me at launch</a>
+        <button class="btn btn-ghost" type="button" data-close-auth>Close</button>
+      </div>
+      <p class="modal-fine">One message, on the day it goes live. Nothing else.</p>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="soon" hidden role="dialog" aria-modal="true" aria-labelledby="soon-title">
   <div class="modal-scrim" data-close></div>
   <div class="modal-card">
@@ -660,6 +815,101 @@
 </div>
 
 <script>
+
+  (function () {
+    var buttons = document.querySelectorAll("[data-role]");
+    var panels = document.querySelectorAll("[data-panel]");
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var want = btn.getAttribute("data-role");
+        buttons.forEach(function (b) {
+          var on = b === btn;
+          b.setAttribute("aria-selected", on ? "true" : "false");
+          b.classList.toggle("filled", on);
+        });
+        panels.forEach(function (p) { p.hidden = p.getAttribute("data-panel") !== want; });
+      });
+    });
+  })();
+
+  (function () {
+    var modal = document.getElementById("auth");
+    var card = modal.querySelector(".modal-card");
+    var closeBtn = modal.querySelector(".modal-close");
+    var formWrap = document.getElementById("auth-form-wrap");
+    var form = document.getElementById("auth-form");
+    var done = document.getElementById("auth-done");
+    var doneSay = document.getElementById("auth-done-say");
+    var mail = document.getElementById("auth-mail");
+    var title = document.getElementById("auth-title");
+    var submit = document.getElementById("auth-submit");
+    var nameField = document.getElementById("name-field");
+    var roleField = document.getElementById("role-field");
+    var emailInput = document.getElementById("auth-email");
+    var mode = "in", role = "player", opener = null;
+    function setMode(next) {
+      mode = next;
+      var up = next === "up";
+      title.textContent = up ? "Create account" : "Sign in";
+      nameField.hidden = !up;
+      roleField.hidden = !up;
+      submit.textContent = up ? "Create my account" : "Email me a sign-in link";
+      document.querySelectorAll("[data-auth-tab]").forEach(function (t) {
+        t.setAttribute("aria-selected", t.getAttribute("data-auth-tab") === next ? "true" : "false");
+      });
+    }
+    function open(el) {
+      opener = el;
+      setMode(el.getAttribute("data-auth") === "up" ? "up" : "in");
+      formWrap.hidden = false; done.hidden = true; modal.hidden = false;
+      document.documentElement.style.overflow = "hidden";
+      emailInput.focus();
+    }
+    function close() {
+      modal.hidden = true; document.documentElement.style.overflow = "";
+      if (opener) opener.focus();
+    }
+    document.querySelectorAll("[data-auth]").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.preventDefault(); open(el); });
+    });
+    document.querySelectorAll("[data-auth-tab]").forEach(function (t) {
+      t.addEventListener("click", function () { setMode(t.getAttribute("data-auth-tab")); });
+    });
+    document.querySelectorAll("[data-role-pick]").forEach(function (r) {
+      r.addEventListener("click", function () {
+        role = r.getAttribute("data-role-pick");
+        document.querySelectorAll("[data-role-pick]").forEach(function (o) {
+          o.setAttribute("aria-pressed", o === r ? "true" : "false");
+        });
+      });
+    });
+    modal.querySelectorAll("[data-close-auth]").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.preventDefault(); close(); });
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = emailInput.value.trim();
+      var owner = mode === "up" && role === "owner";
+      doneSay.textContent = owner
+        ? "The app is still being built, and venues are being signed up first \u2014 which is the useful half to be in early. Tell us about your courts and you are on it before the players arrive."
+        : "The app is still being built, so there is no account to sign in to yet. Venues are being signed up now, and players are let in the day the app opens.";
+      var subject = owner ? "SportBase \u2014 list my venue" : "SportBase \u2014 tell me when it launches";
+      var body = email ? "My email: " + email : "";
+      mail.setAttribute("href", "mailto:angelicamongaya8@gmail.com?subject=" + encodeURIComponent(subject) + (body ? "&body=" + encodeURIComponent(body) : ""));
+      mail.textContent = owner ? "Get my venue listed" : "Email me at launch";
+      formWrap.hidden = true; done.hidden = false; closeBtn.focus();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (modal.hidden) return;
+      if (e.key === "Escape") { close(); return; }
+      if (e.key !== "Tab") return;
+      var items = Array.prototype.filter.call(card.querySelectorAll("button, a[href], input"), function (el) { return el.offsetParent !== null; });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  })();
   (function () {
     var root = document.documentElement;
     var btn = document.getElementById("theme-btn");
