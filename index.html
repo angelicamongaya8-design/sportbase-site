@@ -127,6 +127,16 @@
   .copy-btn { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; background: transparent; color: var(--ink); cursor: pointer; }
   .copy-btn:hover { border-color: var(--accent); }
   .copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 32px 24px; padding-block: 8px 28px; }
+  .foot-brand .name { font-family: Archivo, sans-serif; font-weight: 900; font-size: 19px; letter-spacing: -0.03em; color: var(--ink); text-transform: none; }
+  .foot-brand p { margin-top: 10px; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; font-size: 14px; letter-spacing: 0; max-width: 34ch; text-transform: none; }
+  .foot-col h3 { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); font-weight: 600; }
+  .foot-col ul { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .foot-col a, .foot-col .linkish { font-family: "IBM Plex Sans", sans-serif; font-size: 14px; letter-spacing: 0; color: var(--muted); text-decoration: none; text-align: left; }
+  .foot-col a:hover, .foot-col .linkish:hover { color: var(--accent); }
+  .foot-base { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; border-top: 1px solid var(--line); padding-block: 18px 6px; }
+  @media (max-width: 860px) { footer .foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } .foot-brand { grid-column: 1 / -1; } }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -375,8 +385,8 @@
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
-      <button class="nav-btn ghost-first" type="button" data-auth="in">Sign in</button>
-      <button class="nav-btn filled" type="button" data-auth="up">Create account</button>
+      <a class="nav-btn ghost-first" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Sign in</a>
+      <a class="nav-btn filled" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Create account</a>
     </div>
   </div>
 </header>
@@ -401,7 +411,7 @@
           <span class="lines"><small>Add to</small><strong>Android</strong></span>
         </button>
       </div>
-      <p class="cta-note">Free to use &middot; you pay the venue, never us. Or <button class="linkish" type="button" data-auth="in">book from your browser</button> &mdash; same account either way.</p>
+      <p class="cta-note">Free to use &middot; you pay the venue, never us. Or <a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">book from your browser</a> &mdash; same account either way.</p>
     </div>
 
     <div class="board" role="img" aria-label="Example booking grid for a Saturday: four courts across, hours down the side, showing which hours are taken and which are free.">
@@ -697,6 +707,10 @@
           <div class="tabbar"><span class="on">Approvals</span><span>Venues</span><span>People</span><span>Support</span><span>Log</span></div>
         </div>
         <p class="screen-note">Example screen &middot; the figures are made up</p>
+        <div class="cta-row" style="margin-top:16px">
+          <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Open the real thing</a>
+          <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Create an account</a>
+        </div>
       </div>
     </div>
   </div>
@@ -707,7 +721,7 @@
     <div class="sec-head">
       <p class="eyebrow">Paying</p>
       <h2>GCash at checkout. The deposit comes back.</h2>
-      <p>Payments run through PayMongo. SportBase never holds your card details.</p>
+      <p>Payments run through PayMongo &mdash; GCash today, in test mode while the app is being built. SportBase never holds your card details.</p>
     </div>
     <div class="facts">
       <div class="fact"><p class="tag">At booking</p><h3>The price is locked</h3><p class="body">Whatever the venue charges the day you book is the price on your booking, even if the venue raises its rate the week after.</p></div>
@@ -751,9 +765,40 @@
 </section>
 
 <footer>
-  <div class="wrap">
-    <span>SportBase &middot; Philippines</span>
-    <span>angelicamongaya8@gmail.com</span>
+  <div class="wrap foot">
+    <div class="foot-brand">
+      <span class="name">SportBase</span>
+      <p>Courts by the hour, across the Philippines. Book from the app or straight from this browser &mdash; the venue sets the price, and that is the price you pay.</p>
+    </div>
+    <div class="foot-col">
+      <h3>Play</h3>
+      <ul>
+        <li><a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Open the web app</a></li>
+        <li><a href="#app">What is in the app</a></li>
+        <li><a href="#paying">How paying works</a></li>
+        <li><button class="linkish" type="button" data-guide-open="auto">Add to your phone</button></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h3>Venues</h3>
+      <ul>
+        <li><a href="#owners">Listing and commission</a></li>
+        <li><a href="#preview">What an owner sees</a></li>
+        <li><a href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20list%20my%20venue">List your venue</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h3>SportBase</h3>
+      <ul>
+        <li><a href="#questions">Questions</a></li>
+        <li><a href="mailto:angelicamongaya8@gmail.com?subject=SportBase">Contact</a></li>
+        <li><a href="#top">Back to the top</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <span>&copy; 2026 SportBase &middot; Philippines</span>
+    <span>In development &middot; venues onboarding now</span>
   </div>
 </footer>
 
@@ -804,50 +849,6 @@
   </div>
 </div>
 
-<div class="modal" id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title">
-  <div class="modal-scrim" data-close-auth></div>
-  <div class="modal-card">
-    <button class="modal-close" type="button" data-close-auth aria-label="Close">&times;</button>
-    <div id="auth-form-wrap">
-      <p class="eyebrow">SportBase</p>
-      <h2 id="auth-title">Sign in</h2>
-      <div class="tabs" role="tablist" aria-label="Sign in or create an account">
-        <button class="tab" type="button" role="tab" aria-selected="true" data-auth-tab="in">Sign in</button>
-        <button class="tab" type="button" role="tab" aria-selected="false" data-auth-tab="up">Create account</button>
-      </div>
-      <form id="auth-form" novalidate>
-        <div class="field" id="name-field" hidden>
-          <label for="auth-name">Your name</label>
-          <input id="auth-name" name="name" type="text" autocomplete="name" placeholder="Maria Santos">
-        </div>
-        <div class="field">
-          <label for="auth-email">Email</label>
-          <input id="auth-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
-        </div>
-        <div class="field" id="role-field" hidden>
-          <label id="role-label">I am here to</label>
-          <div class="roles" role="group" aria-labelledby="role-label">
-            <button class="role" type="button" aria-pressed="true" data-role-pick="player">Play<span>Book courts</span></button>
-            <button class="role" type="button" aria-pressed="false" data-role-pick="owner">Run a venue<span>List my courts</span></button>
-          </div>
-        </div>
-        <button class="auth-submit" type="submit" id="auth-submit">Email me a sign-in link</button>
-      </form>
-      <p class="auth-fine">No password to remember &mdash; SportBase emails you a link that signs you in. Prefer the phone? <button class="linkish" type="button" data-guide-open="auto" data-close-auth>Put it on your home screen</button>.</p>
-    </div>
-    <div id="auth-done" hidden>
-      <p class="eyebrow">Almost</p>
-      <h2>Accounts open at launch.</h2>
-      <p class="say" id="auth-done-say">The app is still being built, so there is no account to sign in to yet. Venues are being signed up first, and players are let in the day the app opens.</p>
-      <div class="modal-actions">
-        <a class="btn btn-primary" id="auth-mail" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email me at launch</a>
-        <button class="btn btn-ghost" type="button" data-close-auth>Close</button>
-      </div>
-      <p class="modal-fine">One message, on the day it goes live. Nothing else.</p>
-    </div>
-  </div>
-</div>
-
 <script>
 
   (function () {
@@ -866,84 +867,6 @@
     });
   })();
 
-  (function () {
-    var modal = document.getElementById("auth");
-    var card = modal.querySelector(".modal-card");
-    var closeBtn = modal.querySelector(".modal-close");
-    var formWrap = document.getElementById("auth-form-wrap");
-    var form = document.getElementById("auth-form");
-    var done = document.getElementById("auth-done");
-    var doneSay = document.getElementById("auth-done-say");
-    var mail = document.getElementById("auth-mail");
-    var title = document.getElementById("auth-title");
-    var submit = document.getElementById("auth-submit");
-    var nameField = document.getElementById("name-field");
-    var roleField = document.getElementById("role-field");
-    var emailInput = document.getElementById("auth-email");
-    var mode = "in", role = "player", opener = null;
-    function setMode(next) {
-      mode = next;
-      var up = next === "up";
-      title.textContent = up ? "Create account" : "Sign in";
-      nameField.hidden = !up;
-      roleField.hidden = !up;
-      submit.textContent = up ? "Create my account" : "Email me a sign-in link";
-      document.querySelectorAll("[data-auth-tab]").forEach(function (t) {
-        t.setAttribute("aria-selected", t.getAttribute("data-auth-tab") === next ? "true" : "false");
-      });
-    }
-    function open(el) {
-      opener = el;
-      setMode(el.getAttribute("data-auth") === "up" ? "up" : "in");
-      formWrap.hidden = false; done.hidden = true; modal.hidden = false;
-      document.documentElement.style.overflow = "hidden";
-      emailInput.focus();
-    }
-    function close() {
-      modal.hidden = true; document.documentElement.style.overflow = "";
-      if (opener) opener.focus();
-    }
-    document.querySelectorAll("[data-auth]").forEach(function (el) {
-      el.addEventListener("click", function (e) { e.preventDefault(); open(el); });
-    });
-    document.querySelectorAll("[data-auth-tab]").forEach(function (t) {
-      t.addEventListener("click", function () { setMode(t.getAttribute("data-auth-tab")); });
-    });
-    document.querySelectorAll("[data-role-pick]").forEach(function (r) {
-      r.addEventListener("click", function () {
-        role = r.getAttribute("data-role-pick");
-        document.querySelectorAll("[data-role-pick]").forEach(function (o) {
-          o.setAttribute("aria-pressed", o === r ? "true" : "false");
-        });
-      });
-    });
-    modal.querySelectorAll("[data-close-auth]").forEach(function (el) {
-      el.addEventListener("click", function (e) { e.preventDefault(); close(); });
-    });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var email = emailInput.value.trim();
-      var owner = mode === "up" && role === "owner";
-      doneSay.textContent = owner
-        ? "The app is still being built, and venues are being signed up first \u2014 which is the useful half to be in early. Tell us about your courts and you are on it before the players arrive."
-        : "The app is still being built, so there is no account to sign in to yet. Venues are being signed up now, and players are let in the day the app opens.";
-      var subject = owner ? "SportBase \u2014 list my venue" : "SportBase \u2014 tell me when it launches";
-      var body = email ? "My email: " + email : "";
-      mail.setAttribute("href", "mailto:angelicamongaya8@gmail.com?subject=" + encodeURIComponent(subject) + (body ? "&body=" + encodeURIComponent(body) : ""));
-      mail.textContent = owner ? "Get my venue listed" : "Email me at launch";
-      formWrap.hidden = true; done.hidden = false; closeBtn.focus();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (modal.hidden) return;
-      if (e.key === "Escape") { close(); return; }
-      if (e.key !== "Tab") return;
-      var items = Array.prototype.filter.call(card.querySelectorAll("button, a[href], input"), function (el) { return el.offsetParent !== null; });
-      if (!items.length) return;
-      var first = items[0], last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
-  })();
   (function () {
     var root = document.documentElement;
     var btn = document.getElementById("theme-btn");
