@@ -115,6 +115,18 @@
   .linkish { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   [hidden] { display: none !important; }
   @media (max-width: 860px) { .preview { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+
+  .steps-ol { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .steps-ol li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14.5px; color: var(--muted); }
+  .steps-ol li b { color: var(--ink); font-weight: 600; }
+  .step-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; font-weight: 600; color: var(--accent); border: 1px solid var(--line); border-radius: 7px; height: 22px; display: grid; place-items: center; }
+  .note-line { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .note-line b { color: var(--ink); }
+  .note-line a { color: var(--ink); }
+  .copy-row { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .copy-btn { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; background: transparent; color: var(--ink); cursor: pointer; }
+  .copy-btn:hover { border-color: var(--accent); }
+  .copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -380,16 +392,16 @@
         SportBase costs a player nothing.
       </p>
       <div class="stores">
-        <button class="btn-store solid" type="button" data-soon>
+        <button class="btn-store solid" type="button" data-guide-open="ios">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><path d="M12 8v7"></path><path d="M9.5 12.5 12 15l2.5-2.5"></path></svg>
-          <span class="lines"><small>Install on</small><strong>iPhone</strong></span>
+          <span class="lines"><small>Add to</small><strong>iPhone</strong></span>
         </button>
-        <button class="btn-store outline" type="button" data-soon>
+        <button class="btn-store outline" type="button" data-guide-open="android">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"></rect><path d="M12 8v7"></path><path d="M9.5 12.5 12 15l2.5-2.5"></path></svg>
-          <span class="lines"><small>Install on</small><strong>Android</strong></span>
+          <span class="lines"><small>Add to</small><strong>Android</strong></span>
         </button>
       </div>
-      <p class="cta-note">Free to download &middot; you pay the venue, never us. Or <button class="linkish" type="button" data-auth="in">book from your browser</button> &mdash; same account either way.</p>
+      <p class="cta-note">Free to use &middot; you pay the venue, never us. Or <button class="linkish" type="button" data-auth="in">book from your browser</button> &mdash; same account either way.</p>
     </div>
 
     <div class="board" role="img" aria-label="Example booking grid for a Saturday: four courts across, hours down the side, showing which hours are taken and which are free.">
@@ -746,12 +758,49 @@
 </footer>
 
 <div class="prompt" id="prompt" hidden>
-  <button class="prompt-close" type="button" id="prompt-close" aria-label="Dismiss">&times;</button>
-  <h3>Get SportBase on your phone</h3>
-  <p>Courts near you, booked by the hour, with your bookings in your pocket.</p>
+  <button class="prompt-close" type="button" id="prompt-close" aria-label="Not now">&times;</button>
+  <h3>Add SportBase to your home screen</h3>
+  <p>The site already works in your browser. Installing just makes it open in one tap, full screen.</p>
   <div class="prompt-row">
-    <button class="nav-btn filled" type="button" data-soon="install">Install</button>
-    <button class="nav-btn" type="button" data-soon="install">Other devices</button>
+    <button class="nav-btn filled" type="button" data-guide-open="auto">Show me how</button>
+    <button class="nav-btn" type="button" data-guide-open="other">On another device</button>
+  </div>
+</div>
+
+<div class="modal" id="soon" hidden role="dialog" aria-modal="true" aria-labelledby="guide-title">
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-card">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <p class="eyebrow">Install</p>
+    <h2 id="guide-title">The website is the app.</h2>
+    <p class="say">Booking works right here in the browser &mdash; nothing to download to use it. Adding it to your home screen only means it opens in one tap, full screen, like any other app. The App Store and Play Store versions come later.</p>
+    <div class="tabs" role="tablist" aria-label="Choose your device">
+      <button class="tab" type="button" role="tab" aria-selected="true" data-guide="ios">iPhone</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-guide="android">Android</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-guide="other">Other</button>
+    </div>
+    <ol class="steps-ol" data-guide-panel="ios">
+      <li><span class="step-num">1</span><span>Open this page in <b>Safari</b>. iPhone only lets Safari do this bit.</span></li>
+      <li><span class="step-num">2</span><span>Tap <b>Share</b> at the bottom &mdash; the square with the arrow coming out of it.</span></li>
+      <li><span class="step-num">3</span><span>Scroll down the list and tap <b>Add to Home Screen</b>, then <b>Add</b>.</span></li>
+      <li><span class="step-num">4</span><span>SportBase is now sitting with your other apps. Open it from there.</span></li>
+    </ol>
+    <ol class="steps-ol" data-guide-panel="android" hidden>
+      <li><span class="step-num">1</span><span>Open this page in <b>Chrome</b>.</span></li>
+      <li><span class="step-num">2</span><span>Tap the <b>three dots</b> at the top right.</span></li>
+      <li><span class="step-num">3</span><span>Tap <b>Add to home screen</b>, then <b>Install</b>.</span></li>
+      <li><span class="step-num">4</span><span>It lands on your home screen and opens full screen, no browser bar.</span></li>
+    </ol>
+    <ol class="steps-ol" data-guide-panel="other" hidden>
+      <li><span class="step-num">1</span><span>On a computer, open this page in <b>Chrome</b> or <b>Edge</b> and look for the small install icon at the right of the address bar.</span></li>
+      <li><span class="step-num">2</span><span>No icon? The site works perfectly in a normal tab &mdash; bookmark it and you have lost nothing.</span></li>
+      <li><span class="step-num">3</span><span>Installing on a phone that is not in your hand? Copy the link and send it to yourself.</span></li>
+    </ol>
+    <div class="copy-row">
+      <button class="copy-btn" type="button" data-copy="link">Copy the link</button>
+      <button class="copy-btn" type="button" data-copy="mail">Copy our email</button>
+    </div>
+    <p class="note-line"><b>Stores: coming soon.</b> Want to know the day SportBase lands on the App Store or Play Store? <a href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email us</a> and you get one message, on that day.</p>
   </div>
 </div>
 
@@ -784,7 +833,7 @@
         </div>
         <button class="auth-submit" type="submit" id="auth-submit">Email me a sign-in link</button>
       </form>
-      <p class="auth-fine">No password to remember &mdash; SportBase emails you a link that signs you in. Prefer the phone? <a href="#top" data-close-auth>Install the app</a>.</p>
+      <p class="auth-fine">No password to remember &mdash; SportBase emails you a link that signs you in. Prefer the phone? <button class="linkish" type="button" data-guide-open="auto" data-close-auth>Put it on your home screen</button>.</p>
     </div>
     <div id="auth-done" hidden>
       <p class="eyebrow">Almost</p>
@@ -796,21 +845,6 @@
       </div>
       <p class="modal-fine">One message, on the day it goes live. Nothing else.</p>
     </div>
-  </div>
-</div>
-
-<div class="modal" id="soon" hidden role="dialog" aria-modal="true" aria-labelledby="soon-title">
-  <div class="modal-scrim" data-close></div>
-  <div class="modal-card">
-    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
-    <p class="eyebrow" id="soon-kicker">Almost</p>
-    <h2 id="soon-title">Not on the stores yet.</h2>
-    <p class="say" id="soon-say">SportBase is still being built, so there is nothing to install today. Venues around the country are being signed up first &mdash; so that on the day the app opens, there is already a court near you to book.</p>
-    <div class="modal-actions">
-      <a class="btn btn-primary" href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email me at launch</a>
-      <a class="btn btn-ghost" href="#owners" data-close>I run a venue</a>
-    </div>
-    <p class="modal-fine">One message, on the day it goes live. Nothing else.</p>
   </div>
 </div>
 
@@ -942,25 +976,32 @@
     var modal = document.getElementById("soon");
     var card = modal.querySelector(".modal-card");
     var closeBtn = modal.querySelector(".modal-close");
-    var kicker = document.getElementById("soon-kicker");
-    var title = document.getElementById("soon-title");
-    var say = document.getElementById("soon-say");
+    var tabs = modal.querySelectorAll("[data-guide]");
+    var panels = modal.querySelectorAll("[data-guide-panel]");
     var opener = null;
-    var COPY = {
-      install: { kicker: "Almost", title: "Not on the stores yet.", say: "SportBase is still being built, so there is nothing to install today. Venues around the country are being signed up first \u2014 so that on the day the app opens, there is already a court near you to book." },
-      account: { kicker: "Almost", title: "Accounts open at launch.", say: "There is no sign-in yet: the app is still in development. Leave your email and you will get the invite on the first day, while the good hours are still free." }
-    };
+    function thisDevice() {
+      var ua = navigator.userAgent || "";
+      if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
+      if (/Android/i.test(ua)) return "android";
+      return "other";
+    }
+    function show(which) {
+      tabs.forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-guide") === which ? "true" : "false"); });
+      panels.forEach(function (p) { p.hidden = p.getAttribute("data-guide-panel") !== which; });
+    }
     function open(el) {
-      var copy = COPY[el.getAttribute("data-soon")] || COPY.install;
-      kicker.textContent = copy.kicker; title.textContent = copy.title; say.textContent = copy.say;
+      var want = el.getAttribute("data-guide-open") || "auto";
+      show(want === "auto" ? thisDevice() : want);
       opener = el; modal.hidden = false;
-      document.documentElement.style.overflow = "hidden"; closeBtn.focus();
+      document.documentElement.style.overflow = "hidden";
+      closeBtn.focus();
     }
     function close() {
       modal.hidden = true; document.documentElement.style.overflow = "";
       if (opener) opener.focus();
     }
-    document.querySelectorAll("[data-soon]").forEach(function (el) {
+    tabs.forEach(function (t) { t.addEventListener("click", function () { show(t.getAttribute("data-guide")); }); });
+    document.querySelectorAll("[data-guide-open]").forEach(function (el) {
       el.addEventListener("click", function (e) { e.preventDefault(); open(el); });
     });
     modal.querySelectorAll("[data-close]").forEach(function (el) { el.addEventListener("click", close); });
@@ -968,17 +1009,33 @@
       if (modal.hidden) return;
       if (e.key === "Escape") { close(); return; }
       if (e.key !== "Tab") return;
-      var items = card.querySelectorAll("button, a[href]");
+      var items = Array.prototype.filter.call(card.querySelectorAll("button, a[href]"), function (el) { return el.offsetParent !== null; });
+      if (!items.length) return;
       var first = items[0], last = items[items.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
-
+    modal.querySelectorAll("[data-copy]").forEach(function (btn) {
+      var label = btn.textContent;
+      btn.addEventListener("click", function () {
+        var value = btn.getAttribute("data-copy") === "mail" ? "angelicamongaya8@gmail.com" : window.location.origin + window.location.pathname;
+        function ok() { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = label; }, 1800); }
+        function nope() { btn.textContent = value; }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(value).then(ok, nope); }
+          else { nope(); }
+        } catch (e) { nope(); }
+      });
+    });
     var prompt = document.getElementById("prompt");
-    var dismissed = false;
-    try { dismissed = localStorage.getItem("sb-prompt") === "off"; } catch (e) {}
+    var WEEK = 7 * 24 * 60 * 60 * 1000;
+    var snoozed = false;
+    try {
+      var until = parseInt(localStorage.getItem("sb-prompt-until") || "0", 10);
+      snoozed = until > Date.now();
+    } catch (e) {}
     function maybeShow() {
-      if (dismissed) return;
+      if (snoozed) return;
       if (window.scrollY < 320) return;
       prompt.hidden = false;
       window.removeEventListener("scroll", maybeShow);
@@ -986,8 +1043,8 @@
     window.addEventListener("scroll", maybeShow, { passive: true });
     maybeShow();
     document.getElementById("prompt-close").addEventListener("click", function () {
-      prompt.hidden = true; dismissed = true;
-      try { localStorage.setItem("sb-prompt", "off"); } catch (e) {}
+      prompt.hidden = true; snoozed = true;
+      try { localStorage.setItem("sb-prompt-until", String(Date.now() + WEEK)); } catch (e) {}
     });
   })();
 </script>
