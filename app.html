@@ -821,9 +821,12 @@ async function openApply() {
 
 function askForAccountFirst() {
   setAuthMode("up");
+  /* Say it at the top, where the eye lands, not in a note under the fold. */
+  $("auth-heading").textContent = "List your venue";
+  $("auth-lede").textContent =
+    "It starts with an account, because an application belongs to somebody. " +
+    "Make one here, or sign in, and the venue details come straight after.";
   show("auth");
-  say("<b>Your venue needs an account first.</b> Make one here (or sign in), and the " +
-      "venue details come straight after.", "ok");
 }
 
 $("apply-open").addEventListener("click", () => {
