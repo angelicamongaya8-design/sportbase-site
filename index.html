@@ -204,6 +204,43 @@
     .tile b, .row b { font-size: 16px; }
     .row small { font-size: 13.5px; }
   }
+
+  .proof { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px 22px; }
+  .proof span { display: flex; align-items: center; gap: 7px; font-size: 14.5px; color: var(--muted); }
+  .proof b { color: var(--ink); font-weight: 600; }
+  .proof .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+  .live-stat { margin-top: 16px; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--muted); }
+  .live-stat b { color: var(--ink); }
+  .rates { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .rate { border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 13px 14px; }
+  .rate small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .rate b { font-size: 19px; font-variant-numeric: tabular-nums; }
+  .rate i { display: block; font-style: normal; font-size: 12.5px; color: var(--muted); }
+  .closer { border-top: 1px solid var(--line); background: var(--raised); }
+  .closer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; padding-block: 34px; }
+  .closer h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; }
+  .closer p { margin-top: 8px; color: var(--muted); max-width: 46ch; }
+  .notify { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .notify p { font-size: 13.5px; color: var(--muted); }
+  .notify p b { color: var(--ink); }
+  .notify-row { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .notify-row input { flex: 1; min-width: 170px; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--ground); color: var(--ink); font-family: inherit; font-size: 15px; }
+  .notify-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .notify-msg { margin-top: 9px; font-size: 13.5px; color: var(--muted); }
+  .notify-msg.good { color: #2F9E63; }
+  @media (max-width: 720px) {
+    .plans, .plans tbody, .plans tr, .plans th, .plans td { display: block; width: 100%; }
+    .plans thead { display: none; }
+    .plans tbody tr { box-sizing: border-box; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 16px 17px; margin-bottom: 12px; }
+    .plans th, .plans td { box-sizing: border-box; padding-right: 0; }
+    .plans tbody th { border: 0; padding: 0 0 4px; font-size: 19px; }
+    .plans td { border: 0; padding: 4px 0 0; }
+    .plans td[data-label]::before { content: attr(data-label); display: block; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .plans td.num { font-size: 17px; }
+    .plans td small { margin-top: 6px; }
+    .table-scroll { overflow-x: visible; }
+    .closer .wrap { padding-block: 28px; }
+  }
 </style>
 <title>SportBase — Book a court by the hour, Philippines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -478,6 +515,12 @@
           <span class="lines"><small>Install on</small><strong>Android</strong></span>
         </button>
       </div>
+      <div class="proof">
+        <span><span class="dot" aria-hidden="true"></span><b>No booking fee</b></span>
+        <span><span class="dot" aria-hidden="true"></span><b>The venue&rsquo;s own price</b></span>
+        <span><span class="dot" aria-hidden="true"></span><b>QR check-in</b>, no list at the desk</span>
+      </div>
+      <p class="live-stat" id="live-stat">Loading what is open&hellip;</p>
       <p class="cta-note">Free to use &middot; you pay the venue, never us. Or <a href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">book from your browser</a> &mdash; same account either way.</p>
     </div>
 
@@ -619,14 +662,14 @@
         <tbody>
           <tr>
             <th scope="row">Listed</th>
-            <td class="num">₱0</td>
-            <td class="num">10%</td>
+            <td class="num" data-label="Per month">₱0</td>
+            <td class="num" data-label="Commission">10%</td>
             <td>Findable and bookable, up to 8 photos.</td>
           </tr>
           <tr>
             <th scope="row">Featured</th>
-            <td class="num">₱499</td>
-            <td class="num">7%</td>
+            <td class="num" data-label="Per month">₱499</td>
+            <td class="num" data-label="Commission">7%</td>
             <td>
               Above the fold in your city, a place in Nearby Venues, your
               promotions on the home screen.
@@ -635,8 +678,8 @@
           </tr>
           <tr>
             <th scope="row">Partner</th>
-            <td class="num">₱1,499</td>
-            <td class="num">5%</td>
+            <td class="num" data-label="Per month">₱1,499</td>
+            <td class="num" data-label="Commission">5%</td>
             <td>
               Everything in Featured, a named contact for support, and a
               monthly report on views, bookings and no-shows.
@@ -673,6 +716,21 @@
       <div class="skeleton">Loading venues</div>
     </div>
     <p class="venue-note" id="venue-note" hidden></p>
+  </div>
+</section>
+
+<section class="band" id="rates">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What an hour costs</p>
+      <h2>The venue&rsquo;s price, out in the open.</h2>
+      <p>Straight from the venues listed today &mdash; the cheapest hour on SportBase for each sport. Peak hours cost what the venue says they cost, and the app shows that before you pick anything.</p>
+    </div>
+    <div class="rates" id="rate-grid">
+      <div class="skeleton" style="min-height:96px">Loading prices</div>
+      <div class="skeleton" style="min-height:96px">Loading prices</div>
+      <div class="skeleton" style="min-height:96px">Loading prices</div>
+    </div>
   </div>
 </section>
 
@@ -919,6 +977,19 @@
   </div>
 </section>
 
+<section class="closer">
+  <div class="wrap">
+    <div>
+      <h2>There is a free hour tonight.</h2>
+      <p>Somewhere near you, a court is standing empty. Open the board and take it &mdash; booking costs you nothing.</p>
+    </div>
+    <div class="cta-row" style="margin-top:0">
+      <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html">Find a court</a>
+      <button class="btn btn-ghost" type="button" data-guide-open="auto">Put it on my phone</button>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap foot">
     <div class="foot-brand">
@@ -972,8 +1043,8 @@
   <div class="modal-card">
     <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
     <p class="eyebrow">Install</p>
-    <h2 id="guide-title">The website is the app.</h2>
-    <p class="say">Booking works right here in the browser &mdash; nothing to download to use it. Adding it to your home screen only means it opens in one tap, full screen, like any other app. The App Store and Play Store versions come later.</p>
+    <h2 id="guide-title">Put SportBase on your home screen.</h2>
+    <p class="say">Not on the App Store or Play Store yet. Here is how to put it on your home screen today &mdash; it takes about a minute, and it opens full screen, like any other app.</p>
     <div class="tabs" role="tablist" aria-label="Choose your device">
       <button class="tab" type="button" role="tab" aria-selected="true" data-guide="ios">iPhone</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-guide="android">Android</button>
@@ -998,9 +1069,16 @@
     </ol>
     <div class="copy-row">
       <button class="copy-btn" type="button" data-copy="link">Copy the link</button>
-      <button class="copy-btn" type="button" data-copy="mail">Copy our email</button>
+      
     </div>
-    <p class="note-line"><b>Stores: coming soon.</b> Want to know the day SportBase lands on the App Store or Play Store? <a href="mailto:angelicamongaya8@gmail.com?subject=SportBase%20%E2%80%94%20tell%20me%20when%20it%20launches">Email us</a> and you get one message, on that day.</p>
+        <div class="notify">
+      <p><b>Not on the App Store or Play Store yet.</b> Leave your email and SportBase writes to you on the day it lands there &mdash; one message, nothing else.</p>
+      <div class="notify-row">
+        <input id="notify-email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Your email">
+        <button class="btn" type="button" id="notify-go">Tell me</button>
+      </div>
+      <p class="notify-msg" id="notify-msg" hidden></p>
+    </div>
   </div>
 </div>
 
@@ -1070,9 +1148,9 @@
     var title = document.getElementById("guide-title");
     var say = modal.querySelector(".say");
     var COPY = {
-      ios: { title: "Install SportBase on your iPhone.", say: "Three taps and it sits on your home screen like any other app \u2014 full screen, no browser bar. It is not on the App Store yet, so this is how it gets there today." },
-      android: { title: "Install SportBase on your Android.", say: "Chrome puts it on your home screen in three taps \u2014 full screen, no browser bar. It is not on Play Store yet, so this is how it gets there today." },
-      other: { title: "The website is the app.", say: "Booking works right here in the browser \u2014 nothing to download to use it. Installing only means it opens in one tap, full screen. The App Store and Play Store versions come later." }
+      ios: { title: "Install on your iPhone.", say: "Three taps in Safari and SportBase sits with your other apps. Not on the App Store yet \u2014 this is how it gets on your phone today." },
+      android: { title: "Install on your Android.", say: "Three taps in Chrome and SportBase sits with your other apps. Not on Play Store yet \u2014 this is how it gets on your phone today." },
+      other: { title: "Install on this computer.", say: "Chrome and Edge can keep SportBase in its own window. Everything works in a normal tab too \u2014 the install is only for convenience." }
     };
     function paintCopy(which) {
       var copy = COPY[which] || COPY.other;
@@ -1203,6 +1281,78 @@
         });
       });
     });
+  })();
+
+  (function () {
+    var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/";
+    var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
+    var stat = document.getElementById("live-stat");
+    var rateGrid = document.getElementById("rate-grid");
+    function peso(n) { return "\u20B1" + Number(n || 0).toLocaleString("en-PH", { maximumFractionDigits: 0 }); }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    fetch(API + "venues?select=id,courts(sport,hourly_rate,status)&status=eq.approved", { headers: { apikey: KEY, Authorization: "Bearer " + KEY } })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("no")); })
+      .then(function (rows) {
+        var courts = 0, cheapest = null, bySport = {};
+        rows.forEach(function (v) {
+          (v.courts || []).forEach(function (c) {
+            if (c.status === "unavailable") return;
+            courts += 1;
+            if (c.hourly_rate != null) {
+              if (cheapest == null || c.hourly_rate < cheapest) cheapest = c.hourly_rate;
+              if (c.sport) {
+                if (!bySport[c.sport]) bySport[c.sport] = { min: c.hourly_rate, courts: 1 };
+                else { bySport[c.sport].courts += 1; if (c.hourly_rate < bySport[c.sport].min) bySport[c.sport].min = c.hourly_rate; }
+              }
+            }
+          });
+        });
+        if (stat) stat.innerHTML = "<b>" + rows.length + "</b> venues \u00b7 <b>" + courts + "</b> courts" + (cheapest != null ? " \u00b7 from <b>" + peso(cheapest) + "</b> an hour" : "");
+        if (rateGrid) {
+          var sports = Object.keys(bySport).sort(function (a, b) { return bySport[a].min - bySport[b].min; });
+          rateGrid.innerHTML = sports.length ? sports.map(function (sp) {
+            return '<div class="rate"><small>' + esc(sp) + '</small><b>' + peso(bySport[sp].min) + '</b><i>from, ' + bySport[sp].courts + " court" + (bySport[sp].courts === 1 ? "" : "s") + '</i></div>';
+          }).join("") : '<div class="skeleton" style="grid-column:1/-1;min-height:96px">Prices open in the app</div>';
+        }
+      })
+      .catch(function () {
+        if (stat) stat.textContent = "Venues and prices open in the app.";
+        if (rateGrid) rateGrid.innerHTML = '<div class="skeleton" style="grid-column:1/-1;min-height:96px">Prices open in the app</div>';
+      });
+  })();
+
+  (function () {
+    var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/launch_notify";
+    var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
+    var input = document.getElementById("notify-email");
+    var btn = document.getElementById("notify-go");
+    var msg = document.getElementById("notify-msg");
+    if (!btn) return;
+    btn.addEventListener("click", async function () {
+      var email = (input.value || "").trim();
+      msg.hidden = false; msg.className = "notify-msg";
+      if (!email || email.indexOf("@") < 1) { msg.textContent = "An email address, please \u2014 that is all we need."; return; }
+      btn.disabled = true; msg.textContent = "Adding you\u2026";
+      try {
+        var r = await fetch(API, {
+          method: "POST",
+          headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ email: email, source: "website" })
+        });
+        if (r.ok || r.status === 409) {
+          msg.className = "notify-msg good";
+          msg.textContent = "Done. You will hear from us the day it is on the stores.";
+          input.value = "";
+        } else {
+          var body = await r.text();
+          msg.textContent = body.indexOf("duplicate") > -1 ? "You are already on the list." : "That did not save. Try again in a moment.";
+        }
+      } catch (e) {
+        msg.textContent = "That did not save. Check the connection and try again.";
+      }
+      btn.disabled = false;
+    });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") btn.click(); });
   })();
 </script>
 
