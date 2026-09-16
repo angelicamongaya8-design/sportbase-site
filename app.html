@@ -373,7 +373,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 03:20 UTC</p>
+    <p class="note build">build 2026-09-16 03:26 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -636,7 +636,15 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
    every later call down with it, and the page sits there with no courts on
    it for ever. Public reading has no business waiting on any of that. */
 const sbPublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+    /* Its own storage name, so it never queues behind the signed-in client
+       or behind another tab. Two clients sharing one name share one lock,
+       and a lock held by a tab that went away is held for ever. */
+    storageKey: "sb-public-" + Math.random().toString(36).slice(2),
+  },
 });
 
 /* Nothing on this page should be able to wait for ever. */
@@ -1158,10 +1166,23 @@ $("auth-back").addEventListener("click", () => goBack("browse"));
 async function loadVenues() {
   const list = $("venue-list");
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-  const { data, error } = await sbPublic
-    .from("venues")
-    .select("id, name, address, city, status, description, amenities, photo_url, photos, lat, lng, contact_number, business_hours, opening_time, closing_time, open_days, peak_start, peak_end, peak_days, courts(id, name, sport, hourly_rate, peak_rate, status)")
-    .eq("status", "approved");
+  const res = await withTimeout(
+    sbPublic
+      .from("venues")
+      .select("id, name, address, city, status, description, amenities, photo_url, photos, lat, lng, contact_number, business_hours, opening_time, closing_time, open_days, peak_start, peak_end, peak_days, courts(id, name, sport, hourly_rate, peak_rate, status)")
+      .eq("status", "approved"),
+    9000,
+    { slow: true }
+  );
+  if (res && res.slow) {
+    /* A spinner that never stops tells you nothing. */
+    list.innerHTML = '<div class="empty">The courts are taking too long to load. ' +
+      '<button class="btn small" type="button" id="venue-retry" style="margin-left:8px">Try again</button></div>';
+    const again = $("venue-retry");
+    if (again) again.addEventListener("click", loadVenues);
+    return;
+  }
+  const { data, error } = res;
   if (error) {
     list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + "</div>";
     return;
