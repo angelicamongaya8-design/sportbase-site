@@ -373,7 +373,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 03:10 UTC</p>
+    <p class="note build">build 2026-09-16 03:20 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -795,7 +795,53 @@ const state = {
 
 /* --- views --------------------------------------------------------- */
 const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me"];
+
+/* Back should return you to the page you came from, which is not always the
+   courts. Every step deeper remembers where it started; a tab at the bottom
+   is a fresh start, so it clears the trail. */
+let navTrail = [];
+let goingBack = false;
+
+const BACK_LABEL = {
+  browse: "All venues",
+  bookings: "Your bookings",
+  booking: "That booking",
+  venue: "The venue",
+  owner: "Your venue",
+  admin: "The queue",
+  me: "Your account",
+  auth: "Sign in",
+};
+
+function currentView() {
+  return VIEWS.find((v) => !$("view-" + v).hidden) || null;
+}
+
+function updateBackLabels() {
+  const to = navTrail[navTrail.length - 1];
+  const text = "\u2190 " + (to && BACK_LABEL[to] ? BACK_LABEL[to] : "Back");
+  ["venue-back", "booking-back", "apply-back", "auth-back"].forEach((id) => {
+    const b = $(id);
+    if (b) b.textContent = text;
+  });
+}
+
+function goBack(fallback) {
+  const target = navTrail.pop() || fallback || "browse";
+  goingBack = true;
+  show(target);
+  goingBack = false;
+  if (target === "bookings") loadBookings();
+  else if (target === "owner") loadOwner();
+  else if (target === "admin") loadAdmin();
+  else if (target === "me") renderMe();
+  else if (target === "browse") renderVenues();
+}
+
 function show(view) {
+  const from = currentView();
+  if (!goingBack && from && from !== view) navTrail.push(from);
+  if (navTrail.length > 12) navTrail.shift();
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
   const inApp = view !== "auth";
   const signedIn = !!state.session;
@@ -815,6 +861,7 @@ function show(view) {
     if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
   $("basket").hidden = !(view === "venue" && state.picked.length > 0);
+  updateBackLabels();
   syncDock();
   window.scrollTo(0, 0);
 }
@@ -1073,7 +1120,7 @@ $("apply-open").addEventListener("click", () => {
   if (!state.session) { wantsToApply = true; askForAccountFirst(); return; }
   openApply();
 });
-$("apply-back").addEventListener("click", () => show("browse"));
+$("apply-back").addEventListener("click", () => goBack("browse"));
 
 $("apply-form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -1105,7 +1152,7 @@ $("apply-form").addEventListener("submit", async (e) => {
   openApply();
 });
 
-$("auth-back").addEventListener("click", () => show("browse"));
+$("auth-back").addEventListener("click", () => goBack("browse"));
 
 /* --- browse -------------------------------------------------------- */
 async function loadVenues() {
@@ -1746,8 +1793,8 @@ async function loadBookings() {
   });
 }
 $("bookings-refresh").addEventListener("click", loadBookings);
-$("booking-back").addEventListener("click", () => { show("bookings"); loadBookings(); });
-$("venue-back").addEventListener("click", () => { state.picked = []; show("browse"); });
+$("booking-back").addEventListener("click", () => goBack("bookings"));
+$("venue-back").addEventListener("click", () => { state.picked = []; goBack("browse"); });
 
 async function openBooking(id, justPaid) {
   show("booking");
@@ -1969,7 +2016,13 @@ function openHome() {
 document.querySelectorAll("[data-nav]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const nav = btn.getAttribute("data-nav");
+    /* The bar is not a step deeper; it is a different place to be, so it
+       leaves nothing behind to go back to. */
+    goingBack = true;
     show(nav);
+    goingBack = false;
+    navTrail = [];
+    updateBackLabels();
     if (nav === "browse") renderVenues();
     if (nav === "bookings") {
       if (!state.session) { setAuthMode("in"); say("Sign in to see your bookings."); show("auth"); return; }
