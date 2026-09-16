@@ -41,9 +41,24 @@ function withTimeout(promise, ms, fallback) {
   ]);
 }
 
-/* clear token */
+/* stored token */
 const AUTH_KEY = "sb-" + SUPABASE_URL.replace(/^https:\/\//, "").split(".")[0] + "-auth-token";
-function healStuckSession() {
+
+/* is it unreadable */
+function storedTokenIsBroken() {
+  let raw;
+  try { raw = localStorage.getItem(AUTH_KEY); } catch (e) { return false; }
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw);
+    return !parsed || typeof parsed !== "object";
+  } catch (e) {
+    return true;
+  }
+}
+
+/* drop it once */
+function dropBrokenToken() {
   let already = false;
   try { already = sessionStorage.getItem("sb-healed") === "1"; } catch (e) {}
   if (already) return false;
@@ -57,9 +72,10 @@ function healStuckSession() {
 
 /* session read */
 async function sessionNow() {
-  const res = await withTimeout(sb.auth.getSession(), 4000, { stuck: true });
+  const res = await withTimeout(sb.auth.getSession(), 12000, { stuck: true });
   if (res && res.stuck) {
-    healStuckSession();
+    /* slow is not broken */
+    if (storedTokenIsBroken()) dropBrokenToken();
     return null;
   }
   return (res && res.data && res.data.session) || null;
