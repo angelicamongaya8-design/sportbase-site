@@ -373,7 +373,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 02:50 UTC</p>
+    <p class="note build">build 2026-09-16 02:57 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -621,8 +621,26 @@ if (!window.supabase) {
 }
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    /* supabase-js guards its session store with a Web Lock by default. A
+       lock held by another tab - or left behind by one that went away -
+       makes getSession() wait for ever, and the courts never load because
+       the page is still waiting to find out who you are. One tab at a time
+       is not worth a hung app; this runs the work without the lock. */
+    lock: (_name, _acquireTimeout, fn) => fn(),
+  },
 });
+
+/* Nothing on this page should be able to wait for ever. */
+function withTimeout(promise, ms, fallback) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
 
 /* --- small helpers ------------------------------------------------- */
 const $ = (id) => document.getElementById(id);
@@ -923,8 +941,12 @@ sb.auth.onAuthStateChange(async (_event, session) => {
 });
 
 (async function boot() {
-  const { data } = await sb.auth.getSession();
-  state.session = data.session || null;
+  /* The courts are public, so they are fetched first and never wait on the
+     session. Whoever you turn out to be, the list is already there. */
+  show("browse");
+  loadVenues();
+  const res = await withTimeout(sb.auth.getSession(), 4000, { data: { session: null } });
+  state.session = (res && res.data && res.data.session) || null;
   /* The courts are public, so browsing is the front door. But a person who
      pressed "Sign in" or "Create account" asked for a form, and should get
      the form. */
@@ -932,10 +954,7 @@ sb.auth.onAuthStateChange(async (_event, session) => {
   if (!state.session && (door === "in" || door === "up")) {
     setAuthMode(door);
     show("auth");
-  } else {
-    show("browse");
   }
-  loadVenues();
   if (state.session) {
     await loadProfile();
     if (wantsToApply) openApply();
