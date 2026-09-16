@@ -240,6 +240,13 @@
   }
   .filter-note button:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* An admin sees six tabs. On a narrow phone the bar gives back its own
+     side padding so the longest label still fits on one line. */
+  @media (max-width: 430px) {
+    .navbar .wrap { padding-inline: 8px; gap: 2px; }
+    .navbtn { font-size: 9.5px; letter-spacing: 0.01em; padding: 9px 2px; }
+  }
+
   /* Three tiles are two lines of text each on a small phone; two per row
      lets a date and an hour range sit on one line. */
   @media (max-width: 420px) {
@@ -378,6 +385,35 @@
     letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
   }
   @media (min-width: 861px) { .rail-hint { display: none; } }
+
+  /* --- editing who you are ---------------------------------------------- */
+  .me-edit { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .me-edit .row-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 560px) { .me-edit .row-2 { grid-template-columns: minmax(0, 1fr); } }
+  .photo-row { margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .photo-row .avatar { width: 52px; height: 52px; font-size: 19px; }
+  .file-btn { position: relative; overflow: hidden; }
+  .file-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* --- chats and support ------------------------------------------------- */
+  .thread { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .bubble { max-width: 78%; border: 1px solid var(--line); border-radius: 14px; padding: 10px 13px; background: var(--raised); }
+  .bubble.mine { align-self: flex-end; background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  .bubble .who2 { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .bubble p { margin-top: 5px; font-size: 14.5px; white-space: pre-wrap; word-break: break-word; }
+  .bubble time { display: block; margin-top: 5px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--muted); }
+  .bubble.gone p { color: var(--muted); font-style: italic; }
+  .composer { margin-top: 16px; display: flex; gap: 8px; align-items: flex-end; }
+  .composer textarea {
+    flex: 1; min-width: 0; min-height: 46px; max-height: 140px; resize: vertical;
+    padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--ground); color: var(--ink); font-family: inherit; font-size: 15px;
+  }
+  .app-nudge {
+    margin-top: 16px; border: 1px solid var(--accent); background: var(--accent-soft);
+    border-radius: 12px; padding: 12px 14px; font-size: 13.5px; color: var(--muted);
+  }
+  .app-nudge b { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -474,7 +510,7 @@
     <div class="vcards" id="venue-list"></div>
     <p class="rail-hint" id="venue-hint" hidden>Swipe for more &rarr;</p>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:35 UTC</p>
+    <p class="note build">build 2026-09-16 04:47 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -562,6 +598,40 @@
   </section>
 
   <!-- ---------------------------------------------------------------- -->
+  <!-- Chats and support                                                 -->
+  <!-- ---------------------------------------------------------------- -->
+  <section id="view-chats" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>Messages</h1>
+      <button class="btn small" type="button" id="chats-refresh">Refresh</button>
+    </div>
+    <div class="list" id="chat-list"></div>
+    <div class="empty" id="chat-empty" hidden>No message yet.</div>
+    <div style="margin-top:16px">
+      <button class="btn" type="button" id="support-open">Message SportBase support</button>
+    </div>
+    <div class="app-nudge">
+      <b>The phone app tells you when someone replies.</b> Here a reply waits
+      until you come back and look, and photos can only be sent from the app.
+    </div>
+  </section>
+
+  <section id="view-chat" class="wrap shell" hidden>
+    <button class="btn small back" type="button" id="chat-back">&larr; Messages</button>
+    <div class="shell-head">
+      <h1 id="chat-title">Chat</h1>
+      <span class="chip" id="chat-kind" hidden></span>
+    </div>
+    <div class="thread" id="thread"></div>
+    <div class="empty" id="thread-empty" hidden>Nothing here yet. Say the first thing.</div>
+    <div class="composer">
+      <textarea id="chat-input" rows="1" placeholder="Write a message" aria-label="Write a message"></textarea>
+      <button class="btn filled" type="button" id="chat-send">Send</button>
+    </div>
+    <p class="note" id="chat-note"></p>
+  </section>
+
+  <!-- ---------------------------------------------------------------- -->
   <!-- You                                                               -->
   <!-- ---------------------------------------------------------------- -->
   <section id="view-me" class="wrap shell" hidden>
@@ -585,6 +655,36 @@
           <div class="me-stat"><small>Saved venues</small><b id="stat-saved">&mdash;</b></div>
         </div>
       </div>
+
+      <div style="margin-top:16px">
+        <button class="btn small" type="button" id="me-edit-open">Edit your details</button>
+      </div>
+
+      <div class="me-edit" id="me-edit" hidden>
+        <div class="row-2">
+          <div class="field">
+            <label for="me-name-input">Your name</label>
+            <input id="me-name-input" type="text" autocomplete="name" placeholder="Maria Santos">
+          </div>
+          <div class="field">
+            <label for="me-phone-input">Phone</label>
+            <input id="me-phone-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx">
+          </div>
+        </div>
+        <div class="photo-row">
+          <div class="avatar" id="me-photo-preview">?</div>
+          <span class="btn small file-btn">Choose a photo
+            <input type="file" id="me-photo" accept="image/png, image/jpeg, image/webp">
+          </span>
+          <span class="me-sub" id="me-photo-name">JPG or PNG, up to 5 MB</span>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn filled" type="button" id="me-save">Save</button>
+          <button class="btn" type="button" id="me-cancel">Cancel</button>
+        </div>
+        <div class="msg" id="me-msg" hidden></div>
+        <p class="note">Your email is the one you signed in with, and it is not changed here.</p>
+      </div>
     </div>
 
     <div class="shell-head" style="margin-top:26px"><h1 style="font-size:20px">Saved venues</h1></div>
@@ -595,12 +695,12 @@
     <div class="inapp">
       <h3>Still only in the phone app</h3>
       <ul>
-        <li>Chats with the venue, and support tickets</li>
-        <li>Push notifications and reminders</li>
+        <li>A push when a booking is confirmed or someone replies</li>
+        <li>Photos and files in a message</li>
         <li>Tournaments, and writing a review with photos</li>
-        <li>Scanning a QR code at the desk, and Face ID lock</li>
+        <li>Scanning the QR code at the desk, and Face ID lock</li>
       </ul>
-      <p class="note">The apps are not on the stores yet. Everything above is being built; the booking itself works here today.</p>
+      <p class="note">Messages and support work here now. The app still carries them better: it tells you when a reply arrives instead of waiting for you to look.</p>
     </div>
   </section>
 
@@ -691,6 +791,7 @@
     <button class="navbtn" type="button" data-nav="bookings">Bookings</button>
     <button class="navbtn" type="button" data-nav="owner" hidden>Venue</button>
     <button class="navbtn" type="button" data-nav="admin" hidden>Queue</button>
+    <button class="navbtn" type="button" data-nav="chats">Chats</button>
     <button class="navbtn" type="button" data-nav="me">You</button>
   </div>
 </nav>
@@ -899,13 +1000,16 @@ const state = {
   promo: null,         // the applied promotion, if any
   bookings: [],
   booking: null,
+  chats: [],
+  chatNames: {},
+  chat: null,           // the open conversation
   ratings: {},          // venue id -> { avg, count }
   reviews: [],          // reviews for the open venue
   favs: {},             // venue id -> favourite row id
 };
 
 /* --- views --------------------------------------------------------- */
-const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me"];
+const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me", "chats", "chat"];
 
 /* Back should return you to the page you came from, which is not always the
    courts. Every step deeper remembers where it started; a tab at the bottom
@@ -921,6 +1025,7 @@ const BACK_LABEL = {
   owner: "Your venue",
   admin: "The queue",
   me: "Your account",
+  chats: "Messages",
   auth: "Sign in",
 };
 
@@ -931,7 +1036,7 @@ function currentView() {
 function updateBackLabels() {
   const to = navTrail[navTrail.length - 1];
   const text = "\u2190 " + (to && BACK_LABEL[to] ? BACK_LABEL[to] : "Back");
-  ["venue-back", "booking-back", "apply-back", "auth-back"].forEach((id) => {
+  ["venue-back", "booking-back", "apply-back", "auth-back", "chat-back"].forEach((id) => {
     const b = $(id);
     if (b) b.textContent = text;
   });
@@ -958,6 +1063,7 @@ function rememberWhere(view) {
       v: view,
       venue: state.venue ? state.venue.id : null,
       booking: state.booking ? state.booking.id : null,
+      chat: state.chat ? state.chat.id : null,
       sport: $("sport-filter") ? $("sport-filter").value : "",
     }));
   } catch (e) {}
@@ -984,6 +1090,8 @@ async function restoreWhere(saved) {
   if (w.v === "owner") { show("owner"); loadOwner(); return true; }
   if (w.v === "admin") { show("admin"); loadAdmin(); return true; }
   if (w.v === "me") { show("me"); renderMe(); return true; }
+  if (w.v === "chats") { show("chats"); loadChats(); return true; }
+  if (w.v === "chat" && w.chat) { await openChat(w.chat); return true; }
   if (w.v === "browse") { show("browse"); return true; }
   return false;
 }
@@ -1005,6 +1113,7 @@ function show(view) {
   /* Browsing needs no account; the rest does. */
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
+  document.querySelector('[data-nav="chats"]').hidden = !signedIn;
   document.querySelectorAll("[data-nav]").forEach((b) => {
     const nav = b.getAttribute("data-nav");
     const on = (view === "venue" || view === "browse") ? nav === "browse"
@@ -2273,6 +2382,283 @@ $("menu-venue").addEventListener("click", () => {
   openApply();
 });
 $("menu-signout").addEventListener("click", () => { closeAccountMenu(); signOut(); });
+
+/* --- editing your own details ---------------------------------------- */
+/* The phone app can change a name, a number and a picture; a person who
+   signed in here should not have to fetch their phone to do the same. */
+let photoFile = null;
+
+function fillEditForm() {
+  const p = state.profile || {};
+  $("me-name-input").value = p.name || "";
+  $("me-phone-input").value = p.phone || "";
+  photoFile = null;
+  $("me-photo-name").textContent = "JPG or PNG, up to 5 MB";
+  const prev = $("me-photo-preview");
+  if (p.avatar_url) prev.outerHTML = '<img class="avatar" id="me-photo-preview" src="' + escapeHtml(p.avatar_url) + '" alt="">';
+  else prev.textContent = ((p.name || "?").trim()[0] || "?").toUpperCase();
+  $("me-msg").hidden = true;
+}
+
+$("me-edit-open").addEventListener("click", () => {
+  const open = $("me-edit").hidden;
+  $("me-edit").hidden = !open;
+  $("me-edit-open").textContent = open ? "Close" : "Edit your details";
+  if (open) fillEditForm();
+});
+$("me-cancel").addEventListener("click", () => {
+  $("me-edit").hidden = true;
+  $("me-edit-open").textContent = "Edit your details";
+});
+
+$("me-photo").addEventListener("change", (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) {
+    $("me-msg").hidden = false;
+    $("me-msg").innerHTML = "<b>That photo is over 5 MB.</b> Pick a smaller one.";
+    e.target.value = "";
+    return;
+  }
+  photoFile = f;
+  $("me-photo-name").textContent = f.name;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const prev = $("me-photo-preview");
+    prev.outerHTML = '<img class="avatar" id="me-photo-preview" src="' + reader.result + '" alt="">';
+  };
+  reader.readAsDataURL(f);
+});
+
+$("me-save").addEventListener("click", async () => {
+  if (!state.session) return;
+  const btn = $("me-save");
+  const msg = $("me-msg");
+  const uid = state.session.user.id;
+  const name = $("me-name-input").value.trim();
+  if (!name) { msg.hidden = false; msg.innerHTML = "<b>A name, please.</b>"; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  msg.hidden = true;
+  const patch = { name: name, phone: $("me-phone-input").value.trim() || null };
+
+  if (photoFile) {
+    /* Same bucket and same path as the phone app, so one picture follows
+       you to both. */
+    const ext = (photoFile.type === "image/png") ? "png" : (photoFile.type === "image/webp" ? "webp" : "jpg");
+    const path = uid + "/avatar." + ext;
+    const up = await sb.storage.from("avatars").upload(path, photoFile, {
+      contentType: photoFile.type || "image/jpeg",
+      upsert: true,
+    });
+    if (up.error) {
+      btn.disabled = false; btn.textContent = "Save";
+      msg.hidden = false;
+      msg.innerHTML = "<b>The photo did not upload.</b> " + escapeHtml(up.error.message);
+      return;
+    }
+    const pub = sb.storage.from("avatars").getPublicUrl(path);
+    patch.avatar_url = (pub.data && pub.data.publicUrl ? pub.data.publicUrl : "") + "?t=" + Date.now();
+  }
+
+  const { error } = await sb.from("users").update(patch).eq("id", uid);
+  btn.disabled = false;
+  btn.textContent = "Save";
+  if (error) {
+    msg.hidden = false;
+    msg.innerHTML = "<b>That did not save.</b> " + escapeHtml(error.message);
+    return;
+  }
+  await loadProfile();
+  renderMe();
+  $("me-edit").hidden = true;
+  $("me-edit-open").textContent = "Edit your details";
+});
+
+/* --- messages ---------------------------------------------------------- */
+/* Chats and support are the same thing in this database: a conversation you
+   are a participant of. Support just has a type and a name. */
+function whenShort(iso) {
+  const d = new Date(iso);
+  const today = new Date();
+  const sameDay = d.toDateString() === today.toDateString();
+  return sameDay
+    ? d.toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })
+    : d.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+}
+
+async function loadChats() {
+  const list = $("chat-list");
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  if (!state.session) return;
+  const me = state.session.user.id;
+
+  const { data: mine } = await withTimeout(
+    sb.from("conversation_participants").select("conversation_id").eq("user_id", me),
+    8000, { data: null });
+  const ids = (mine || []).map((r) => r.conversation_id);
+  if (!ids.length) {
+    list.innerHTML = "";
+    $("chat-empty").hidden = false;
+    return;
+  }
+
+  const [convRes, msgRes, partRes] = await Promise.all([
+    sb.from("conversations").select("id, type, name, created_by, created_at").in("id", ids),
+    sb.from("messages").select("conversation_id, content, created_at, sender_id, deleted_at")
+      .in("conversation_id", ids).order("created_at", { ascending: false }).limit(400),
+    sb.from("conversation_participants").select("conversation_id, user_id").in("conversation_id", ids),
+  ]);
+  const convs = convRes.data || [];
+
+  /* A thread with no name of its own is named after the people in it, so the
+     list reads like a list of people rather than a list of rows called Chat. */
+  const others = {};
+  (partRes.data || []).forEach((p) => {
+    if (p.user_id === me) return;
+    (others[p.conversation_id] = others[p.conversation_id] || []).push(p.user_id);
+  });
+  const need = [...new Set(Object.values(others).flat())];
+  if (need.length) {
+    const { data: people } = await withTimeout(
+      sb.from("users").select("id, name, email").in("id", need), 8000, { data: null });
+    const byId = {};
+    (people || []).forEach((u) => { byId[u.id] = u.name || (u.email || "").split("@")[0]; });
+    state.chatNames = {};
+    Object.keys(others).forEach((cid) => {
+      const names = others[cid].map((id) => byId[id]).filter(Boolean);
+      if (names.length) state.chatNames[cid] = names.slice(0, 3).join(", ");
+    });
+  } else {
+    state.chatNames = {};
+  }
+  const last = {};
+  (msgRes.data || []).forEach((m) => { if (!last[m.conversation_id]) last[m.conversation_id] = m; });
+
+  convs.sort((a, b) => {
+    const la = last[a.id] ? last[a.id].created_at : a.created_at;
+    const lb = last[b.id] ? last[b.id].created_at : b.created_at;
+    return String(lb).localeCompare(String(la));
+  });
+  state.chats = convs;
+
+  $("chat-empty").hidden = convs.length > 0;
+  list.innerHTML = convs.map((c) => {
+    const m = last[c.id];
+    const preview = m
+      ? (m.deleted_at ? "Message unsent" : String(m.content || "").slice(0, 70))
+      : "No message yet";
+    return '<button class="row" type="button" data-chat="' + c.id + '"><span><b>' +
+      escapeHtml(chatTitle(c)) + "</b><small>" + escapeHtml(preview) + "</small></span>" +
+      '<span class="pill' + (c.type === "support" ? " go" : "") + '">' +
+      (m ? escapeHtml(whenShort(m.created_at)) : escapeHtml(c.type)) + "</span></button>";
+  }).join("");
+  list.querySelectorAll("[data-chat]").forEach((b) => {
+    b.addEventListener("click", () => openChat(b.getAttribute("data-chat")));
+  });
+}
+
+function chatTitle(c) {
+  if (c.name) return c.name;
+  if (c.type === "support") return "SportBase Support";
+  const named = (state.chatNames || {})[c.id];
+  if (named) return named;
+  return "Chat";
+}
+
+$("chats-refresh").addEventListener("click", loadChats);
+$("chat-back").addEventListener("click", () => goBack("chats"));
+
+$("support-open").addEventListener("click", async () => {
+  if (!state.session) { setAuthMode("in"); say("Sign in to message support."); show("auth"); return; }
+  const btn = $("support-open");
+  btn.disabled = true;
+  const { data, error } = await withTimeout(sb.rpc("open_support_conversation"), 9000, { data: null, error: null });
+  btn.disabled = false;
+  if (error || !data) {
+    $("chat-empty").hidden = false;
+    $("chat-empty").textContent = "Support could not be opened right now. Try again in a moment.";
+    return;
+  }
+  openChat(data);
+});
+
+async function openChat(id) {
+  show("chat");
+  const box = $("thread");
+  box.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  $("thread-empty").hidden = true;
+
+  const { data: conv } = await sb.from("conversations").select("id, type, name, created_by").eq("id", id).maybeSingle();
+  state.chat = conv || { id: id, type: "direct", name: null };
+  $("chat-title").textContent = chatTitle(state.chat);
+  $("chat-kind").hidden = state.chat.type !== "support";
+  $("chat-kind").textContent = "support";
+  $("chat-note").textContent = state.chat.type === "support"
+    ? "An admin reads this. Replies land as a notification in the phone app."
+    : "Replies land as a notification in the phone app; here you have to come back and look.";
+  rememberWhere("chat");
+  await loadThread();
+}
+
+async function loadThread() {
+  const box = $("thread");
+  if (!state.chat) return;
+  const { data, error } = await sb
+    .from("messages")
+    .select("id, sender_id, content, created_at, deleted_at")
+    .eq("conversation_id", state.chat.id)
+    .order("created_at", { ascending: true })
+    .limit(200);
+  if (error) { box.innerHTML = '<div class="empty">' + escapeHtml(error.message) + "</div>"; return; }
+  const rows = data || [];
+  $("thread-empty").hidden = rows.length > 0;
+  if (!rows.length) { box.innerHTML = ""; return; }
+
+  const senders = Array.from(new Set(rows.map((m) => m.sender_id).filter(Boolean)));
+  const names = {};
+  if (senders.length) {
+    const { data: people } = await sb.from("users").select("id, name").in("id", senders);
+    (people || []).forEach((u) => { names[u.id] = u.name; });
+  }
+  const me = state.session ? state.session.user.id : null;
+  box.innerHTML = rows.map((m) => {
+    const mine = m.sender_id === me;
+    const who = mine ? "You" : (names[m.sender_id] || "SportBase");
+    return '<div class="bubble' + (mine ? " mine" : "") + (m.deleted_at ? " gone" : "") + '">' +
+      '<span class="who2">' + escapeHtml(who) + "</span><p>" +
+      (m.deleted_at ? "Message unsent" : escapeHtml(m.content || "")) + "</p><time>" +
+      escapeHtml(whenShort(m.created_at)) + "</time></div>";
+  }).join("");
+  box.scrollIntoView({ block: "end" });
+}
+
+async function sendMessage() {
+  if (!state.chat || !state.session) return;
+  const input = $("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = $("chat-send");
+  btn.disabled = true;
+  const { error } = await sb.from("messages").insert({
+    conversation_id: state.chat.id,
+    sender_id: state.session.user.id,
+    content: text,
+  });
+  btn.disabled = false;
+  if (error) {
+    $("chat-note").textContent = "That did not send: " + error.message;
+    return;
+  }
+  input.value = "";
+  await loadThread();
+}
+$("chat-send").addEventListener("click", sendMessage);
+$("chat-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
 /* Opening the home view also has to fetch what that view shows. */
 function openHome() {
   const home = homeView();
@@ -2298,6 +2684,10 @@ document.querySelectorAll("[data-nav]").forEach((btn) => {
     }
     if (nav === "owner") loadOwner();
     if (nav === "admin") loadAdmin();
+    if (nav === "chats") {
+      if (!state.session) { setAuthMode("in"); say("Sign in to see your messages."); show("auth"); return; }
+      loadChats();
+    }
     if (nav === "me") {
       if (!state.session) { setAuthMode("in"); say("Sign in to see your account."); show("auth"); return; }
       renderMe();
