@@ -285,7 +285,7 @@ a { color: var(--ink); }
 .review time { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--muted); }
 
 /* profile */
-.me { display: flex; align-items: center; gap: 14px; }
+.me { display: flex; align-items: flex-start; gap: 14px; }
 .avatar { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; background: var(--accent-soft); display: grid; place-items: center; font-family: Archivo, sans-serif; font-weight: 900; font-size: 21px; color: var(--accent); flex: 0 0 auto; }
 .me-name { font-family: Archivo, sans-serif; font-weight: 700; font-size: 20px; }
 .me-sub { color: var(--muted); font-size: 13.5px; word-break: break-word; }
@@ -333,11 +333,38 @@ a { color: var(--ink); }
 .menu .danger { color: var(--accent); }
 
 /* account stats */
-.me-card { display: flex; flex-wrap: wrap; gap: 20px 28px; align-items: center; justify-content: space-between; }
-.me-stats { display: grid; grid-template-columns: repeat(3, minmax(84px, 1fr)); gap: 10px; flex: 1 1 320px; max-width: 420px; }
-.me-stat { border: 1px solid var(--line); border-radius: 12px; background: var(--ground); padding: 11px 12px; }
+.me-card { display: flex; flex-wrap: wrap; gap: 20px 28px; align-items: flex-start; justify-content: space-between; }
+
+/* who you are */
+.me-id { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.me-id .btn { margin-top: 12px; }
+
+.me-stats { display: grid; grid-template-columns: repeat(3, minmax(84px, 1fr)); gap: 10px; flex: 1 1 320px; max-width: 420px; align-items: stretch; }
+
+/* one tile */
+.me-stat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--ground);
+  padding: 11px 12px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.me-stat:hover { border-color: var(--accent); }
+.me-stat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .me-stat small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.me-stat b { display: block; margin-top: 3px; font-family: Archivo, sans-serif; font-size: 19px; font-variant-numeric: tabular-nums; }
+
+/* numbers line up */
+.me-stat b { display: block; margin-top: auto; padding-top: 6px; font-family: Archivo, sans-serif; font-size: 19px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+
 @media (max-width: 560px) {
   .me-stats { flex-basis: 100%; max-width: none; }
 }

@@ -1802,6 +1802,21 @@ function openHome() {
   else if (home === "admin") loadAdmin();
 }
 
+/* stat tiles */
+document.querySelectorAll("[data-goto]").forEach((tile) => {
+  tile.addEventListener("click", () => {
+    const where = tile.getAttribute("data-goto");
+    if (where === "saved") {
+      const head = $("fav-head");
+      if (head) head.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    /* reuse the tab */
+    const tab = document.querySelector('#navbar [data-nav="' + where + '"]');
+    if (tab) tab.click();
+  });
+});
+
 document.querySelectorAll("[data-nav]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const nav = btn.getAttribute("data-nav");

@@ -236,21 +236,24 @@
       <div class="me-card">
         <div class="me">
           <div class="avatar" id="me-avatar">?</div>
-          <div style="min-width:0">
+          <div class="me-id">
             <div class="me-name" id="me-name">&hellip;</div>
             <div class="me-sub" id="me-email"></div>
             <div class="me-sub" id="me-since"></div>
+            <button class="btn small" type="button" id="me-edit-open">Edit your details</button>
           </div>
         </div>
         <div class="me-stats">
-          <div class="me-stat"><small>Bookings</small><b id="stat-bookings">&hellip;</b></div>
-          <div class="me-stat"><small>Hours booked</small><b id="stat-hours">&hellip;</b></div>
-          <div class="me-stat"><small>Saved venues</small><b id="stat-saved">&hellip;</b></div>
+          <button class="me-stat" type="button" data-goto="bookings">
+            <small>Bookings</small><b id="stat-bookings">&hellip;</b>
+          </button>
+          <button class="me-stat" type="button" data-goto="bookings">
+            <small>Hours booked</small><b id="stat-hours">&hellip;</b>
+          </button>
+          <button class="me-stat" type="button" data-goto="saved">
+            <small>Saved venues</small><b id="stat-saved">&hellip;</b>
+          </button>
         </div>
-      </div>
-
-      <div style="margin-top:16px">
-        <button class="btn small" type="button" id="me-edit-open">Edit your details</button>
       </div>
 
       <div class="me-edit" id="me-edit" hidden>
@@ -280,7 +283,7 @@
       </div>
     </div>
 
-    <div class="shell-head" style="margin-top:26px"><h1 style="font-size:20px">Saved venues</h1></div>
+    <div class="shell-head" id="fav-head" style="margin-top:26px"><h1 style="font-size:20px">Saved venues</h1></div>
     <div class="vcards" id="fav-list"></div>
     <p class="rail-hint" id="fav-hint" hidden>Swipe for more &rarr;</p>
     <div class="empty" id="fav-empty" hidden>Nothing saved yet. Tap the heart on a venue and it lands here.</div>
