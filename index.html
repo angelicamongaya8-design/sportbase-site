@@ -548,43 +548,40 @@
 
   /* --- signed-in preview -------------------------------------------- */
   .roleswitch { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .preview { margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 40px; align-items: center; }
-  .role-copy h3 { font-size: 20px; font-weight: 700; }
-  .role-copy > p { margin-top: 10px; color: var(--muted); }
-  .role-points { margin-top: 18px; display: flex; flex-direction: column; gap: 13px; }
-  .role-points b { font-size: 15px; }
-  .role-points p { margin-top: 2px; color: var(--muted); font-size: 14.5px; }
-  /* --- the app, in a phone --------------------------------------------
+  /* --- the app, in phones ----------------------------------------------
      Real screenshots, not a drawing. Faces, names, email addresses, phone
-     numbers and street addresses are blurred out of them before they ship. */
-  .stage { display: flex; justify-content: center; padding: 6px 0 2px; }
-  .rig { width: min(318px, 100%); }
-  .screen {
-    position: relative; box-sizing: border-box; overflow: hidden; line-height: 0;
-    border: 10px solid var(--bezel); border-radius: 40px; background: #0B0B0B;
-    box-shadow: inset 0 0 0 1px var(--line), 0 0 0 1px var(--line), 0 26px 56px rgba(0, 0, 0, 0.3);
+     numbers and street addresses are blurred out of them before they ship.
+     A rail beats one big phone: more of the app is visible at once, and the
+     words beside it stop having to prop up a column twice their height. */
+  .role-copy { margin-top: 30px; }
+  .role-copy h3 { font-size: 22px; font-weight: 700; }
+  .role-copy > p { margin-top: 10px; color: var(--muted); max-width: 680px; }
+  .role-points { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .role-points b { font-size: 15px; }
+  .role-points p { margin-top: 4px; color: var(--muted); font-size: 14.5px; }
+  @media (max-width: 760px) { .role-points { grid-template-columns: minmax(0, 1fr); gap: 15px; } }
+
+  .gallery {
+    margin-top: 30px; display: grid; grid-auto-flow: column; grid-auto-columns: 206px;
+    gap: 16px; overflow-x: auto; scroll-snap-type: x proximity;
+    padding-bottom: 10px; scrollbar-width: thin;
   }
-  .screen img { display: block; width: 100%; height: auto; border-radius: 30px; }
-  .screen img[hidden] { display: none; }
-  .tabbar { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+  .gallery::-webkit-scrollbar { height: 5px; }
+  .gallery::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  .gallery figure { margin: 0; scroll-snap-align: start; }
+  .gallery .frame {
+    border: 7px solid var(--bezel); border-radius: 30px; overflow: hidden;
+    background: #0B0B0B; line-height: 0;
+    box-shadow: inset 0 0 0 1px var(--line), 0 0 0 1px var(--line), 0 14px 30px rgba(0, 0, 0, 0.26);
+  }
+  .gallery img { display: block; width: 100%; height: auto; border-radius: 23px; }
+  .gallery figcaption { margin-top: 11px; font-size: 13.5px; color: var(--ink); line-height: 1.4; }
 
   /* The two screens that answer "how do I get in" sit beside the answer. */
-  .gate-shots { display: grid; gap: 12px; }
-  .gate-shots img {
-    display: block; width: 100%; height: auto; border-radius: 14px;
-    border: 1px solid var(--line);
-  }
-  .gate-shots img.wide { border-radius: 10px; }
-
-  /* How you get in: the one thing a person wants to know before signing up. */
-  .gate { margin-top: 38px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 20px 20px 22px; }
-  .gate-grid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 208px) minmax(0, 1fr); gap: 28px; align-items: start; }
-  .gate-list { display: grid; gap: 18px; }
-  @media (max-width: 860px) { .gate-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
+  .gate-list { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gate-list div { font-size: 15px; color: var(--muted); line-height: 1.55; }
   .gate-list b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
-  @media (max-width: 720px) { .gate-list { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
-
+  @media (max-width: 760px) { .gate-list { grid-template-columns: minmax(0, 1fr); gap: 16px; } }
   .sec-sub { margin-top: 46px; max-width: 640px; }
   .sec-sub h3 { font-size: 22px; font-weight: 700; }
   .sec-sub p { margin-top: 10px; color: var(--muted); }
@@ -618,7 +615,6 @@
   .auth-fine a { color: var(--ink); }
   [hidden] { display: none !important; }
   @media (max-width: 860px) {
-    .preview { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
@@ -1213,100 +1209,136 @@
       <button class="nav-btn" type="button" role="tab" aria-selected="false" data-role="admin">Admin</button>
     </div>
 
-    <div class="preview">
-      <div>
-        <div class="role-copy" data-panel="player">
-          <h3>You came to play.</h3>
-          <p>The app opens on the courts near you, with tonight&rsquo;s free hours already on the screen.</p>
-          <div class="role-points">
-            <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map. Open one and you get the photos, the amenities, every court with its price, the days it is closed, and what people who played there said.</p></div>
-            <div><b>Book</b><p>Pick the hours, add gear if you need it, pay with GCash. The price is the venue&rsquo;s own.</p></div>
-            <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in.</p></div>
-          </div>
-        </div>
+    <div class="role-copy" data-panel="player">
+      <h3>You came to play.</h3>
+      <p>The app opens on the courts near you, with tonight&rsquo;s free hours already on the screen.</p>
+      <div class="role-points">
+        <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map. Open one and you get the photos, the amenities, every court with its price, the days it is closed, and what people who played there said.</p></div>
+        <div><b>Book</b><p>Pick the hours, add gear if you need it, pay with GCash. The price is the venue&rsquo;s own.</p></div>
+        <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in.</p></div>
+      </div>
+    </div>
 
-        <div class="role-copy" data-panel="owner" hidden>
-          <h3>You came to fill the courts.</h3>
-          <p>The app opens on today: who is coming, what is owed, and what is still free to sell.</p>
-          <div class="role-points">
-            <div><b>Today</b><p>Every booking in order, with a scanner to check people in as they walk through the door.</p></div>
-            <div><b>Money</b><p>Expected, paid, and the SportBase share, per booking, at the rate agreed the day it was made.</p></div>
-            <div><b>Courts</b><p>Prices, peak hours, closures, equipment stock and promotions, all in your hands, not ours.</p></div>
-          </div>
-        </div>
+    <div class="role-copy" data-panel="owner" hidden>
+      <h3>You came to fill the courts.</h3>
+      <p>The app opens on today: who is coming, what is owed, and what is still free to sell.</p>
+      <div class="role-points">
+        <div><b>Today</b><p>Every booking in order, with a scanner to check people in as they walk through the door.</p></div>
+        <div><b>Money</b><p>Expected, paid, and the SportBase share, per booking, at the rate agreed the day it was made.</p></div>
+        <div><b>Courts</b><p>Prices, peak hours, closures, equipment stock and promotions, all in your hands, not ours.</p></div>
+      </div>
+    </div>
 
-        <div class="role-copy" data-panel="admin" hidden>
-          <h3>You came to keep it honest.</h3>
-          <p>The app opens on the queue: what is waiting for a decision, and what is running out of time.</p>
-          <div class="role-points">
-            <div><b>Approvals</b><p>Venue listings and owner applications, with the permit attached, read by a person before anything goes live.</p></div>
-            <div><b>Support</b><p>Tickets with a reference and a clock, so nobody waits a week for an answer.</p></div>
-            <div><b>People</b><p>Accounts, roles and the activity log: who changed what, and when.</p></div>
-          </div>
-        </div>
+    <div class="role-copy" data-panel="admin" hidden>
+      <h3>You came to keep it honest.</h3>
+      <p>The app opens on the queue: what is waiting for a decision, and what is running out of time.</p>
+      <div class="role-points">
+        <div><b>Approvals</b><p>Venue listings and owner applications, with the permit attached, read by a person before anything goes live.</p></div>
+        <div><b>Support</b><p>Tickets with a reference and a clock, so nobody waits a week for an answer.</p></div>
+        <div><b>People</b><p>Accounts, roles and the activity log: who changed what, and when.</p></div>
+      </div>
+    </div>
+
+      <div class="gallery" data-panel="player">
+        <figure>
+          <div class="frame"><img src="shot-p-home.webp" width="460" height="947" alt="The SportBase home screen, with venues near you"></div>
+          <figcaption>Courts near you</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-venues.webp" width="460" height="947" alt="The venue list, filtered by sport" loading="lazy"></div>
+          <figcaption>Every venue, by sport</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-map.webp" width="460" height="947" alt="Venues on a map, with a card for the one you tapped" loading="lazy"></div>
+          <figcaption>On the map</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-venue.webp" width="460" height="947" alt="A venue page with photos, hours and amenities" loading="lazy"></div>
+          <figcaption>The venue page</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-courts.webp" width="460" height="947" alt="Every court with its hourly price, and gear for rent" loading="lazy"></div>
+          <figcaption>Courts, prices and gear</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-reviews.webp" width="460" height="947" alt="Reviews of a venue and the form to write one" loading="lazy"></div>
+          <figcaption>Reviews, and your own</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-tourn.webp" width="460" height="947" alt="Open tournaments and running promotions" loading="lazy"></div>
+          <figcaption>Tournaments and promos</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-bookings.webp" width="460" height="947" alt="Your bookings, with what is paid and what is not" loading="lazy"></div>
+          <figcaption>Your bookings</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-support.webp" width="460" height="947" alt="Support threads, each with its own reference" loading="lazy"></div>
+          <figcaption>Support with a reference</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-p-profile.webp" width="460" height="947" alt="Your profile, with the player and owner switch" loading="lazy"></div>
+          <figcaption>Your profile and app lock</figcaption>
+        </figure>
       </div>
 
-      <div>
-        <div class="stage">
-        <div class="rig" data-panel="player">
-          <div class="screen">
-              <img data-screen="p-home" src="shot-p-home.webp" width="560" height="1153" alt="The SportBase home screen, with courts near you">
-              <img data-screen="p-map" src="shot-p-map.webp" width="560" height="1153" alt="Venues on a map, with a card for the one you tapped" hidden loading="lazy">
-              <img data-screen="p-venue" src="shot-p-venue.webp" width="560" height="1153" alt="A venue page: photos, hours, courts and prices" hidden loading="lazy">
-              <img data-screen="p-bookings" src="shot-p-bookings.webp" width="560" height="1153" alt="Your bookings, with what is paid and what is not" hidden loading="lazy">
-              <img data-screen="p-chats" src="shot-p-chats.webp" width="560" height="1153" alt="Support threads, each with its own reference" hidden loading="lazy">
-          </div>
-          <div class="tabbar" role="tablist" aria-label="Screens">
-              <button type="button" role="tab" data-screen-tab="p-home" aria-current="page">Home</button>
-              <button type="button" role="tab" data-screen-tab="p-map">Map</button>
-              <button type="button" role="tab" data-screen-tab="p-venue">A venue</button>
-              <button type="button" role="tab" data-screen-tab="p-bookings">Bookings</button>
-              <button type="button" role="tab" data-screen-tab="p-chats">Support</button>
-          </div>
-        </div>
-        <div class="rig" data-panel="owner" hidden>
-          <div class="screen">
-              <img data-screen="o-home" src="shot-o-home.webp" width="560" height="1153" alt="The owner home screen: bookings, money and courts today">
-              <img data-screen="o-venues" src="shot-o-venues.webp" width="560" height="1153" alt="Your venues, with add venue and the check-in scanner" hidden loading="lazy">
-          </div>
-          <div class="tabbar" role="tablist" aria-label="Screens">
-              <button type="button" role="tab" data-screen-tab="o-home" aria-current="page">Today</button>
-              <button type="button" role="tab" data-screen-tab="o-venues">Venues</button>
-          </div>
-        </div>
-        <div class="rig" data-panel="admin" hidden>
-          <div class="screen">
-              <img data-screen="a-home" src="shot-a-home.webp" width="560" height="1153" alt="The admin home screen, with the approval queue">
-              <img data-screen="a-approvals" src="shot-a-approvals.webp" width="560" height="1153" alt="Owner applications waiting for a decision" hidden loading="lazy">
-              <img data-screen="a-profile" src="shot-a-profile.webp" width="560" height="1153" alt="What an admin can manage across SportBase" hidden loading="lazy">
-          </div>
-          <div class="tabbar" role="tablist" aria-label="Screens">
-              <button type="button" role="tab" data-screen-tab="a-home" aria-current="page">Queue</button>
-              <button type="button" role="tab" data-screen-tab="a-approvals">Approvals</button>
-              <button type="button" role="tab" data-screen-tab="a-profile">Manage</button>
-          </div>
-        </div>
-        </div>
-        <p class="screen-note">Real screens &middot; faces, names and contact details blurred</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in and use it</a>
-          <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up">Create an account</a>
-        </div>
+      <div class="gallery" data-panel="owner" hidden>
+        <figure>
+          <div class="frame"><img src="shot-o-home.webp" width="460" height="947" alt="The owner home screen with today's bookings and takings" loading="lazy"></div>
+          <figcaption>Today: bookings and money</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-o-venues.webp" width="460" height="947" alt="Your venues, with add venue and the check-in scanner" loading="lazy"></div>
+          <figcaption>Your venues, and the scanner</figcaption>
+        </figure>
       </div>
+
+      <div class="gallery" data-panel="admin" hidden>
+        <figure>
+          <div class="frame"><img src="shot-a-home.webp" width="460" height="947" alt="The admin home screen with the approval queue" loading="lazy"></div>
+          <figcaption>The queue, and the numbers</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-a-approvals.webp" width="460" height="947" alt="Owner applications waiting for a decision" loading="lazy"></div>
+          <figcaption>Read by a person</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-a-chats.webp" width="460" height="947" alt="Admin messages with owners and players" loading="lazy"></div>
+          <figcaption>Messages and support</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-a-profile.webp" width="460" height="947" alt="What an admin can manage across SportBase" loading="lazy"></div>
+          <figcaption>What an admin manages</figcaption>
+        </figure>
+      </div>
+
+    <p class="screen-note">Real screens &middot; swipe for more &middot; faces, names and contact details blurred</p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in and use it</a>
+      <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up">Create an account</a>
     </div>
 
     <div class="gate">
       <p class="eyebrow">Getting in</p>
-      <div class="gate-grid">
-        <div class="gate-shots">
-          <img src="shot-g-signin.webp" width="560" height="1153" loading="lazy" alt="The SportBase sign-in screen">
-          <img class="wide" src="shot-g-captcha.webp" width="640" height="189" loading="lazy" alt="The human check shown when an account is created">
-        </div>
-        <div class="gate-list">
-          <div><b>Email and a password, or Google, Apple or Facebook.</b> One account opens the app and the website, with the same bookings in both.</div>
-          <div><b>A human check before an account is made.</b> Signing up clears a captcha, so a script cannot open a thousand accounts and sit on the free hours.</div>
-          <div><b>Nobody reads your password.</b> Not a venue, not us. A venue sees only what it needs to serve the booking you made.</div>
-        </div>
+      <div class="gallery" aria-label="Signing in">
+        <figure>
+          <div class="frame"><img src="shot-g-signin.webp" width="460" height="947" alt="The SportBase sign-in screen" loading="lazy"></div>
+          <figcaption>Sign in</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-g-signup.webp" width="460" height="947" alt="The SportBase sign-up screen" loading="lazy"></div>
+          <figcaption>Create an account</figcaption>
+        </figure>
+        <figure>
+          <div class="frame"><img src="shot-g-captcha.webp" width="460" height="947" alt="The captcha shown before an account is created" loading="lazy"></div>
+          <figcaption>The human check</figcaption>
+        </figure>
+      </div>
+      <div class="gate-list">
+        <div><b>Email and a password, or Google, Apple or Facebook.</b> One account opens the app and the website, with the same bookings in both.</div>
+        <div><b>A human check before an account is made.</b> Signing up clears a captcha, so a script cannot open a thousand accounts and sit on the free hours.</div>
+        <div><b>Nobody reads your password.</b> Not a venue, not us. A venue sees only what it needs to serve the booking you made.</div>
       </div>
     </div>
 
@@ -1456,7 +1488,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:57 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 06:08 UTC</span></span>
   </div>
 </footer>
 
