@@ -295,6 +295,38 @@
     .filters { flex-direction: column; }
     .filters input, .filters select { width: 100%; min-width: 0; }
   }
+
+  /* --- the account menu -------------------------------------------------
+     Sign out is an account action, and account actions live behind the
+     avatar at the top right. A full-width button in the page was shouting
+     a thing people expect to find quietly in a menu. */
+  .who { position: relative; }
+  .avatar-btn {
+    width: 34px; height: 34px; border-radius: 50%; padding: 0; overflow: hidden;
+    border: 1px solid var(--line); background: var(--accent-soft); color: var(--accent);
+    font-family: Archivo, sans-serif; font-weight: 900; font-size: 14px;
+    cursor: pointer; display: grid; place-items: center; flex: 0 0 auto;
+  }
+  .avatar-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avatar-btn[aria-expanded="true"] { border-color: var(--accent); }
+  .menu {
+    position: absolute; top: calc(100% + 10px); right: 0; z-index: 30;
+    min-width: 232px; max-width: min(300px, calc(100vw - 32px));
+    border: 1px solid var(--line); border-radius: 14px; background: var(--raised);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3); padding: 6px;
+  }
+  .menu-head { padding: 10px 12px 12px; border-bottom: 1px solid var(--line); }
+  .menu-head b { display: block; font-family: Archivo, sans-serif; font-size: 15px; }
+  .menu-head small { display: block; margin-top: 2px; color: var(--muted); font-size: 12.5px; word-break: break-word; }
+  .menu-head .chip { margin-top: 8px; display: inline-block; }
+  .menu button {
+    display: block; width: 100%; text-align: left; border: 0; background: none;
+    border-radius: 10px; padding: 11px 12px; font: inherit; font-size: 14.5px;
+    color: var(--ink); cursor: pointer;
+  }
+  .menu button:hover { background: var(--ground); }
+  .menu .sep { margin: 6px 0; border-top: 1px solid var(--line); }
+  .menu .danger { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -302,11 +334,22 @@
   <div class="wrap">
     <a class="wordmark" href="./index.html"><img src="" id="brand-img" alt="" width="24" height="24">SportBase</a>
     <div class="who">
-      <span class="chip" id="role-chip" hidden></span>
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
       <button class="btn small" type="button" id="signin-btn" hidden>Sign in</button>
+      <button class="avatar-btn" type="button" id="account-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Your account" hidden>?</button>
+      <div class="menu" id="account-menu" role="menu" hidden>
+        <div class="menu-head">
+          <b id="menu-name">&mdash;</b>
+          <small id="menu-email"></small>
+          <span class="chip" id="menu-role"></span>
+        </div>
+        <button type="button" role="menuitem" id="menu-account">Your account</button>
+        <button type="button" role="menuitem" id="menu-venue">List your venue</button>
+        <div class="sep"></div>
+        <button type="button" role="menuitem" class="danger" id="menu-signout">Sign out</button>
+      </div>
     </div>
   </div>
 </header>
@@ -379,7 +422,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:01 UTC</p>
+    <p class="note build">build 2026-09-16 04:11 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -474,6 +517,7 @@
       <h1>Your account</h1>
       <span class="chip" id="me-role"></span>
     </div>
+    <p class="note">Signing out is in the menu under your picture, top right.</p>
 
     <div class="card" style="margin-top:16px">
       <div class="me">
@@ -483,10 +527,6 @@
           <div class="me-sub" id="me-email"></div>
           <div class="me-sub" id="me-since"></div>
         </div>
-      </div>
-      <div class="me-actions">
-        <button class="btn" type="button" id="me-venue">List your venue</button>
-        <button class="btn" type="button" id="me-signout">Sign out</button>
       </div>
     </div>
 
@@ -862,7 +902,8 @@ function show(view) {
      does nothing. It appears when there is somewhere else to go. */
   $("navbar").hidden = !(inApp && signedIn);
   $("signin-btn").hidden = !(inApp && !signedIn);
-  $("role-chip").hidden = !(inApp && signedIn);
+  $("account-btn").hidden = !(inApp && signedIn);
+  if (!signedIn) closeAccountMenu();
   /* Browsing needs no account; the rest does. */
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
@@ -1009,7 +1050,7 @@ async function loadProfile() {
   const { data } = await sb.rpc("my_profile");
   state.profile = (data && data[0]) || null;
   const role = (state.profile && state.profile.role) || "player";
-  $("role-chip").textContent = (state.profile && state.profile.name ? state.profile.name + " · " : "") + role;
+  renderAccountButton();
   document.querySelector('[data-nav="owner"]').hidden = !(role === "owner" || role === "admin");
   document.querySelector('[data-nav="admin"]').hidden = role !== "admin";
   renderMe();
@@ -2028,17 +2069,52 @@ function renderMe() {
   } else {
     av.textContent = (name.trim()[0] || "?").toUpperCase();
   }
-  const role = p.role || "player";
-  $("me-venue").hidden = !(role === "player");
+  renderAccountButton();
   renderFavourites();
 }
 
-$("me-signout").addEventListener("click", () => signOut());
-$("me-venue").addEventListener("click", () => {
+/* The avatar, and what sits behind it. */
+function renderAccountButton() {
+  const p = state.profile || {};
+  const name = p.name || (state.session && state.session.user.email) || "Your account";
+  const btn = $("account-btn");
+  if (p.avatar_url) btn.innerHTML = '<img src="' + escapeHtml(p.avatar_url) + '" alt="">';
+  else btn.textContent = (String(name).trim()[0] || "?").toUpperCase();
+  btn.setAttribute("aria-label", name + ", your account");
+  $("menu-name").textContent = name;
+  $("menu-email").textContent = p.email || (state.session && state.session.user.email) || "";
+  $("menu-role").textContent = p.role || "player";
+  $("menu-venue").hidden = (p.role || "player") !== "player";
+}
+
+function closeAccountMenu() {
+  $("account-menu").hidden = true;
+  $("account-btn").setAttribute("aria-expanded", "false");
+}
+function toggleAccountMenu() {
+  const open = $("account-menu").hidden;
+  $("account-menu").hidden = !open;
+  $("account-btn").setAttribute("aria-expanded", open ? "true" : "false");
+}
+$("account-btn").addEventListener("click", (e) => { e.stopPropagation(); toggleAccountMenu(); });
+document.addEventListener("click", (e) => {
+  if ($("account-menu").hidden) return;
+  if (!$("account-menu").contains(e.target)) closeAccountMenu();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAccountMenu(); });
+
+$("menu-account").addEventListener("click", () => {
+  closeAccountMenu();
+  navTrail = [];
+  show("me");
+  renderMe();
+});
+$("menu-venue").addEventListener("click", () => {
+  closeAccountMenu();
   if (!state.session) { wantsToApply = true; askForAccountFirst(); return; }
   openApply();
 });
-
+$("menu-signout").addEventListener("click", () => { closeAccountMenu(); signOut(); });
 /* Opening the home view also has to fetch what that view shows. */
 function openHome() {
   const home = homeView();
