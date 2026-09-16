@@ -300,7 +300,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
       </button>
       <button class="btn small" type="button" id="signin-btn" hidden>Sign in</button>
-      <button class="btn small" type="button" id="signout-btn" hidden>Sign out</button>
     </div>
   </div>
 </header>
@@ -373,7 +372,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 03:26 UTC</p>
+    <p class="note build">build 2026-09-16 03:54 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -479,7 +478,6 @@
         </div>
       </div>
       <div class="me-actions">
-        <button class="btn" type="button" id="me-theme">Switch theme</button>
         <button class="btn" type="button" id="me-venue">List your venue</button>
         <button class="btn" type="button" id="me-signout">Sign out</button>
       </div>
@@ -856,7 +854,6 @@ function show(view) {
   /* Signed out there is one tab, and a bar with one tab in it is a bar that
      does nothing. It appears when there is somewhere else to go. */
   $("navbar").hidden = !(inApp && signedIn);
-  $("signout-btn").hidden = !(inApp && signedIn);
   $("signin-btn").hidden = !(inApp && !signedIn);
   $("role-chip").hidden = !(inApp && signedIn);
   /* Browsing needs no account; the rest does. */
@@ -988,9 +985,17 @@ document.querySelectorAll("[data-oauth]").forEach((btn) => {
   });
 });
 
-$("signout-btn").addEventListener("click", async () => {
-  await sb.auth.signOut();
-});
+/* Signing out lives in one place now - the account page - so it is a
+   function rather than a button that other buttons have to poke. */
+async function signOut() {
+  navTrail = [];
+  state.favs = {};
+  state.profile = null;
+  await withTimeout(sb.auth.signOut(), 4000, null);
+  state.session = null;
+  show("browse");
+  renderVenues();
+}
 
 /* --- boot ---------------------------------------------------------- */
 async function loadProfile() {
@@ -2019,8 +2024,7 @@ function renderMe() {
   renderFavourites();
 }
 
-$("me-theme").addEventListener("click", () => $("theme-btn").click());
-$("me-signout").addEventListener("click", () => $("signout-btn").click());
+$("me-signout").addEventListener("click", () => signOut());
 $("me-venue").addEventListener("click", () => {
   if (!state.session) { wantsToApply = true; askForAccountFirst(); return; }
   openApply();
