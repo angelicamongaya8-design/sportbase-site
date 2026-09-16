@@ -64,7 +64,9 @@
 
   /* header */
   .masthead { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--ground) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-  .masthead .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  /* Logo on the left, the two controls on the right. One row: with the
+     account behind a picture there is nothing left that needs a second. */
+  .masthead .wrap { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
   /* The name gives way before the controls do; on a narrow phone the two
      rows separate instead of printing on top of each other. */
   .wordmark { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }
@@ -115,7 +117,11 @@
      stacked. They used to be positioned separately, with the basket guessing
      the bar was 58px tall - which it is not once a phone adds its home
      indicator, so the basket floated in the middle of the board. */
-  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  /* iPhone counts "the bottom" as the bottom of the layout viewport, which
+     sits behind Safari's own bar - so a bar pinned there floats up the page
+     instead of resting on the edge. The script below measures the visual
+     viewport and corrects it; this is the starting point. */
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; padding-bottom: env(safe-area-inset-bottom, 0px); will-change: bottom; }
   .navbar { background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
   .navbar .wrap { display: flex; gap: 6px; justify-content: space-between; padding-block: 8px; }
   .navbtn { flex: 1 1 0; min-width: 0; border: 0; background: none; padding: 8px 4px; border-radius: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
@@ -422,7 +428,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:11 UTC</p>
+    <p class="note build">build 2026-09-16 04:20 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -891,8 +897,48 @@ function goBack(fallback) {
   else if (target === "browse") renderVenues();
 }
 
+/* Where you were, kept for the length of this tab. A refresh should put you
+   back on the page you were reading, not at the front door. */
+const WHERE = "sb-where";
+function rememberWhere(view) {
+  try {
+    sessionStorage.setItem(WHERE, JSON.stringify({
+      v: view,
+      venue: state.venue ? state.venue.id : null,
+      booking: state.booking ? state.booking.id : null,
+      sport: $("sport-filter") ? $("sport-filter").value : "",
+    }));
+  } catch (e) {}
+}
+function readWhere() {
+  try { return JSON.parse(sessionStorage.getItem(WHERE) || "null"); } catch (e) { return null; }
+}
+
+async function restoreWhere(saved) {
+  const w = saved || readWhere();
+  if (!w || !w.v) return false;
+  /* A form is not a place to be returned to. */
+  if (w.v === "auth" || w.v === "apply") return false;
+  const needsAccount = ["bookings", "booking", "owner", "admin", "me"].indexOf(w.v) > -1;
+  if (needsAccount && !state.session) return false;
+
+  if (w.sport && $("sport-filter")) {
+    const opt = Array.from($("sport-filter").options).find((o) => o.value === w.sport);
+    if (opt) { $("sport-filter").value = w.sport; syncSportNote(); renderVenues(); }
+  }
+  if (w.v === "venue" && w.venue) { await openVenue(w.venue); return true; }
+  if (w.v === "booking" && w.booking) { await openBooking(w.booking); return true; }
+  if (w.v === "bookings") { show("bookings"); loadBookings(); return true; }
+  if (w.v === "owner") { show("owner"); loadOwner(); return true; }
+  if (w.v === "admin") { show("admin"); loadAdmin(); return true; }
+  if (w.v === "me") { show("me"); renderMe(); return true; }
+  if (w.v === "browse") { show("browse"); return true; }
+  return false;
+}
+
 function show(view) {
   const from = currentView();
+  rememberWhere(view);
   if (!goingBack && from && from !== view) navTrail.push(from);
   if (navTrail.length > 12) navTrail.shift();
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
@@ -1036,6 +1082,7 @@ document.querySelectorAll("[data-oauth]").forEach((btn) => {
 /* Signing out lives in one place now - the account page - so it is a
    function rather than a button that other buttons have to poke. */
 async function signOut() {
+  try { sessionStorage.removeItem(WHERE); } catch (e) {}
   navTrail = [];
   state.favs = {};
   state.profile = null;
@@ -1081,26 +1128,31 @@ sb.auth.onAuthStateChange(async (_event, session) => {
 });
 
 (async function boot() {
+  /* Read where we were before anything on this page writes over it. */
+  const saved = readWhere();
   /* The courts are public, so they are fetched first and never wait on the
      session. Whoever you turn out to be, the list is already there. */
   show("browse");
-  loadVenues();
+  const venuesReady = loadVenues();
   state.session = await sessionNow();
-  /* The courts are public, so browsing is the front door. But a person who
-     pressed "Sign in" or "Create account" asked for a form, and should get
-     the form. */
+
+  /* A person who pressed "Sign in" or "Create account" asked for a form and
+     should get the form; everyone else should be put back where they were,
+     which needs the venues in hand first. */
   const door = new URLSearchParams(window.location.search).get("auth");
   if (!state.session && (door === "in" || door === "up")) {
     setAuthMode(door);
     show("auth");
+    return;
   }
-  if (state.session) {
-    await loadProfile();
-    if (wantsToApply) openApply();
-    else openHome();
-  } else if (wantsToApply) {
-    askForAccountFirst();
+  if (state.session) await loadProfile();
+  if (wantsToApply) {
+    if (state.session) openApply(); else askForAccountFirst();
+    return;
   }
+  await venuesReady;
+  if (await restoreWhere(saved)) return;
+  if (state.session) openHome();
 })();
 
 /* The same service worker as the landing page, so an install started from
@@ -1743,14 +1795,30 @@ function basketLabel() {
 }
 
 /* The page must end where the dock begins, and the dock changes height when
-   the basket appears, so the padding is measured rather than guessed. */
+   the basket appears, so the padding is measured rather than guessed.
+
+   The dock's own position is measured too. On a phone the browser's bar
+   overlays the page: window.innerHeight counts the space behind it, so
+   bottom: 0 lands underneath Safari and the dock appears to float in the
+   middle of the board. visualViewport reports what is actually on screen. */
 function syncDock() {
   const dock = document.getElementById("dock");
   if (!dock) return;
+  const vv = window.visualViewport;
+  if (vv) {
+    const hidden = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    dock.style.bottom = hidden + "px";
+  }
   const h = dock.getBoundingClientRect().height;
   document.body.style.paddingBottom = (h ? Math.round(h) + 18 : 24) + "px";
 }
 window.addEventListener("resize", syncDock);
+window.addEventListener("orientationchange", syncDock);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", syncDock);
+  window.visualViewport.addEventListener("scroll", syncDock);
+}
+window.addEventListener("scroll", syncDock, { passive: true });
 
 /* Contiguous hours on one court become one booking, exactly as the phone
    app groups them: one row per run of hours, all sharing a group id. */
