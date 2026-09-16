@@ -123,9 +123,18 @@
     position: sticky;
     top: env(safe-area-inset-top, 0px);
     z-index: 10;
-    background: color-mix(in srgb, var(--ground) 88%, transparent);
-    backdrop-filter: blur(10px);
+    /* Solid first. The translucent version is lovely where the blur behind
+       it works and unreadable where it does not - the page's own text shows
+       straight through the bar at 88% with nothing blurring it. */
+    background: var(--ground);
     border-bottom: 1px solid var(--line);
+  }
+  @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+    .masthead {
+      background: color-mix(in srgb, var(--ground) 88%, transparent);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
   }
   .masthead .wrap {
     display: flex;
@@ -566,16 +575,31 @@
     gap: 16px; overflow-x: auto; scroll-snap-type: x proximity;
     padding-bottom: 10px; scrollbar-width: thin;
   }
+  /* On a phone the rail has to come to rest on a whole screen. Left to drift,
+     it stops halfway through one and all you can read is the tail of a
+     caption - "h a reference" under no phone at all. */
+  @media (max-width: 560px) { .gallery { scroll-snap-type: x mandatory; } }
   .gallery::-webkit-scrollbar { height: 5px; }
   .gallery::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
-  .gallery figure { margin: 0; scroll-snap-align: start; }
+  /* min-width:0 is the whole reason the captions used to sit off their
+     phones. A grid item will not shrink below its own min-content width by
+     default, so a caption longer than the 206px track pushed its figure wider
+     than the column, and every caption after it drifted right of the phone it
+     belonged to. Anyone reading at a larger text size saw it worst. */
+  .gallery figure { margin: 0; scroll-snap-align: start; min-width: 0; }
   .gallery .frame {
     border: 7px solid var(--bezel); border-radius: 30px; overflow: hidden;
     background: #0B0B0B; line-height: 0;
     box-shadow: inset 0 0 0 1px var(--line), 0 0 0 1px var(--line), 0 14px 30px rgba(0, 0, 0, 0.26);
   }
   .gallery img { display: block; width: 100%; height: auto; border-radius: 23px; }
-  .gallery figcaption { margin-top: 11px; font-size: 13.5px; color: var(--ink); line-height: 1.4; }
+  /* Indented by the width of the bezel. Flush with the frame, the caption
+     lines up with the outer edge of a black border on a dark page - which is
+     not the edge anyone sees. The eye reads the lit screen as the phone, and
+     that starts 7px further in. */
+  .gallery figcaption { margin-top: 11px; font-size: 13.5px; color: var(--ink);
+    line-height: 1.4; max-width: 100%; overflow-wrap: break-word;
+    padding-inline: 7px; }
 
   /* The two screens that answer "how do I get in" sit beside the answer. */
   .gate-list { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
@@ -1542,7 +1566,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 09:57 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 10:17 UTC</span></span>
   </div>
 </footer>
 
