@@ -597,6 +597,22 @@
   .pill.go { color: var(--accent); border-color: var(--accent); }
   .tabbar { margin-top: 12px; display: flex; justify-content: space-between; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
   .tabbar .on { color: var(--accent); }
+  /* Chips inside the phone: the app's own filter row, at phone scale. */
+  .screen .chiprow { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 11px; }
+  .screen .chiprow span {
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px;
+    font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .screen .chiprow span.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+  /* How you get in: the one thing a person wants to know before signing up. */
+  .gate { margin-top: 38px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 20px 20px 22px; }
+  .gate-list { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .gate-list div { font-size: 15px; color: var(--muted); line-height: 1.55; }
+  .gate-list b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+  @media (max-width: 720px) { .gate-list { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+
   .sec-sub { margin-top: 46px; max-width: 640px; }
   .sec-sub h3 { font-size: 22px; font-weight: 700; }
   .sec-sub p { margin-top: 10px; color: var(--muted); }
@@ -1257,36 +1273,40 @@
         <div class="stage">
         <div class="screen" data-panel="player">
           <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
-          <div class="screen-bar"><span id="p-title">Near you &middot; Saturday</span><span>19:00</span></div>
+          <div class="screen-bar"><span>Calamba City</span><span>Find &middot; Book &middot; Play</span></div>
           <div class="screen-body">
             <div data-screen="player-home">
-              <div class="row"><span><b>Ateneo Courts</b><small>Badminton &middot; 1.2 km</small></span><span class="pill go">&#8369;350/hr</span></div>
-              <div class="row"><span><b>Vertex Padel</b><small>Padel &middot; 2.8 km</small></span><span class="pill go">&#8369;900/hr</span></div>
-              <div class="row"><span><b>Gomez Gym</b><small>Basketball &middot; 3.1 km</small></span><span class="pill">full tonight</span></div>
+              <div class="chiprow"><span class="on">Basketball</span><span>Padel</span><span>Tennis</span><span>Badminton</span></div>
+              <div class="row"><span><b>Ateneo Courts</b><small>Badminton &middot; 1.2 km &middot; &#9733; 4.6</small></span><span class="pill go">&#8369;350/hr</span></div>
+              <div class="row"><span><b>Vertex Padel</b><small>Padel &middot; 2.8 km &middot; &#9733; 4.4</small></span><span class="pill go">&#8369;900/hr</span></div>
+              <div class="row"><span><b>Gomez Gym</b><small>Basketball &middot; 3.1 km &middot; new</small></span><span class="pill">full tonight</span></div>
             </div>
-            <div data-screen="player-map" hidden>
-              <div class="row"><span><b>Within 2 km</b><small>4 venues, 11 courts free tonight</small></span><span class="pill go">map</span></div>
-              <div class="row"><span><b>Ateneo Courts</b><small>1.2 km &middot; open until 22:00</small></span><span class="pill">walk 14 min</span></div>
-              <div class="row"><span><b>Vertex Padel</b><small>2.8 km &middot; open until 23:00</small></span><span class="pill">drive 9 min</span></div>
+            <div data-screen="player-venues" hidden>
+              <div class="chiprow"><span class="on">All</span><span>Favourites</span><span>Map view</span></div>
+              <div class="row"><span><b>Ateneo Courts</b><small>Covered courts with lights, open until 22:00</small></span><span class="pill go">4 free</span></div>
+              <div class="row"><span><b>Vertex Padel</b><small>Two glass courts, rackets for rent</small></span><span class="pill go">2 free</span></div>
+              <div class="row"><span><b>Riverside Courts</b><small>Tennis and badminton by the river</small></span><span class="pill">closed today</span></div>
             </div>
             <div data-screen="player-bookings" hidden>
-              <div class="row"><span><b>Sat 20 Sept, 19:00</b><small>Ateneo Courts &middot; Court C1</small></span><span class="pill go">QR ready</span></div>
-              <div class="row"><span><b>Wed 17 Sept, 07:00</b><small>Vertex Padel &middot; Court B</small></span><span class="pill">played</span></div>
-              <div class="row"><span><b>Deposit returned</b><small>2 rackets handed back</small></span><span class="pill">&#8369;400</span></div>
+              <div class="chiprow"><span class="on">All</span><span>To pay</span><span>Confirmed</span><span>Played</span></div>
+              <div class="row"><span><b>Sat 20 Sept &middot; 19:00</b><small>Ateneo Courts &middot; Court C1 &middot; &#8369;700</small></span><span class="pill go">QR ready</span></div>
+              <div class="row"><span><b>Wed 24 Sept &middot; 07:00</b><small>Vertex Padel &middot; Court B &middot; &#8369;900</small></span><span class="pill">to pay</span></div>
+              <div class="row"><span><b>Deposit returned</b><small>2 rackets handed back</small></span><span class="pill go">&#8369;400</span></div>
             </div>
             <div data-screen="player-chats" hidden>
+              <div class="chiprow"><span>Support</span><span class="on">Messages</span></div>
               <div class="row"><span><b>Ateneo Courts</b><small>&ldquo;Gate is open from 6, kuya.&rdquo;</small></span><span class="pill go">2m</span></div>
-              <div class="row"><span><b>Support &middot; SB-2291</b><small>Refund question &middot; answered</small></span><span class="pill">closed</span></div>
+              <div class="row"><span><b>SportBase Support</b><small>Booking problem &middot; a person answered</small></span><span class="pill">resolved</span></div>
             </div>
             <div data-screen="player-profile" hidden>
-              <div class="row"><span><b>Maria Santos</b><small>Player &middot; joined August</small></span><span class="pill">free plan</span></div>
-              <div class="row"><span><b>App lock</b><small>PIN and Face ID</small></span><span class="pill go">on</span></div>
-              <div class="row"><span><b>Notifications</b><small>Booking reminders only</small></span><span class="pill">3 of 8</span></div>
+              <div class="row"><span><b>Playing as</b><small>Player &middot; tap to switch to venue owner</small></span><span class="pill go">player</span></div>
+              <div class="row"><span><b>App lock</b><small>PIN, plus Face ID where the phone has it</small></span><span class="pill go">on</span></div>
+              <div class="row"><span><b>Notifications</b><small>Booking reminders and replies</small></span><span class="pill">3 of 8</span></div>
             </div>
           </div>
           <div class="tabbar" role="tablist">
             <button type="button" role="tab" aria-current="page" data-screen-tab="player-home">Home</button>
-            <button type="button" role="tab" data-screen-tab="player-map">Map</button>
+            <button type="button" role="tab" data-screen-tab="player-venues">Venues</button>
             <button type="button" role="tab" data-screen-tab="player-bookings">Bookings</button>
             <button type="button" role="tab" data-screen-tab="player-chats">Chats</button>
             <button type="button" role="tab" data-screen-tab="player-profile">Profile</button>
@@ -1295,82 +1315,93 @@
 
         <div class="screen" data-panel="owner" hidden>
           <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
-          <div class="screen-bar"><span>Your venue &middot; today</span><span>6 bookings</span></div>
+          <div class="screen-bar"><span>Owner mode</span><span>List &middot; Fill &middot; Earn</span></div>
           <div class="screen-body">
-            <div data-screen="owner-today">
+            <div data-screen="owner-home">
               <div class="tiles">
+                <div class="tile"><small>Bookings</small><b>6</b></div>
                 <div class="tile"><small>Expected</small><b>&#8369;4,320</b></div>
-                <div class="tile"><small>Paid</small><b>&#8369;2,880</b></div>
-                <div class="tile"><small>Our share</small><b>&#8369;302</b></div>
+                <div class="tile"><small>Courts</small><b>3</b></div>
               </div>
               <div class="row"><span><b>19:00 &middot; Court C1</b><small>Miguel R. &middot; 2 hours</small></span><span class="pill go">checked in</span></div>
-              <div class="row"><span><b>20:00 &middot; Court C2</b><small>Dana L. &middot; 1 hour</small></span><span class="pill">arriving</span></div>
+              <div class="row"><span><b>20:00 &middot; Court C2</b><small>Dana L. &middot; 1 hour</small></span><span class="pill">unpaid</span></div>
             </div>
-            <div data-screen="owner-courts" hidden>
-              <div class="row"><span><b>Court C1</b><small>Basketball &middot; &#8369;480/hr</small></span><span class="pill go">open</span></div>
-              <div class="row"><span><b>Court C3</b><small>Peak 17:00&ndash;22:00 &middot; &#8369;900/hr</small></span><span class="pill">peak set</span></div>
+            <div data-screen="owner-venues" hidden>
+              <div class="chiprow"><span class="on">Add venue</span><span>Scan check-in</span></div>
+              <div class="row"><span><b>Ateneo Courts</b><small>3 courts &middot; open until 22:00</small></span><span class="pill go">approved</span></div>
+              <div class="row"><span><b>Court C3</b><small>Peak 17:00&ndash;22:00 &middot; &#8369;900/hr</small></span><span class="pill go">peak set</span></div>
               <div class="row"><span><b>Court C4</b><small>Floor repair until Friday</small></span><span class="pill">off the board</span></div>
             </div>
-            <div data-screen="owner-earnings" hidden>
-              <div class="tiles">
-                <div class="tile"><small>This week</small><b>&#8369;28,400</b></div>
-                <div class="tile"><small>Paid out</small><b>&#8369;26,412</b></div>
-                <div class="tile"><small>Commission</small><b>7%</b></div>
-              </div>
-              <div class="row"><span><b>Sat 20 Sept</b><small>11 bookings &middot; 2 cancelled</small></span><span class="pill go">&#8369;5,760</span></div>
-              <div class="row"><span><b>Deposits held</b><small>4 rackets out tonight</small></span><span class="pill">&#8369;800</span></div>
+            <div data-screen="owner-chats" hidden>
+              <div class="chiprow"><span>Support</span><span class="on">Messages</span></div>
+              <div class="row"><span><b>Maria S.</b><small>&ldquo;Is the gate open at 6?&rdquo;</small></span><span class="pill go">4m</span></div>
+              <div class="row"><span><b>SportBase Support</b><small>Payout question &middot; answered</small></span><span class="pill">closed</span></div>
             </div>
-            <div data-screen="owner-gear" hidden>
-              <div class="row"><span><b>Badminton racket</b><small>&#8369;80/visit &middot; &#8369;200 deposit</small></span><span class="pill go">6 left</span></div>
-              <div class="row"><span><b>Basketball</b><small>&#8369;50/visit &middot; no deposit</small></span><span class="pill">10 left</span></div>
-              <div class="row"><span><b>Promotion</b><small>20% off weekday mornings</small></span><span class="pill go">running</span></div>
+            <div data-screen="owner-profile" hidden>
+              <div class="row"><span><b>Using SportBase as</b><small>Venue owner &middot; tap to switch to player</small></span><span class="pill go">owner</span></div>
+              <div class="row"><span><b>Earnings</b><small>Expected, paid, and our share per booking</small></span><span class="pill go">&#8369;28,400</span></div>
+              <div class="row"><span><b>Your plan</b><small>Commission on bookings we send you</small></span><span class="pill">7%</span></div>
             </div>
           </div>
           <div class="tabbar" role="tablist">
-            <button type="button" role="tab" aria-current="page" data-screen-tab="owner-today">Today</button>
-            <button type="button" role="tab" data-screen-tab="owner-courts">Courts</button>
-            <button type="button" role="tab" data-screen-tab="owner-earnings">Earnings</button>
-            <button type="button" role="tab" data-screen-tab="owner-gear">Gear</button>
+            <button type="button" role="tab" aria-current="page" data-screen-tab="owner-home">Home</button>
+            <button type="button" role="tab" data-screen-tab="owner-venues">Venues</button>
+            <button type="button" role="tab" data-screen-tab="owner-chats">Chats</button>
+            <button type="button" role="tab" data-screen-tab="owner-profile">Profile</button>
           </div>
         </div>
 
         <div class="screen" data-panel="admin" hidden>
           <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
-          <div class="screen-bar"><span>Queue</span><span>4 waiting</span></div>
+          <div class="screen-bar"><span>Admin</span><span>Check &middot; Approve &middot; Protect</span></div>
           <div class="screen-body">
-            <div data-screen="admin-approvals">
+            <div data-screen="admin-home">
+              <div class="row"><span><b>Waiting on you</b><small>Applications and venues land here</small></span><span class="pill go">2</span></div>
               <div class="tiles">
-                <div class="tile"><small>Pending</small><b>4</b></div>
-                <div class="tile"><small>Venues</small><b>38</b></div>
-                <div class="tile"><small>Players</small><b>1,204</b></div>
+                <div class="tile"><small>People</small><b>1,204</b></div>
+                <div class="tile"><small>Live venues</small><b>38</b></div>
+                <div class="tile"><small>Bookings</small><b>312</b></div>
               </div>
-              <div class="row"><span><b>Vertex Padel</b><small>New venue &middot; permit attached</small></span><span class="pill go">review</span></div>
-              <div class="row"><span><b>R. Santos</b><small>Owner application &middot; 2 venues</small></span><span class="pill go">review</span></div>
             </div>
-            <div data-screen="admin-support" hidden>
-              <div class="row"><span><b>SB-2291</b><small>Refund question &middot; 2h left</small></span><span class="pill go">open</span></div>
-              <div class="row"><span><b>SB-2288</b><small>Wrong court booked &middot; answered</small></span><span class="pill">waiting</span></div>
-              <div class="row"><span><b>SB-2280</b><small>Resolved by the venue</small></span><span class="pill">closed</span></div>
+            <div data-screen="admin-approvals" hidden>
+              <div class="chiprow"><span class="on">Owner applications</span><span>Venues</span></div>
+              <div class="row"><span><b>R. Santos</b><small>Owner application &middot; permit in</small></span><span class="pill go">review</span></div>
+              <div class="row"><span><b>Vertex Padel</b><small>New venue &middot; 2 courts</small></span><span class="pill go">review</span></div>
+              <div class="row"><span><b>Riverside Courts</b><small>Permit expires in 14 days</small></span><span class="pill">flagged</span></div>
             </div>
-            <div data-screen="admin-people" hidden>
-              <div class="row"><span><b>Owners</b><small>38 accounts &middot; 2 suspended</small></span><span class="pill">manage</span></div>
-              <div class="row"><span><b>Activity log</b><small>Price changed on Court C3</small></span><span class="pill go">14:02</span></div>
-              <div class="row"><span><b>Admins</b><small>2 accounts</small></span><span class="pill">manage</span></div>
+            <div data-screen="admin-chats" hidden>
+              <div class="chiprow"><span class="on">Support</span><span>Messages</span></div>
+              <div class="row"><span><b>Payment problem</b><small>#FE8937 &middot; 2 hours left to answer</small></span><span class="pill go">open</span></div>
+              <div class="row"><span><b>Booking problem</b><small>#985D3F &middot; sorted with the venue</small></span><span class="pill">resolved</span></div>
+            </div>
+            <div data-screen="admin-profile" hidden>
+              <div class="row"><span><b>Signed in as</b><small>Admin &middot; every action is logged</small></span><span class="pill go">super admin</span></div>
+              <div class="row"><span><b>People and roles</b><small>Who can approve, who can reply</small></span><span class="pill">manage</span></div>
+              <div class="row"><span><b>Plans and promotions</b><small>What a venue pays, what a player sees</small></span><span class="pill">manage</span></div>
             </div>
           </div>
           <div class="tabbar" role="tablist">
-            <button type="button" role="tab" aria-current="page" data-screen-tab="admin-approvals">Approvals</button>
-            <button type="button" role="tab" data-screen-tab="admin-support">Support</button>
-            <button type="button" role="tab" data-screen-tab="admin-people">People</button>
+            <button type="button" role="tab" aria-current="page" data-screen-tab="admin-home">Home</button>
+            <button type="button" role="tab" data-screen-tab="admin-approvals">Approvals</button>
+            <button type="button" role="tab" data-screen-tab="admin-chats">Chats</button>
+            <button type="button" role="tab" data-screen-tab="admin-profile">Profile</button>
           </div>
         </div>
-
         </div>
         <p class="screen-note">Drawn screen &middot; the figures are made up</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in and use it</a>
           <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up">Create an account</a>
         </div>
+      </div>
+    </div>
+
+    <div class="gate">
+      <p class="eyebrow">Getting in</p>
+      <div class="gate-list">
+        <div><b>Email and a password, or Google, Apple or Facebook.</b> One account opens the app and the website, with the same bookings in both.</div>
+        <div><b>A human check before an account is made.</b> Signing up clears a captcha, so a script cannot open a thousand accounts and sit on the free hours.</div>
+        <div><b>Nobody reads your password.</b> Not a venue, not us. A venue sees only what it needs to serve the booking you made.</div>
       </div>
     </div>
 
@@ -1520,7 +1551,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:15 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:29 UTC</span></span>
   </div>
 </footer>
 
