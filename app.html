@@ -333,6 +333,17 @@
   .menu button:hover { background: var(--ground); }
   .menu .sep { margin: 6px 0; border-top: 1px solid var(--line); }
   .menu .danger { color: var(--accent); }
+
+  /* The account card had a person on the left and a field of nothing on the
+     right. The empty half now carries what the account has actually done. */
+  .me-card { display: flex; flex-wrap: wrap; gap: 20px 28px; align-items: center; justify-content: space-between; }
+  .me-stats { display: grid; grid-template-columns: repeat(3, minmax(84px, 1fr)); gap: 10px; flex: 1 1 320px; max-width: 420px; }
+  .me-stat { border: 1px solid var(--line); border-radius: 12px; background: var(--ground); padding: 11px 12px; }
+  .me-stat small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .me-stat b { display: block; margin-top: 3px; font-family: Archivo, sans-serif; font-size: 19px; font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px) {
+    .me-stats { flex-basis: 100%; max-width: none; }
+  }
 </style>
 </head>
 <body>
@@ -428,7 +439,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:20 UTC</p>
+    <p class="note build">build 2026-09-16 04:29 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -523,15 +534,20 @@
       <h1>Your account</h1>
       <span class="chip" id="me-role"></span>
     </div>
-    <p class="note">Signing out is in the menu under your picture, top right.</p>
-
     <div class="card" style="margin-top:16px">
-      <div class="me">
-        <div class="avatar" id="me-avatar">?</div>
-        <div style="min-width:0">
-          <div class="me-name" id="me-name">&mdash;</div>
-          <div class="me-sub" id="me-email"></div>
-          <div class="me-sub" id="me-since"></div>
+      <div class="me-card">
+        <div class="me">
+          <div class="avatar" id="me-avatar">?</div>
+          <div style="min-width:0">
+            <div class="me-name" id="me-name">&mdash;</div>
+            <div class="me-sub" id="me-email"></div>
+            <div class="me-sub" id="me-since"></div>
+          </div>
+        </div>
+        <div class="me-stats">
+          <div class="me-stat"><small>Bookings</small><b id="stat-bookings">&mdash;</b></div>
+          <div class="me-stat"><small>Hours booked</small><b id="stat-hours">&mdash;</b></div>
+          <div class="me-stat"><small>Saved venues</small><b id="stat-saved">&mdash;</b></div>
         </div>
       </div>
     </div>
@@ -2139,6 +2155,29 @@ function renderMe() {
   }
   renderAccountButton();
   renderFavourites();
+  loadMeStats();
+}
+
+/* What this account has actually done. One query, counted here. */
+async function loadMeStats() {
+  $("stat-saved").textContent = String(Object.keys(state.favs).length);
+  if (!state.session) return;
+  const { data } = await withTimeout(
+    sb.from("bookings")
+      .select("start_time, end_time, status")
+      .eq("player_id", state.session.user.id)
+      .is("deleted_at", null),
+    8000,
+    { data: null }
+  );
+  if (!data) return;
+  const live = data.filter((b) => b.status !== "cancelled");
+  const hours = live.reduce((sum, b) => {
+    const a = toMinutes(b.start_time), z = toMinutes(b.end_time);
+    return sum + (a != null && z != null && z > a ? (z - a) / 60 : 0);
+  }, 0);
+  $("stat-bookings").textContent = String(live.length);
+  $("stat-hours").textContent = hours ? String(Math.round(hours)) : "0";
 }
 
 /* The avatar, and what sits behind it. */
