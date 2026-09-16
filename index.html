@@ -597,11 +597,16 @@
      lines up with the outer edge of a black border on a dark page - which is
      not the edge anyone sees. The eye reads the lit screen as the phone, and
      that starts 7px further in. */
+  /* Centred under the phone it names. Padding the bezel's width on both
+     sides keeps the centre line on the screen rather than on the border. */
   .gallery figcaption { margin-top: 11px; font-size: 13.5px; color: var(--ink);
     line-height: 1.4; max-width: 100%; overflow-wrap: break-word;
-    padding-inline: 7px; }
+    padding-inline: 7px; text-align: center; }
 
   /* The two screens that answer "how do I get in" sit beside the answer. */
+  /* The eyebrow had nothing above it, so GETTING IN sat on the shoulders of
+     the two buttons and read as part of them. */
+  .gate { margin-top: 54px; padding-top: 34px; border-top: 1px solid var(--line); }
   .gate-list { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gate-list div { font-size: 15px; color: var(--muted); line-height: 1.55; }
   .gate-list b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
@@ -1566,7 +1571,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 10:17 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 10:34 UTC</span></span>
   </div>
 </footer>
 
