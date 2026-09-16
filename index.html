@@ -582,6 +582,13 @@
   .gate-list div { font-size: 15px; color: var(--muted); line-height: 1.55; }
   .gate-list b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
   @media (max-width: 760px) { .gate-list { grid-template-columns: minmax(0, 1fr); gap: 16px; } }
+  .mailshot { margin-top: 34px; max-width: 760px; }
+  .mailshot figure { margin: 0; }
+  .mailshot .shot { border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; background: #0B0B0B; line-height: 0; }
+  .mailshot img { display: block; width: 100%; height: auto; }
+  .mailshot figcaption { margin-top: 10px; font-size: 13px; color: var(--muted);
+    line-height: 1.6; }
   .sec-sub { margin-top: 46px; max-width: 640px; }
   .sec-sub h3 { font-size: 22px; font-weight: 700; }
   .sec-sub p { margin-top: 10px; color: var(--muted); }
@@ -1215,7 +1222,7 @@
       <div class="role-points">
         <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map. Open one and you get the photos, the amenities, every court with its price, the days it is closed, and what people who played there said.</p></div>
         <div><b>Book</b><p>Pick the hours, add gear if you need it, pay with GCash. The price is the venue&rsquo;s own.</p></div>
-        <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in.</p></div>
+        <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in. If you need to ask them something first, the venue is one message away &mdash; in the app or here on the website.</p></div>
       </div>
     </div>
 
@@ -1405,6 +1412,13 @@
         </ul>
       </div>
     </div>
+
+    <div class="mailshot">
+      <figure>
+        <div class="shot"><img src="shot-mail.webp" width="1302" height="442" alt="An email from SportBase headed Booking cancelled, saying the venue closed that day and nothing was charged" loading="lazy"></div>
+        <figcaption>When a booking changes you are told twice &mdash; a notification on the phone, and this in your inbox. A real one, with only the sender&rsquo;s address blurred.</figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -1520,7 +1534,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 08:26 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 08:34 UTC</span></span>
   </div>
 </footer>
 
