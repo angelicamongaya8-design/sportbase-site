@@ -288,6 +288,13 @@
   .inapp ul { margin-top: 9px; display: grid; gap: 7px; list-style: none; }
   .inapp li { font-size: 13.5px; color: var(--muted); padding-left: 15px; position: relative; }
   .inapp li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  /* On a phone the search box and the sport picker share a line and the
+     placeholder gets cut in half. They take a line each instead. */
+  @media (max-width: 430px) {
+    .filters { flex-direction: column; }
+    .filters input, .filters select { width: 100%; min-width: 0; }
+  }
 </style>
 </head>
 <body>
@@ -372,7 +379,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 03:54 UTC</p>
+    <p class="note build">build 2026-09-16 04:01 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -1413,7 +1420,9 @@ function renderVenueDetail(venue) {
   shots.forEach((u) => { if (seen.indexOf(u) === -1) seen.push(u); });
   $("venue-gallery").hidden = seen.length === 0;
   $("venue-gallery").innerHTML = seen.map((u) =>
-    '<img src="' + escapeHtml(u) + '" alt="" loading="lazy" onerror="this.remove()">').join("");
+    '<img src="' + escapeHtml(u) + '" alt="" loading="lazy" ' +
+    'onerror="this.remove(); if (!this.parentNode || !this.parentNode.children.length) ' +
+    'document.getElementById(\'venue-gallery\').hidden = true;">').join("");
 
   $("venue-desc").textContent = venue.description || "";
   $("venue-desc").hidden = !venue.description;
