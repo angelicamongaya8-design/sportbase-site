@@ -14,12 +14,26 @@ if (!window.supabase) {
   throw new Error("supabase-js did not load");
 }
 
+/* nothing waits for ever */
+function fetchWithTimeout(ms) {
+  return function (input, init) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    const caller = init && init.signal;
+    if (caller) caller.addEventListener("abort", () => ctrl.abort());
+    const opts = Object.assign({}, init, { signal: ctrl.signal });
+    return fetch(input, opts).finally(() => clearTimeout(timer));
+  };
+}
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
   },
+  /* a hung refresh holds the auth lock */
+  global: { fetch: fetchWithTimeout(25000) },
 });
 
 /* public client */
@@ -380,24 +394,32 @@ $("auth-form").addEventListener("submit", async (e) => {
 
   try {
     if (authMode === "up") {
-      const { error } = await sb.auth.signUp({
-        email, password,
-        options: {
-          data: { name },
-          captchaToken: token || undefined,
-          /* redirect back */
-          emailRedirectTo: window.location.origin + window.location.pathname,
-        },
-      });
-      if (error) throw error;
+      const res = await withTimeout(
+        sb.auth.signUp({
+          email, password,
+          options: {
+            data: { name },
+            captchaToken: token || undefined,
+            /* redirect back */
+            emailRedirectTo: window.location.origin + window.location.pathname,
+          },
+        }),
+        20000,
+        { stuck: true },
+      );
+      if (res && res.stuck) throw new Error("That took too long. Check your connection and try again.");
+      if (res.error) throw res.error;
       captchaReset();
       setAuthMode("in");
       say("<b>Account made.</b> Check your email for the confirmation link, then sign in here.", "ok");
     } else {
-      const { error } = await sb.auth.signInWithPassword({
-        email, password, options: { captchaToken: token || undefined },
-      });
-      if (error) throw error;
+      const res = await withTimeout(
+        sb.auth.signInWithPassword({ email, password, options: { captchaToken: token || undefined } }),
+        20000,
+        { stuck: true },
+      );
+      if (res && res.stuck) throw new Error("That took too long. Check your connection and try again.");
+      if (res.error) throw res.error;
       captchaReset();
     }
   } catch (err) {
