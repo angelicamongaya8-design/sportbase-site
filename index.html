@@ -51,6 +51,7 @@
     --taken: #DDE3DC;
     --taken-ink: #8C9A91;
     --peak: #FFDCBB;
+    --bezel: #26332E;
     --maxw: 1080px;
   }
 
@@ -66,6 +67,7 @@
       --taken: #1D2723;
       --taken-ink: #6C7C73;
       --peak: #4A2A11;
+      --bezel: #33443D;
     }
   }
 
@@ -80,6 +82,7 @@
     --taken: #1D2723;
     --taken-ink: #6C7C73;
     --peak: #4A2A11;
+    --bezel: #33443D;
   }
 
   body {
@@ -551,8 +554,48 @@
   .role-points { margin-top: 18px; display: flex; flex-direction: column; gap: 13px; }
   .role-points b { font-size: 15px; }
   .role-points p { margin-top: 2px; color: var(--muted); font-size: 14.5px; }
-  .screen { border: 1px solid var(--line); border-radius: 20px; background: var(--raised); padding: 14px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16); }
-  .screen-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 2px 4px 12px; }
+  /* --- the app, in a phone --------------------------------------------
+     These are the real screens, drawn rather than photographed, because a
+     screenshot of a half-built app ages badly. The frame is a phone since
+     that is where most people will open it; the glow underneath is the
+     court light, which is ours and not any handset maker's. */
+  .stage { position: relative; display: flex; justify-content: center; padding: 30px 0 18px; }
+  .stage::before {
+    content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+    width: min(380px, 100%); height: 210px; border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 100%, var(--accent-soft) 0%, transparent 72%);
+    pointer-events: none;
+  }
+  .stage::after {
+    content: ""; position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    width: min(300px, 82%); height: 1px; background: var(--line);
+  }
+  .screen {
+    position: relative; z-index: 1; box-sizing: border-box;
+    width: min(332px, 100%);
+    border: 10px solid var(--bezel); border-radius: 40px;
+    background: var(--raised);
+    padding: 8px 12px 24px;
+    box-shadow: inset 0 0 0 1px var(--line), 0 0 0 1px var(--line), 0 26px 56px rgba(0, 0, 0, 0.3);
+  }
+  /* The bar a thumb sweeps up from. */
+  .screen::after {
+    content: ""; position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%);
+    width: 104px; height: 4px; border-radius: 3px; background: color-mix(in srgb, var(--muted) 55%, transparent);
+  }
+  .phone-top { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; color: var(--muted); }
+  .phone-ind { display: inline-flex; align-items: flex-end; gap: 2px; }
+  .phone-ind i { display: block; width: 2px; background: var(--muted); border-radius: 1px; }
+  .phone-ind i:nth-child(1) { height: 4px; }
+  .phone-ind i:nth-child(2) { height: 6px; }
+  .phone-ind i:nth-child(3) { height: 8px; }
+  .phone-ind b { display: block; margin-left: 5px; width: 15px; height: 8px; border: 1px solid var(--muted); border-radius: 2px; position: relative; }
+  .phone-ind b::before { content: ""; position: absolute; inset: 1.5px; right: 5px; background: var(--muted); border-radius: 1px; }
+  .screen .row { padding: 10px 11px; }
+  .screen .row b { font-size: 14.5px; }
+  .screen .row small { font-size: 12.5px; }
+  .screen .tile b { font-size: 16px; }
+  .screen-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--line); padding: 0 2px 10px; margin-bottom: 10px; }
   .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .tile { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--ground); }
   .tile small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
@@ -564,6 +607,17 @@
   .pill.go { color: var(--accent); border-color: var(--accent); }
   .tabbar { margin-top: 12px; display: flex; justify-content: space-between; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
   .tabbar .on { color: var(--accent); }
+  .sec-sub { margin-top: 46px; max-width: 640px; }
+  .sec-sub h3 { font-size: 22px; font-weight: 700; }
+  .sec-sub p { margin-top: 10px; color: var(--muted); }
+  .split { margin-top: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+  .split-col { border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 18px 18px 20px; }
+  .split-col.lead { border-color: var(--accent); background: var(--accent-soft); }
+  .split-col ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 11px; }
+  .split-col li { position: relative; padding-left: 20px; font-size: 15px; color: var(--muted); line-height: 1.55; }
+  .split-col li::before { content: ""; position: absolute; left: 0; top: 11px; width: 9px; height: 2px; border-radius: 1px; background: var(--accent); }
+  .split-col li b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 720px) { .split { grid-template-columns: minmax(0, 1fr); } }
   .screen-note { margin-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 
   /* --- the sign-in panel --------------------------------------------- */
@@ -1161,9 +1215,9 @@
       <p class="eyebrow">Signed in</p>
       <h2>Three people, three apps.</h2>
       <p>
-        One account, and what opens depends on who you are. Sign in on the
-        web or on the phone: same account, same bookings, whichever
-        one is nearer to hand.
+        One account, and what opens depends on who you are. The website and
+        the app carry the same bookings, the same messages and the same
+        profile, so sign in on whichever one is nearer to hand.
       </p>
     </div>
 
@@ -1207,7 +1261,9 @@
       </div>
 
       <div>
+        <div class="stage">
         <div class="screen" data-panel="player">
+          <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
           <div class="screen-bar"><span id="p-title">Near you &middot; Saturday</span><span>19:00</span></div>
           <div class="screen-body">
             <div data-screen="player-home">
@@ -1245,6 +1301,7 @@
         </div>
 
         <div class="screen" data-panel="owner" hidden>
+          <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
           <div class="screen-bar"><span>Your venue &middot; today</span><span>6 bookings</span></div>
           <div class="screen-body">
             <div data-screen="owner-today">
@@ -1285,6 +1342,7 @@
         </div>
 
         <div class="screen" data-panel="admin" hidden>
+          <div class="phone-top" aria-hidden="true"><span>18:42</span><span class="phone-ind"><i></i><i></i><i></i><b></b></span></div>
           <div class="screen-bar"><span>Queue</span><span>4 waiting</span></div>
           <div class="screen-body">
             <div data-screen="admin-approvals">
@@ -1314,11 +1372,44 @@
           </div>
         </div>
 
-        <p class="screen-note">Example screen &middot; the figures are made up</p>
+        </div>
+        <p class="screen-note">Drawn screen &middot; the figures are made up</p>
         <div class="cta-row" style="margin-top:16px">
           <a class="btn btn-primary" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=in">Sign in and use it</a>
           <a class="btn btn-ghost" href="https://angelicamongaya8-design.github.io/sportbase-site/app.html?auth=up">Create an account</a>
         </div>
+      </div>
+    </div>
+
+    <div class="sec-sub">
+      <h3>The website does the whole job. The app does it while you are away.</h3>
+      <p>
+        Nothing is kept back from the browser. The one thing a browser tab
+        cannot do is reach you when you are not looking at it, and that is
+        most of what the phone adds.
+      </p>
+    </div>
+
+    <div class="split">
+      <div class="split-col">
+        <p class="eyebrow">In the browser, today</p>
+        <ul>
+          <li><b>Find and book.</b> Photos, amenities, reviews, the map and the venue&rsquo;s own hourly price.</li>
+          <li><b>Pay and check the bookings</b> you already made, with the QR code on the booking.</li>
+          <li><b>Your profile.</b> Photo, name and number, changed from the You tab.</li>
+          <li><b>Messages.</b> A thread with a venue, and a support thread with us.</li>
+          <li><b>Saved venues</b> and your review of a court you played on.</li>
+        </ul>
+      </div>
+      <div class="split-col lead">
+        <p class="eyebrow">Better on the phone</p>
+        <ul>
+          <li><b>It tells you.</b> A confirmed booking or a reply arrives as a notification. On the web, it waits until you come back and look.</li>
+          <li><b>Photos in a message</b> and photos on a review, straight from the camera.</li>
+          <li><b>The QR code at the gate</b>, and the scanner if you run the venue.</li>
+          <li><b>Face ID or a PIN</b> over the app itself.</li>
+          <li><b>Tournaments</b> and the map, built for a thumb.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -1436,7 +1527,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 04:35 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:01 UTC</span></span>
   </div>
 </footer>
 
