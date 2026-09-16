@@ -74,6 +74,16 @@
   .chip { max-width: 44vw; overflow: hidden; text-overflow: ellipsis; }
   .wordmark { display: flex; align-items: center; gap: 9px; font-family: Archivo, sans-serif; font-weight: 900; font-size: 18px; letter-spacing: -0.03em; text-decoration: none; color: var(--ink); }
   .wordmark img { width: 24px; height: 24px; }
+  .wordmark:hover { color: var(--accent); }
+
+  /* The way back to the front page, said out loud. The wordmark was already
+     a link, which is no use to anybody who cannot tell it is one. */
+  .app-foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 18px 0 26px; }
+  .app-foot .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .app-foot a { color: var(--muted); text-decoration: none; font-size: 14.5px; }
+  .app-foot a:hover { color: var(--accent); }
+  .app-foot .build { margin-left: auto; }
+  @media (max-width: 480px) { .app-foot .build { margin-left: 0; } }
   .who { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .chip { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; color: var(--muted); white-space: nowrap; }
   .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
@@ -428,7 +438,7 @@
 <body>
 <header class="masthead">
   <div class="wrap">
-    <a class="wordmark" href="./index.html"><img src="" id="brand-img" alt="" width="24" height="24">SportBase</a>
+    <a class="wordmark" href="./index.html" title="Back to the SportBase home page"><img src="" id="brand-img" alt="" width="24" height="24">SportBase</a>
     <div class="who">
       <button class="icon-btn" type="button" id="theme-btn" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" id="theme-icon"></svg>
@@ -528,7 +538,6 @@
       <span><b>Run courts yourself?</b> Listing is free, and a person reviews your permit before anything goes live.</span>
       <button class="btn small" type="button" id="apply-open">List your venue</button>
     </div>
-    <p class="note build">build 2026-09-16 05:57 UTC</p>
   </section>
 
   <!-- ---------------------------------------------------------------- -->
@@ -793,6 +802,13 @@
     <p class="note">Approving and rejecting stays in the phone app for now. This is the read-only view of what is waiting.</p>
   </section>
 </main>
+
+<footer class="app-foot">
+  <div class="wrap">
+    <a href="./index.html">&larr; Back to the SportBase home page</a>
+    <span class="note build">build 2026-09-16 06:15 UTC</span>
+  </div>
+</footer>
 
 <div class="dock" id="dock">
 <div class="basket" id="basket" hidden>
