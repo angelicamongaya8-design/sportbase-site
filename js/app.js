@@ -45,7 +45,15 @@ const sbPublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     /* own storage */
     storageKey: "sb-public-" + Math.random().toString(36).slice(2),
   },
+  global: { fetch: fetchWithTimeout(25000) },
 });
+
+/* what to say */
+function errorText(err) {
+  if (!err) return "Something went wrong.";
+  if (err.name === "AbortError") return "That took too long. Check your connection and try again.";
+  return err.message || String(err);
+}
 
 /* timeout */
 function withTimeout(promise, ms, fallback) {
@@ -621,12 +629,17 @@ $("apply-form").addEventListener("submit", async (e) => {
 
   go.disabled = true;
   go.innerHTML = '<span class="spinner"></span>';
-  const { error } = await sb.from("owner_applications").insert(row);
-  go.disabled = false;
-  go.textContent = "Send the application";
-  if (error) { msg.innerHTML = "<b>That did not send.</b> " + escapeHtml(error.message); return; }
-  msg.hidden = true;
-  openApply();
+  try {
+    const { error } = await sb.from("owner_applications").insert(row);
+    if (error) { msg.innerHTML = "<b>That did not send.</b> " + escapeHtml(error.message); return; }
+    msg.hidden = true;
+    openApply();
+  } catch (err) {
+    msg.innerHTML = "<b>That did not send.</b> " + escapeHtml(errorText(err));
+  } finally {
+    go.disabled = false;
+    go.textContent = "Send the application";
+  }
 });
 
 $("auth-back").addEventListener("click", () => goBack("browse"));
@@ -1230,10 +1243,9 @@ $("basket-go").addEventListener("click", async () => {
     discount_amount: i === 0 ? m.discount : 0,
   }));
 
+  try {
   const { data: lead, error } = await sb.from("bookings").insert(rows[0]).select("id, group_id").single();
   if (error || !lead) {
-    go.disabled = false;
-    go.textContent = basketLabel();
     alert("Booking failed: " + ((error && error.message) || "unknown error"));
     return;
   }
@@ -1260,9 +1272,13 @@ $("basket-go").addEventListener("click", async () => {
   state.picked = [];
   state.qty = {};
   state.promo = null;
-  go.disabled = false;
-  go.textContent = basketLabel();
   openBooking(lead.id);
+  } catch (err) {
+    alert("Booking failed: " + errorText(err));
+  } finally {
+    go.disabled = false;
+    go.textContent = basketLabel();
+  }
 });
 
 /* bookings */
@@ -1395,7 +1411,8 @@ async function payWithGCash(booking) {
       throw new Error("GCash did not start.");
     }
   } catch (err) {
-    alert(err.message || "Payment could not start.");
+    alert(errorText(err) || "Payment could not start.");
+  } finally {
     btn.disabled = false;
     btn.textContent = "Pay with GCash";
   }
@@ -1619,6 +1636,7 @@ $("me-save").addEventListener("click", async () => {
   msg.hidden = true;
   const patch = { name: name, phone: $("me-phone-input").value.trim() || null };
 
+  try {
   if (photoFile) {
     /* avatar upload */
     const ext = (photoFile.type === "image/png") ? "png" : (photoFile.type === "image/webp" ? "webp" : "jpg");
@@ -1628,7 +1646,6 @@ $("me-save").addEventListener("click", async () => {
       upsert: true,
     });
     if (up.error) {
-      btn.disabled = false; btn.textContent = "Save";
       msg.hidden = false;
       msg.innerHTML = "<b>The photo did not upload.</b> " + escapeHtml(up.error.message);
       return;
@@ -1638,8 +1655,6 @@ $("me-save").addEventListener("click", async () => {
   }
 
   const { error } = await sb.from("users").update(patch).eq("id", uid);
-  btn.disabled = false;
-  btn.textContent = "Save";
   if (error) {
     msg.hidden = false;
     msg.innerHTML = "<b>That did not save.</b> " + escapeHtml(error.message);
@@ -1649,6 +1664,13 @@ $("me-save").addEventListener("click", async () => {
   renderMe();
   $("me-edit").hidden = true;
   $("me-edit-open").textContent = "Edit your details";
+  } catch (err) {
+    msg.hidden = false;
+    msg.innerHTML = "<b>That did not save.</b> " + escapeHtml(errorText(err));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save";
+  }
 });
 
 /* messages */
@@ -1747,14 +1769,20 @@ $("support-open").addEventListener("click", async () => {
   if (!state.session) { setAuthMode("in"); say("Sign in to message support."); show("auth"); return; }
   const btn = $("support-open");
   btn.disabled = true;
-  const { data, error } = await withTimeout(sb.rpc("open_support_conversation"), 9000, { data: null, error: null });
-  btn.disabled = false;
-  if (error || !data) {
+  try {
+    const { data, error } = await withTimeout(sb.rpc("open_support_conversation"), 9000, { data: null, error: null });
+    if (error || !data) {
+      $("chat-empty").hidden = false;
+      $("chat-empty").textContent = "Support could not be opened right now. Try again in a moment.";
+      return;
+    }
+    openChat(data);
+  } catch (err) {
     $("chat-empty").hidden = false;
     $("chat-empty").textContent = "Support could not be opened right now. Try again in a moment.";
-    return;
+  } finally {
+    btn.disabled = false;
   }
-  openChat(data);
 });
 
 async function openChat(id) {
@@ -1814,18 +1842,23 @@ async function sendMessage() {
   if (!text) return;
   const btn = $("chat-send");
   btn.disabled = true;
-  const { error } = await sb.from("messages").insert({
-    conversation_id: state.chat.id,
-    sender_id: state.session.user.id,
-    content: text,
-  });
-  btn.disabled = false;
-  if (error) {
-    $("chat-note").textContent = "That did not send: " + error.message;
-    return;
+  try {
+    const { error } = await sb.from("messages").insert({
+      conversation_id: state.chat.id,
+      sender_id: state.session.user.id,
+      content: text,
+    });
+    if (error) {
+      $("chat-note").textContent = "That did not send: " + error.message;
+      return;
+    }
+    input.value = "";
+    await loadThread();
+  } catch (err) {
+    $("chat-note").textContent = "That did not send: " + errorText(err);
+  } finally {
+    btn.disabled = false;
   }
-  input.value = "";
-  await loadThread();
 }
 $("chat-send").addEventListener("click", sendMessage);
 $("chat-input").addEventListener("keydown", (e) => {

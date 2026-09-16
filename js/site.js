@@ -334,11 +334,14 @@
       if (!email || email.indexOf("@") < 1) { msg.textContent = "An email address, please. That is all we need."; return; }
       btn.disabled = true;
       msg.textContent = "Adding you\u2026";
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, 15000);
       try {
         var r = await fetch(API, {
           method: "POST",
           headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json", Prefer: "return=minimal" },
           body: JSON.stringify({ email: email, source: source }),
+          signal: ctrl.signal,
         });
         if (r.ok || r.status === 409) {
           msg.className = "notify-msg good";
@@ -352,8 +355,10 @@
         }
       } catch (e) {
         msg.textContent = "That did not save. Check the connection and try again.";
+      } finally {
+        clearTimeout(timer);
+        btn.disabled = false;
       }
-      btn.disabled = false;
     });
 
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") btn.click(); });
@@ -428,8 +433,8 @@
   if (promptBtn) {
     promptBtn.addEventListener("click", async function () {
       promptBtn.disabled = true;
-      var did = await spend();
-      promptBtn.disabled = false;
+      var did = false;
+      try { did = await spend(); } finally { promptBtn.disabled = false; }
       if (!did && howBtn) { promptBtn.hidden = true; howBtn.hidden = false; }
     });
   }
@@ -437,11 +442,15 @@
     btn.addEventListener("click", async function () {
       if (!deferred) { if (panel) panel.hidden = true; return; }
       btn.disabled = true;
-      deferred.prompt();
-      try { await deferred.userChoice; } catch (e) {}
-      deferred = null;
-      btn.disabled = false;
-      if (panel) panel.hidden = true;
+      try {
+        deferred.prompt();
+        await deferred.userChoice;
+      } catch (e) {
+      } finally {
+        deferred = null;
+        btn.disabled = false;
+        if (panel) panel.hidden = true;
+      }
     });
   }
 
