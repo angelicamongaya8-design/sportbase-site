@@ -121,7 +121,15 @@
      sits behind Safari's own bar - so a bar pinned there floats up the page
      instead of resting on the edge. The script below measures the visual
      viewport and corrects it; this is the starting point. */
-  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; padding-bottom: env(safe-area-inset-bottom, 0px); will-change: bottom; }
+  /* The dock pads itself by the phone's home-indicator strip, and that strip
+     had no colour - so the board scrolled visibly through it and the bar
+     looked like it was floating above the edge instead of resting on it. */
+  .dock {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 16;
+    background: var(--ground);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    will-change: bottom;
+  }
   .navbar { background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
   .navbar .wrap { display: flex; gap: 6px; justify-content: space-between; padding-block: 8px; }
   .navbtn { flex: 1 1 0; min-width: 0; border: 0; background: none; padding: 8px 4px; border-radius: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
@@ -344,6 +352,32 @@
   @media (max-width: 560px) {
     .me-stats { flex-basis: 100%; max-width: none; }
   }
+
+  /* A list of venues on a phone is a long scroll past photographs. Sideways
+     it is one flick, and the card peeking past the edge is what tells you
+     there is more. */
+  @media (max-width: 860px) {
+    .vcards {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 78%;
+      gap: 14px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      padding-bottom: 8px;
+    }
+    .vcards > * { scroll-snap-align: start; }
+    .vshot { aspect-ratio: 16 / 11; }
+  }
+  @media (max-width: 560px) {
+    .vcards { grid-auto-columns: 82%; }
+  }
+  .rail-hint {
+    margin-top: 8px; font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  }
+  @media (min-width: 861px) { .rail-hint { display: none; } }
 </style>
 </head>
 <body>
@@ -438,8 +472,9 @@
       <button type="button" id="sport-clear">Show every sport</button>
     </div>
     <div class="vcards" id="venue-list"></div>
+    <p class="rail-hint" id="venue-hint" hidden>Swipe for more &rarr;</p>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:29 UTC</p>
+    <p class="note build">build 2026-09-16 04:35 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -554,6 +589,7 @@
 
     <div class="shell-head" style="margin-top:26px"><h1 style="font-size:20px">Saved venues</h1></div>
     <div class="vcards" id="fav-list"></div>
+    <p class="rail-hint" id="fav-hint" hidden>Swipe for more &rarr;</p>
     <div class="empty" id="fav-empty" hidden>Nothing saved yet. Tap the heart on a venue and it lands here.</div>
 
     <div class="inapp">
@@ -1362,6 +1398,7 @@ function renderVenues() {
   $("venue-list").querySelectorAll("[data-venue]").forEach((b) => {
     b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
   });
+  syncRailHints();
 }
 
 function venueCard(v) {
@@ -1429,6 +1466,7 @@ function renderFavourites() {
   box.querySelectorAll("[data-venue]").forEach((b) => {
     b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
   });
+  syncRailHints();
 }
 
 function syncHeart() {
@@ -1817,6 +1855,19 @@ function basketLabel() {
    overlays the page: window.innerHeight counts the space behind it, so
    bottom: 0 lands underneath Safari and the dock appears to float in the
    middle of the board. visualViewport reports what is actually on screen. */
+/* Say "swipe" only where swiping does something. */
+function syncRailHint(listId, hintId) {
+  const list = document.getElementById(listId);
+  const hint = document.getElementById(hintId);
+  if (!list || !hint) return;
+  hint.hidden = !(list.scrollWidth > list.clientWidth + 8);
+}
+function syncRailHints() {
+  syncRailHint("venue-list", "venue-hint");
+  syncRailHint("fav-list", "fav-hint");
+}
+window.addEventListener("resize", syncRailHints);
+
 function syncDock() {
   const dock = document.getElementById("dock");
   if (!dock) return;
