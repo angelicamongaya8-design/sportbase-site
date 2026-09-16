@@ -599,12 +599,72 @@
   .tabbar .on { color: var(--accent); }
   /* Chips inside the phone: the app's own filter row, at phone scale. */
   .screen .chiprow { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 11px; }
-  .screen .chiprow span {
+  .screen .chiprow span, .screen .chiprow button {
     border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px;
+    background: transparent; font: inherit;
     font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.05em;
     text-transform: uppercase; color: var(--muted);
   }
-  .screen .chiprow span.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .screen .chiprow button { cursor: pointer; }
+  .screen .chiprow button:hover { border-color: var(--accent); color: var(--accent); }
+  .screen .chiprow span.on, .screen .chiprow button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+  /* A map drawn in CSS: pins, a blue dot for you, and the card a tap opens.
+     No tiles are loaded, so the phone stays a drawing rather than a screenshot. */
+  .screen .minimap {
+    position: relative; height: 158px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--taken);
+    background-image:
+      linear-gradient(112deg, transparent 0 44%, var(--taken-ink) 44% 44.7%, transparent 44.7%),
+      linear-gradient(-24deg, transparent 0 58%, var(--taken-ink) 58% 58.7%, transparent 58.7%),
+      linear-gradient(74deg, transparent 0 26%, var(--line) 26% 26.6%, transparent 26.6%),
+      linear-gradient(8deg, transparent 0 72%, var(--line) 72% 72.6%, transparent 72.6%);
+  }
+  .screen .pin {
+    position: absolute; width: 20px; height: 20px; background: var(--accent);
+    border-radius: 50% 50% 50% 3px; transform: rotate(-45deg);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.32);
+  }
+  .screen .pin i { position: absolute; inset: 5px; border-radius: 50%; background: var(--raised); }
+  .screen .here {
+    position: absolute; width: 11px; height: 11px; border-radius: 50%;
+    background: #2F80ED; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+  }
+  .screen .mapcard {
+    position: absolute; left: 8px; right: 8px; top: 8px;
+    display: flex; align-items: center; gap: 9px;
+    background: var(--raised); border: 1px solid var(--line);
+    border-radius: 10px; padding: 7px 10px;
+    font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+  }
+  .screen .mapcard:hover { border-color: var(--accent); }
+  .screen .mapcard b { display: block; font-size: 13px; }
+  .screen .mapcard small { display: block; font-size: 11.5px; color: var(--muted); }
+  .screen .mapcard em { margin-left: auto; font-style: normal; color: var(--accent); font-size: 15px; }
+
+  /* The venue page: a photo, the facts, the courts and what they cost. */
+  .screen .shot {
+    position: relative; height: 92px; border-radius: 12px; margin-bottom: 11px;
+    border: 1px solid var(--line);
+    background: linear-gradient(145deg, var(--taken), var(--raised) 70%);
+  }
+  .screen .shot span {
+    position: absolute; left: 9px; bottom: 8px;
+    font-family: "IBM Plex Mono", monospace; font-size: 9px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--taken-ink);
+  }
+  .screen .vhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .screen .vhead b { font-size: 16px; }
+  .screen .vmeta { margin-top: 6px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .screen .vclosed { margin-top: 7px; font-size: 12.5px; color: var(--accent); line-height: 1.45; }
+  .screen .bigbtn {
+    display: block; margin: 12px 0 2px; border-radius: 10px; background: var(--accent);
+    color: #fff; text-align: center; padding: 10px; font-size: 13px; font-weight: 600;
+  }
+  .screen .grouplabel {
+    margin: 13px 0 7px; font-family: "IBM Plex Mono", monospace; font-size: 9px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  }
 
   /* How you get in: the one thing a person wants to know before signing up. */
   .gate { margin-top: 38px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 20px 20px 22px; }
@@ -732,6 +792,11 @@
   /* --- the sample screens answer a tap -------------------------------- */
   .tabbar button { border: 0; background: none; padding: 6px 4px; border-radius: 8px; font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
   .tabbar button[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+  /* A phone screen does not grow to fit its content, so neither does this one:
+     the taller pages scroll inside the glass, as they do on the handset. */
+  .screen-body { min-height: 296px; max-height: 420px; overflow-y: auto; scrollbar-width: thin; }
+  .screen-body::-webkit-scrollbar { width: 4px; }
+  .screen-body::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
   .screen-body > div[hidden] { display: none !important; }
 
   /* --- reading on a phone --------------------------------------------- */
@@ -1242,7 +1307,7 @@
           <h3>You came to play.</h3>
           <p>The app opens on the courts near you, with tonight&rsquo;s free hours already on the screen.</p>
           <div class="role-points">
-            <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map, with the hour you want already filtered.</p></div>
+            <div><b>Find</b><p>Venues by sport and by distance, on a list or on the map. Open one and you get the photos, the amenities, every court with its price, the days it is closed, and what people who played there said.</p></div>
             <div><b>Book</b><p>Pick the hours, add gear if you need it, pay with GCash. The price is the venue&rsquo;s own.</p></div>
             <div><b>Arrive</b><p>Your booking carries a QR code. The venue scans it, and that is the check-in.</p></div>
           </div>
@@ -1282,10 +1347,41 @@
               <div class="row"><span><b>Gomez Gym</b><small>Basketball &middot; 3.1 km &middot; new</small></span><span class="pill">full tonight</span></div>
             </div>
             <div data-screen="player-venues" hidden>
-              <div class="chiprow"><span class="on">All</span><span>Favourites</span><span>Map view</span></div>
-              <div class="row"><span><b>Ateneo Courts</b><small>Covered courts with lights, open until 22:00</small></span><span class="pill go">4 free</span></div>
+              <div class="chiprow"><button type="button" class="on" data-screen-tab="player-venues">List</button><button type="button" data-screen-tab="player-map">Map</button></div>
+              <div class="row"><span><b>Northside Arena</b><small>Futsal, basketball and a pool &middot; 4.5</small></span><span class="pill go">4 free</span></div>
               <div class="row"><span><b>Vertex Padel</b><small>Two glass courts, rackets for rent</small></span><span class="pill go">2 free</span></div>
               <div class="row"><span><b>Riverside Courts</b><small>Tennis and badminton by the river</small></span><span class="pill">closed today</span></div>
+            </div>
+            <div data-screen="player-map" hidden>
+              <div class="chiprow"><button type="button" data-screen-tab="player-venues">List</button><button type="button" class="on" data-screen-tab="player-map">Map</button></div>
+              <div class="minimap">
+                <button type="button" class="mapcard" data-screen-tab="player-venue">
+                  <span><b>Northside Arena</b><small>Futsal &middot; 2.4 km</small></span><em>&rsaquo;</em>
+                </button>
+                <span class="pin" style="left:44%;top:44%"><i></i></span>
+                <span class="pin" style="left:22%;top:62%"><i></i></span>
+                <span class="pin" style="left:63%;top:58%"><i></i></span>
+                <span class="pin" style="left:37%;top:80%"><i></i></span>
+                <span class="here" style="left:52%;top:87%"></span>
+              </div>
+              <p class="vmeta">Four venues within reach tonight. Tap a pin to see what it costs.</p>
+            </div>
+            <div data-screen="player-venue" hidden>
+              <div class="chiprow"><button type="button" data-screen-tab="player-venues">&larr; Venues</button></div>
+              <div class="shot"><span>3 photos</span></div>
+              <div class="vhead"><b>Northside Arena</b><span class="pill go">&#9733; 4.5 (2)</span></div>
+              <p class="vmeta">45 Timog Ave &middot; every day, 07:00&ndash;22:00<br>Parking &middot; canteen &middot; referee &middot; drinking water</p>
+              <p class="vclosed">Closed Sat 19 Sept &mdash; water line repair</p>
+              <span class="bigbtn">See all available times</span>
+              <p class="grouplabel">Courts</p>
+              <div class="row"><span><b>Futsal Court A</b><small>Futsal</small></span><span class="pill go">&#8369;700/hr</span></div>
+              <div class="row"><span><b>Basketball Court</b><small>Basketball</small></span><span class="pill go">&#8369;550/hr</span></div>
+              <div class="row"><span><b>Swimming Lane</b><small>Swimming</small></span><span class="pill go">&#8369;300/hr</span></div>
+              <p class="grouplabel">Gear you can rent here</p>
+              <div class="row"><span><b>Futsal ball</b><small>8 available &middot; deposit on its own line</small></span><span class="pill">&#8369;70</span></div>
+              <div class="row"><span><b>Swim goggles</b><small>12 available</small></span><span class="pill">&#8369;40</span></div>
+              <p class="grouplabel">Reviews</p>
+              <div class="row"><span><b>&#9733;&#9733;&#9733;&#9733;&#9734; &nbsp;Marlon C.</b><small>&ldquo;Big hall, good for futsal. Lockers could be better.&rdquo;</small></span><span class="pill">played here</span></div>
             </div>
             <div data-screen="player-bookings" hidden>
               <div class="chiprow"><span class="on">All</span><span>To pay</span><span>Confirmed</span><span>Played</span></div>
@@ -1551,7 +1647,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:29 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:35 UTC</span></span>
   </div>
 </footer>
 
@@ -1903,7 +1999,7 @@
       tab.addEventListener("click", function () {
         var want = tab.getAttribute("data-screen-tab");
         var bar = tab.parentElement;
-        var screen = bar.parentElement;
+        var screen = tab.closest(".screen");
         bar.querySelectorAll("[data-screen-tab]").forEach(function (t) {
           if (t === tab) t.setAttribute("aria-current", "page");
           else t.removeAttribute("aria-current");
