@@ -238,6 +238,56 @@
   }
 
   .build { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
+
+  /* --- a venue you can actually look at -------------------------------- */
+  .vcards { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .vcard { text-align: left; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); cursor: pointer; font: inherit; color: var(--ink); display: flex; flex-direction: column; }
+  .vcard:hover { border-color: var(--accent); }
+  .vshot { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: var(--accent-soft); }
+  .vshot-none { display: grid; place-items: center; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .vbody { padding: 13px 14px 15px; display: flex; flex-direction: column; gap: 5px; }
+  .vbody b { font-family: Archivo, sans-serif; font-size: 16px; }
+  .vbody small { color: var(--muted); font-size: 13px; }
+  .vmeta { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .stars { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--accent); white-space: nowrap; }
+  .stars span { color: var(--muted); }
+
+  /* --- the venue page -------------------------------------------------- */
+  .gallery { margin-top: 14px; display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 8px; }
+  .gallery img { width: 100%; height: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; scroll-snap-align: start; }
+  @media (min-width: 721px) { .gallery { grid-auto-columns: 340px; } }
+  .about { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 16px; }
+  .about p { color: var(--muted); font-size: 14.5px; }
+  .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; color: var(--muted); }
+  .facts2 { margin-top: 14px; display: grid; gap: 10px; }
+  .fact2 { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+  .fact2 span:first-child { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); min-width: 92px; }
+  .mapwrap { margin-top: 14px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--ground); }
+  .mapwrap iframe { display: block; width: 100%; height: 220px; border: 0; }
+  .maplink { display: block; padding: 11px 14px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--accent); text-decoration: none; }
+  .maplink:hover { text-decoration: underline; }
+  .heart { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 10px; width: 38px; height: 38px; cursor: pointer; font-size: 15px; line-height: 1; }
+  .heart[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .reviews { margin-top: 22px; }
+  .reviews h2 { font-size: 18px; font-weight: 700; }
+  .review { margin-top: 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 13px 14px; }
+  .review .top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .review p { margin-top: 6px; color: var(--muted); font-size: 14px; }
+  .review time { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--muted); }
+
+  /* --- profile ---------------------------------------------------------- */
+  .me { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; background: var(--accent-soft); display: grid; place-items: center; font-family: Archivo, sans-serif; font-weight: 900; font-size: 21px; color: var(--accent); flex: 0 0 auto; }
+  .me-name { font-family: Archivo, sans-serif; font-weight: 700; font-size: 20px; }
+  .me-sub { color: var(--muted); font-size: 13.5px; word-break: break-word; }
+  .me-actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .me-actions .btn { flex: 1 1 160px; }
+  .inapp { margin-top: 20px; border: 1px dashed var(--line); border-radius: 14px; padding: 16px; }
+  .inapp h3 { font-family: Archivo, sans-serif; font-size: 15px; font-weight: 700; }
+  .inapp ul { margin-top: 9px; display: grid; gap: 7px; list-style: none; }
+  .inapp li { font-size: 13.5px; color: var(--muted); padding-left: 15px; position: relative; }
+  .inapp li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 </style>
 </head>
 <body>
@@ -321,9 +371,9 @@
       <span>Showing <b id="sport-note-name">one sport</b> only. Courts for anything else are hidden.</span>
       <button type="button" id="sport-clear">Show every sport</button>
     </div>
-    <div class="list" id="venue-list"></div>
+    <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-15 16:07 UTC</p>
+    <p class="note build">build 2026-09-16 02:50 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -336,11 +386,24 @@
       <span>Only the <b id="venue-sport-name">sport</b> courts are shown here.</span>
       <button type="button" id="venue-sport-clear">Show every court</button>
     </div>
+    <div class="gallery" id="venue-gallery" hidden></div>
     <div class="shell-head">
       <h1 id="venue-name">Venue</h1>
-      <span class="chip" id="venue-hours"></span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span class="chip" id="venue-hours"></span>
+        <button class="heart" type="button" id="venue-fav" aria-pressed="false" aria-label="Save this venue" hidden>&#9825;</button>
+      </span>
     </div>
     <p class="note" id="venue-address"></p>
+    <div class="about" id="venue-about" hidden>
+      <p id="venue-desc"></p>
+      <div class="tags" id="venue-tags"></div>
+      <div class="facts2" id="venue-facts"></div>
+      <div class="mapwrap" id="venue-map" hidden>
+        <iframe id="venue-map-frame" title="Where the venue is" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        <a class="maplink" id="venue-map-link" target="_blank" rel="noopener">Open in Google Maps &rarr;</a>
+      </div>
+    </div>
     <div class="days" id="day-strip"></div>
     <div id="court-list"></div>
     <div class="empty" id="court-empty" hidden>No court here for that sport. Clear the filter above to see the rest.</div>
@@ -355,6 +418,12 @@
       </div>
       <p class="code-msg" id="promo-msg" hidden></p>
       <div class="totals" id="totals" hidden></div>
+    </div>
+
+    <div class="reviews" id="venue-reviews" hidden>
+      <h2>What players said</h2>
+      <div id="review-list"></div>
+      <p class="note" id="review-note"></p>
     </div>
   </section>
 
@@ -389,6 +458,47 @@
     <div class="tiles" id="owner-tiles"></div>
     <div class="list" id="owner-list"></div>
     <div class="empty" id="owner-empty" hidden>No booking today. The board is all yours.</div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- -->
+  <!-- You                                                               -->
+  <!-- ---------------------------------------------------------------- -->
+  <section id="view-me" class="wrap shell" hidden>
+    <div class="shell-head">
+      <h1>Your account</h1>
+      <span class="chip" id="me-role"></span>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="me">
+        <div class="avatar" id="me-avatar">?</div>
+        <div style="min-width:0">
+          <div class="me-name" id="me-name">&mdash;</div>
+          <div class="me-sub" id="me-email"></div>
+          <div class="me-sub" id="me-since"></div>
+        </div>
+      </div>
+      <div class="me-actions">
+        <button class="btn" type="button" id="me-theme">Switch theme</button>
+        <button class="btn" type="button" id="me-venue">List your venue</button>
+        <button class="btn" type="button" id="me-signout">Sign out</button>
+      </div>
+    </div>
+
+    <div class="shell-head" style="margin-top:26px"><h1 style="font-size:20px">Saved venues</h1></div>
+    <div class="vcards" id="fav-list"></div>
+    <div class="empty" id="fav-empty" hidden>Nothing saved yet. Tap the heart on a venue and it lands here.</div>
+
+    <div class="inapp">
+      <h3>Still only in the phone app</h3>
+      <ul>
+        <li>Chats with the venue, and support tickets</li>
+        <li>Push notifications and reminders</li>
+        <li>Tournaments, and writing a review with photos</li>
+        <li>Scanning a QR code at the desk, and Face ID lock</li>
+      </ul>
+      <p class="note">The apps are not on the stores yet. Everything above is being built; the booking itself works here today.</p>
+    </div>
   </section>
 
   <!-- ---------------------------------------------------------------- -->
@@ -478,6 +588,7 @@
     <button class="navbtn" type="button" data-nav="bookings">Bookings</button>
     <button class="navbtn" type="button" data-nav="owner" hidden>Venue</button>
     <button class="navbtn" type="button" data-nav="admin" hidden>Queue</button>
+    <button class="navbtn" type="button" data-nav="me">You</button>
   </div>
 </nav>
 </div>
@@ -627,10 +738,13 @@ const state = {
   promo: null,         // the applied promotion, if any
   bookings: [],
   booking: null,
+  ratings: {},          // venue id -> { avg, count }
+  reviews: [],          // reviews for the open venue
+  favs: {},             // venue id -> favourite row id
 };
 
 /* --- views --------------------------------------------------------- */
-const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply"];
+const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me"];
 function show(view) {
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
   const inApp = view !== "auth";
@@ -643,6 +757,7 @@ function show(view) {
   $("role-chip").hidden = !(inApp && signedIn);
   /* Browsing needs no account; the rest does. */
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
+  document.querySelector('[data-nav="me"]').hidden = !signedIn;
   document.querySelectorAll("[data-nav]").forEach((b) => {
     const nav = b.getAttribute("data-nav");
     const on = (view === "venue" || view === "browse") ? nav === "browse"
@@ -780,6 +895,8 @@ async function loadProfile() {
   $("role-chip").textContent = (state.profile && state.profile.name ? state.profile.name + " · " : "") + role;
   document.querySelector('[data-nav="owner"]').hidden = !(role === "owner" || role === "admin");
   document.querySelector('[data-nav="admin"]').hidden = role !== "admin";
+  renderMe();
+  loadFavourites();
 }
 
 sb.auth.onAuthStateChange(async (_event, session) => {
@@ -946,7 +1063,7 @@ async function loadVenues() {
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
   const { data, error } = await sb
     .from("venues")
-    .select("id, name, address, city, status, opening_time, closing_time, open_days, peak_start, peak_end, peak_days, courts(id, name, sport, hourly_rate, peak_rate, status)")
+    .select("id, name, address, city, status, description, amenities, photo_url, photos, lat, lng, contact_number, business_hours, opening_time, closing_time, open_days, peak_start, peak_end, peak_days, courts(id, name, sport, hourly_rate, peak_rate, status)")
     .eq("status", "approved");
   if (error) {
     list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + "</div>";
@@ -972,32 +1089,58 @@ async function loadVenues() {
   }
   syncSportNote();
   renderVenues();
+  loadRatings();
+  loadFavourites();
+}
+
+function venueShot(v) {
+  const list = Array.isArray(v.photos) ? v.photos.filter(Boolean) : [];
+  return v.photo_url || list[0] || null;
+}
+
+/* A rating is a number people recognise on sight, so it is drawn as stars
+   with the number beside it rather than left as 4.3333. */
+function starLine(venueId) {
+  const r = state.ratings[venueId];
+  if (!r || !r.count) return '<span class="stars"><span>no reviews yet</span></span>';
+  const full = Math.round(r.avg);
+  return '<span class="stars">' + "\u2605".repeat(full) + "\u2606".repeat(5 - full) +
+    " <span>" + r.avg.toFixed(1) + " \u00b7 " + r.count + (r.count === 1 ? " review" : " reviews") + "</span></span>";
 }
 
 function renderVenues() {
   const q = $("venue-search").value.trim().toLowerCase();
   const sport = $("sport-filter").value;
   const rows = state.venues.filter((v) => {
-    const courts = (v.courts || []).filter((c) => c.status !== "unavailable");
-    if (sport && !courts.some((c) => c.sport === sport)) return false;
+    const courts = courtsHere(v);
+    if (sport && !courts.length) return false;
     if (!q) return true;
     return (v.name + " " + (v.city || "") + " " + (v.address || "")).toLowerCase().includes(q);
   });
   $("venue-count").textContent = rows.length + (rows.length === 1 ? " venue" : " venues");
   $("venue-empty").hidden = rows.length > 0;
-  $("venue-list").innerHTML = rows.map((v) => {
-    const courts = (v.courts || []).filter((c) => c.status !== "unavailable");
-    const cheapest = courts.reduce((min, c) => (c.hourly_rate != null && (min == null || c.hourly_rate < min) ? c.hourly_rate : min), null);
-    const sportList = Array.from(new Set(courts.map((c) => c.sport).filter(Boolean))).slice(0, 3).join(", ");
-    return '<button class="row" type="button" data-venue="' + v.id + '">' +
-      "<span><b>" + escapeHtml(v.name) + "</b><small>" +
-      escapeHtml(sportList || "No court listed") + (v.city ? " · " + escapeHtml(v.city) : "") +
-      "</small></span><span class='pill" + (cheapest != null ? " go" : "") + "'>" +
-      (cheapest != null ? "from " + peso(cheapest) + "/hr" : "no rate yet") + "</span></button>";
-  }).join("");
-  document.querySelectorAll("[data-venue]").forEach((b) => {
+  $("venue-list").innerHTML = rows.map((v) => venueCard(v)).join("");
+  $("venue-list").querySelectorAll("[data-venue]").forEach((b) => {
     b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
   });
+}
+
+function venueCard(v) {
+  const courts = courtsHere(v);
+  const cheapest = courts.reduce((min, c) => (c.hourly_rate != null && (min == null || c.hourly_rate < min) ? c.hourly_rate : min), null);
+  const sports = Array.from(new Set(courts.map((c) => c.sport).filter(Boolean))).slice(0, 3).join(", ");
+  const shot = venueShot(v);
+  return '<button class="vcard" type="button" data-venue="' + v.id + '">' +
+    (shot
+      ? '<img class="vshot" src="' + escapeHtml(shot) + '" alt="" loading="lazy">'
+      : '<div class="vshot vshot-none">No photo yet</div>') +
+    '<span class="vbody"><b>' + escapeHtml(v.name) + "</b>" +
+    "<small>" + escapeHtml([v.city, v.address].filter(Boolean).join(" \u00b7 ")) + "</small>" +
+    (sports ? "<small>" + escapeHtml(sports) + "</small>" : "") +
+    '<span class="vmeta">' +
+    (cheapest != null ? '<span class="pill go">from ' + peso(cheapest) + "/hr</span>" : "") +
+    starLine(v.id) +
+    "</span></span></button>";
 }
 $("venue-sport-clear").addEventListener("click", () => {
   $("sport-filter").value = "";
@@ -1007,6 +1150,72 @@ $("venue-sport-clear").addEventListener("click", () => {
 });
 $("venue-search").addEventListener("input", renderVenues);
 $("sport-filter").addEventListener("change", () => { syncSportNote(); renderVenues(); });
+
+/* Every review in one go, averaged here: five small queries per card would
+   be five round trips for a number that fits in a line. */
+async function loadRatings() {
+  const { data } = await sb.from("reviews").select("venue_id, rating");
+  const by = {};
+  (data || []).forEach((r) => {
+    const k = r.venue_id;
+    if (!by[k]) by[k] = { sum: 0, count: 0 };
+    by[k].sum += Number(r.rating || 0);
+    by[k].count += 1;
+  });
+  state.ratings = {};
+  Object.keys(by).forEach((k) => { state.ratings[k] = { avg: by[k].sum / by[k].count, count: by[k].count }; });
+  renderVenues();
+  renderFavourites();
+}
+
+async function loadFavourites() {
+  state.favs = {};
+  if (!state.session) { renderFavourites(); return; }
+  const { data } = await sb.from("favorites").select("id, venue_id").eq("user_id", state.session.user.id);
+  (data || []).forEach((f) => { state.favs[f.venue_id] = f.id; });
+  renderFavourites();
+  syncHeart();
+}
+
+function renderFavourites() {
+  const box = $("fav-list");
+  if (!box) return;
+  const ids = Object.keys(state.favs);
+  const rows = state.venues.filter((v) => ids.indexOf(v.id) > -1);
+  $("fav-empty").hidden = rows.length > 0 || !state.session;
+  box.innerHTML = rows.map((v) => venueCard(v)).join("");
+  box.querySelectorAll("[data-venue]").forEach((b) => {
+    b.addEventListener("click", () => openVenue(b.getAttribute("data-venue")));
+  });
+}
+
+function syncHeart() {
+  const btn = $("venue-fav");
+  if (!btn || !state.venue) return;
+  btn.hidden = !state.session;
+  const on = !!state.favs[state.venue.id];
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  btn.innerHTML = on ? "\u2665" : "\u2661";
+  btn.setAttribute("aria-label", on ? "Saved. Tap to remove" : "Save this venue");
+}
+
+$("venue-fav").addEventListener("click", async () => {
+  if (!state.session || !state.venue) return;
+  const id = state.venue.id;
+  const existing = state.favs[id];
+  if (existing) {
+    delete state.favs[id];
+    syncHeart();
+    await sb.from("favorites").delete().eq("id", existing);
+  } else {
+    state.favs[id] = "pending";
+    syncHeart();
+    const { data } = await sb.from("favorites").insert({ user_id: state.session.user.id, venue_id: id }).select("id").maybeSingle();
+    if (data) state.favs[id] = data.id; else delete state.favs[id];
+    syncHeart();
+  }
+  renderFavourites();
+});
 
 /* One sport means one sport. The filter follows you into the venue, so a
    badminton search never offers you a basketball hour. */
@@ -1054,10 +1263,87 @@ async function openVenue(id) {
   const sport = currentSport();
   $("venue-sport-note").hidden = !sport;
   if (sport) $("venue-sport-name").textContent = sport;
+  renderVenueDetail(venue);
   show("venue");
   renderDays();
   await loadBoard();
   await loadGear(venue.id);
+}
+
+/* The page for one venue: what it looks like, what is there, where it is,
+   and what people said. A list of prices was never the whole answer to
+   "should I go here?". */
+const AMENITY = {
+  parking: "Parking", canteen: "Canteen", referee: "Referee available",
+  water: "Drinking water", covered: "Covered court", lights: "Night lights",
+  restroom: "Restrooms", shower: "Showers", aircon: "Air-conditioned",
+  locker: "Lockers", wifi: "Wi-Fi", seating: "Seating",
+};
+const DAY_NAME = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function renderVenueDetail(venue) {
+  const shots = [venue.photo_url].concat(Array.isArray(venue.photos) ? venue.photos : []).filter(Boolean);
+  const seen = [];
+  shots.forEach((u) => { if (seen.indexOf(u) === -1) seen.push(u); });
+  $("venue-gallery").hidden = seen.length === 0;
+  $("venue-gallery").innerHTML = seen.map((u) => '<img src="' + escapeHtml(u) + '" alt="" loading="lazy">').join("");
+
+  $("venue-desc").textContent = venue.description || "";
+  $("venue-desc").hidden = !venue.description;
+
+  const tags = (venue.amenities || []).map((a) => '<span class="tag">' + escapeHtml(AMENITY[a] || a) + "</span>").join("");
+  $("venue-tags").innerHTML = tags;
+
+  const days = Array.isArray(venue.open_days) && venue.open_days.length
+    ? venue.open_days.slice().sort().map((d) => DAY_NAME[d]).join(", ") : null;
+  const facts = [];
+  if (venue.business_hours) facts.push(["Hours", venue.business_hours]);
+  else if (venue.opening_time && venue.closing_time) facts.push(["Hours", venue.opening_time + " to " + venue.closing_time]);
+  if (days) facts.push(["Open", days]);
+  if (venue.peak_start && venue.peak_end) facts.push(["Peak", venue.peak_start + " to " + venue.peak_end + ", priced higher"]);
+  if (venue.contact_number) facts.push(["Phone", venue.contact_number]);
+  $("venue-facts").innerHTML = facts.map((f) =>
+    '<div class="fact2"><span>' + escapeHtml(f[0]) + "</span><span>" + escapeHtml(f[1]) + "</span></div>").join("");
+
+  const hasMap = venue.lat != null && venue.lng != null;
+  $("venue-map").hidden = !hasMap;
+  if (hasMap) {
+    const lat = Number(venue.lat), lng = Number(venue.lng);
+    const box = [lng - 0.008, lat - 0.005, lng + 0.008, lat + 0.005].join("%2C");
+    $("venue-map-frame").src = "https://www.openstreetmap.org/export/embed.html?bbox=" + box +
+      "&layer=mapnik&marker=" + lat + "%2C" + lng;
+    $("venue-map-link").href = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng;
+  }
+
+  $("venue-about").hidden = !(venue.description || tags || facts.length || hasMap);
+  syncHeart();
+  loadReviews(venue.id);
+}
+
+async function loadReviews(venueId) {
+  const box = $("review-list");
+  $("venue-reviews").hidden = false;
+  box.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data } = await sb
+    .from("reviews")
+    .select("id, rating, comment, created_at")
+    .eq("venue_id", venueId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  const rows = data || [];
+  const r = state.ratings[venueId];
+  $("review-note").textContent = rows.length
+    ? "Reviews are written in the phone app. Names are kept private."
+    : "No review yet for this venue.";
+  if (!rows.length) { box.innerHTML = ""; return; }
+  box.innerHTML = rows.map((rev) => {
+    const full = Math.max(0, Math.min(5, Math.round(Number(rev.rating || 0))));
+    return '<div class="review"><div class="top"><span class="stars">' +
+      "\u2605".repeat(full) + "\u2606".repeat(5 - full) + "</span><time>" +
+      prettyDate(String(rev.created_at).slice(0, 10)) + "</time></div>" +
+      (rev.comment ? "<p>" + escapeHtml(rev.comment) + "</p>" : "") + "</div>";
+  }).join("");
+  if (r) $("venue-hours").title = r.avg.toFixed(1) + " out of 5";
 }
 
 /* What the venue rents, if it rents anything. */
@@ -1590,6 +1876,34 @@ async function loadAdmin() {
 }
 
 /* --- navigation ---------------------------------------------------- */
+/* --- you -------------------------------------------------------------- */
+function renderMe() {
+  const p = state.profile || {};
+  const name = p.name || "Your account";
+  $("me-name").textContent = name;
+  $("me-email").textContent = p.email || (state.session && state.session.user.email) || "";
+  $("me-role").textContent = p.role || "player";
+  $("me-since").textContent = p.created_at
+    ? "With SportBase since " + prettyDate(String(p.created_at).slice(0, 10))
+    : "";
+  const av = $("me-avatar");
+  if (p.avatar_url) {
+    av.outerHTML = '<img class="avatar" id="me-avatar" src="' + escapeHtml(p.avatar_url) + '" alt="">';
+  } else {
+    av.textContent = (name.trim()[0] || "?").toUpperCase();
+  }
+  const role = p.role || "player";
+  $("me-venue").hidden = !(role === "player");
+  renderFavourites();
+}
+
+$("me-theme").addEventListener("click", () => $("theme-btn").click());
+$("me-signout").addEventListener("click", () => $("signout-btn").click());
+$("me-venue").addEventListener("click", () => {
+  if (!state.session) { wantsToApply = true; askForAccountFirst(); return; }
+  openApply();
+});
+
 /* Opening the home view also has to fetch what that view shows. */
 function openHome() {
   const home = homeView();
@@ -1609,6 +1923,10 @@ document.querySelectorAll("[data-nav]").forEach((btn) => {
     }
     if (nav === "owner") loadOwner();
     if (nav === "admin") loadAdmin();
+    if (nav === "me") {
+      if (!state.session) { setAuthMode("in"); say("Sign in to see your account."); show("auth"); return; }
+      renderMe();
+    }
   });
 });
 
