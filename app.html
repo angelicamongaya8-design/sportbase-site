@@ -258,6 +258,15 @@
     .navbtn { flex: 0 1 190px; }
   }
 
+  /* The owner ask is a real offer, not a footnote under a build number. */
+  .owner-cta {
+    margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--raised);
+    padding: 14px 16px; font-size: 15px; color: var(--muted);
+  }
+  .owner-cta b { color: var(--ink); }
+  .owner-cta .btn { margin-left: auto; }
+  @media (max-width: 560px) { .owner-cta .btn { margin-left: 0; width: 100%; justify-content: center; } }
   .build { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 
   /* --- a venue you can actually look at -------------------------------- */
@@ -496,9 +505,14 @@
   <!-- ---------------------------------------------------------------- -->
   <section id="view-browse" class="wrap shell" hidden>
     <div class="shell-head">
-      <h1>Courts near you</h1>
+      <h1>Find a court</h1>
       <span class="chip" id="venue-count"></span>
     </div>
+    <p class="note">
+      Every venue listed today, with its own hours and its own prices. The
+      phone app knows where you are and puts the nearest ones first; a
+      browser tab does not, so search by venue or by city here.
+    </p>
     <div class="filters">
       <input id="venue-search" type="search" placeholder="Search a venue or a city" aria-label="Search venues">
       <select id="sport-filter" aria-label="Filter by sport"><option value="">Every sport</option></select>
@@ -510,8 +524,11 @@
     <div class="vcards" id="venue-list"></div>
     <p class="rail-hint" id="venue-hint" hidden>Swipe for more &rarr;</p>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 04:47 UTC</p>
-    <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
+    <div class="owner-cta">
+      <span><b>Run courts yourself?</b> Listing is free, and a person reviews your permit before anything goes live.</span>
+      <button class="btn small" type="button" id="apply-open">List your venue</button>
+    </div>
+    <p class="note build">build 2026-09-16 05:57 UTC</p>
   </section>
 
   <!-- ---------------------------------------------------------------- -->
@@ -1312,6 +1329,17 @@ sb.auth.onAuthStateChange(async (_event, session) => {
     return;
   }
   await venuesReady;
+
+  /* A link from the landing page names a venue. Open it, and put the list
+     behind it so the back button has somewhere honest to go. */
+  const wantedVenue = new URLSearchParams(window.location.search).get("venue");
+  if (wantedVenue && state.venues.some((v) => String(v.id) === wantedVenue)) {
+    navTrail = ["browse"];
+    updateBackLabels();
+    await openVenue(wantedVenue);
+    return;
+  }
+
   if (await restoreWhere(saved)) return;
   if (state.session) openHome();
 })();

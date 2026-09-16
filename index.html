@@ -1456,7 +1456,7 @@
   </div>
   <div class="wrap foot-base">
     <span>&copy; 2026 SportBase &middot; Philippines</span>
-    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:48 UTC</span></span>
+    <span>In development &middot; venues onboarding now &middot; <span class="build">build 2026-09-16 05:57 UTC</span></span>
   </div>
 </footer>
 
@@ -1771,7 +1771,7 @@
       courts.forEach(function (c) { if (c.hourly_rate != null && (cheapest == null || c.hourly_rate < cheapest)) cheapest = c.hourly_rate; });
       var photo = v.photo_url || (v.photos && v.photos[0]) || null;
       var hours = v.opening_time && v.closing_time ? v.opening_time + " \u2013 " + v.closing_time : (v.business_hours || "hours on the venue page");
-      return '<a class="vcard" href="' + APP + '">' +
+      return '<a class="vcard" href="' + APP + "?venue=" + encodeURIComponent(v.id) + '">' +
         (photo
           ? '<img class="vshot" src="' + esc(photo) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'vshot vshot-blank\',textContent:\'no photo yet\'}))">'
           : '<span class="vshot vshot-blank">' + esc(sports[0] || "court") + '</span>') +
