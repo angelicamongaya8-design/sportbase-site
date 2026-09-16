@@ -373,7 +373,7 @@
     </div>
     <div class="vcards" id="venue-list"></div>
     <div class="empty" id="venue-empty" hidden>No venue matches that yet.</div>
-    <p class="note build">build 2026-09-16 03:04 UTC</p>
+    <p class="note build">build 2026-09-16 03:10 UTC</p>
     <p class="note">Run courts yourself? <button class="btn small" type="button" id="apply-open" style="margin-left:6px">List your venue</button></p>
   </section>
 
@@ -1182,7 +1182,10 @@ function venueCard(v) {
   const shot = venueShot(v);
   return '<button class="vcard" type="button" data-venue="' + v.id + '">' +
     (shot
-      ? '<img class="vshot" src="' + escapeHtml(shot) + '" alt="" loading="lazy">'
+      /* A photo that fails to arrive should leave the card looking
+         deliberate, not broken. */
+      ? '<img class="vshot" src="' + escapeHtml(shot) + '" alt="" loading="lazy" ' +
+        'onerror="this.outerHTML=\'<div class=&quot;vshot vshot-none&quot;>No photo yet</div>\'">'
       : '<div class="vshot vshot-none">No photo yet</div>') +
     '<span class="vbody"><b>' + escapeHtml(v.name) + "</b>" +
     "<small>" + escapeHtml([v.city, v.address].filter(Boolean).join(" \u00b7 ")) + "</small>" +
@@ -1336,7 +1339,8 @@ function renderVenueDetail(venue) {
   const seen = [];
   shots.forEach((u) => { if (seen.indexOf(u) === -1) seen.push(u); });
   $("venue-gallery").hidden = seen.length === 0;
-  $("venue-gallery").innerHTML = seen.map((u) => '<img src="' + escapeHtml(u) + '" alt="" loading="lazy">').join("");
+  $("venue-gallery").innerHTML = seen.map((u) =>
+    '<img src="' + escapeHtml(u) + '" alt="" loading="lazy" onerror="this.remove()">').join("");
 
   $("venue-desc").textContent = venue.description || "";
   $("venue-desc").hidden = !venue.description;
