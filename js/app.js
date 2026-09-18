@@ -2498,13 +2498,28 @@ async function loadReactions(ids) {
   return out;
 }
 
+const PIN_ICON =
+  '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2.4 3.2H6.6z"/></svg>';
+
 function renderPinned(pinned) {
   const bar = $("pinned-bar");
   if (!pinned.length) { bar.hidden = true; bar.innerHTML = ""; return; }
   const top = pinned[pinned.length - 1];
-  bar.innerHTML = '<button class="pinned-jump" type="button" data-jump="' + top.id + '">' +
-    "<b>Pinned</b> " + escapeHtml(messageBody(top)).slice(0, 90) + "</button>" +
-    (pinned.length > 1 ? '<span class="sheet-count">' + pinned.length + "</span>" : "");
+  const me = state.session ? state.session.user.id : null;
+  const who = top.sender_id === me
+    ? "You"
+    : ((state.chatKnown[top.sender_id] || {}).name || "SportBase");
+  bar.innerHTML =
+    '<span class="pin-icon">' + PIN_ICON + "</span>" +
+    '<button class="pinned-jump" type="button" data-jump="' + top.id + '">' +
+      "<small>" + escapeHtml(who) + "</small>" +
+      "<b>" + escapeHtml(messageBody(top)) + "</b>" +
+    "</button>" +
+    (pinned.length > 1
+      ? '<span class="sheet-count">' + pinned.length + " pinned</span>"
+      : "");
   bar.hidden = false;
   const jump = bar.querySelector("[data-jump]");
   if (jump) {

@@ -432,9 +432,12 @@ a { color: var(--ink); }
 .menu-item { display: block; width: 100%; text-align: left; border: 0; border-radius: 8px; background: none; color: var(--ink); font-family: Archivo, sans-serif; font-weight: 600; font-size: 14px; padding: 9px 11px; cursor: pointer; }
 .menu-item:hover { background: var(--ground); }
 .menu-item.danger { color: #e0574f; }
-.pinned-bar { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 12px; background: var(--accent-soft); }
-.pinned-jump { flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pinned-jump b { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 6px; }
+.pinned-bar { display: flex; align-items: center; gap: 11px; margin-top: 14px; padding: 10px 13px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 12px; background: var(--accent-soft); }
+.pin-icon { display: flex; flex: none; color: var(--accent); }
+.pinned-jump { flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: var(--ink); font: inherit; cursor: pointer; }
+.pinned-jump small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pinned-jump b { display: block; font-family: Archivo, sans-serif; font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pinned-bar .sheet-count { flex: none; }
 .reply-strip { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 9px 12px; border: 1px solid var(--line); border-left: 2px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--raised); }
 .reply-strip span { flex: 1; min-width: 0; }
 .reply-strip b { display: block; font-size: 12px; color: var(--accent); }
