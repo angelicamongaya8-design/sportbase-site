@@ -2066,11 +2066,18 @@ const CHAT_KIND_LABEL = {
 
 async function loadMembers(conversationId) {
   state.chatMembers = [];
+  state.iBlockedThem = false;
   $("chat-members-list").hidden = true;
   $("chat-members-list").innerHTML = "";
   $("member-add").hidden = true;
   $("member-results").innerHTML = "";
   $("chat-members-toggle").setAttribute("aria-expanded", "false");
+  ["info", "media", "privacy"].forEach((name) => {
+    $(name + "-panel").hidden = true;
+    $(name + "-toggle").setAttribute("aria-expanded", "false");
+  });
+  $("media-count").textContent = "";
+  if (typeof mediaSection !== "undefined") mediaSection.reset();
 
   const { data: rows } = await sb
     .from("conversation_participants")
@@ -2101,6 +2108,134 @@ function renderDetails() {
   $("chat-members-toggle").hidden = !group;
   $("members-count").textContent = group ? String(state.chatMembers.length) : "";
   renderMembers();
+  renderChatInfo();
+  renderPrivacy();
+}
+
+function renderChatInfo() {
+  const c = state.chat || {};
+  const me = state.session ? state.session.user.id : null;
+  const starter = state.chatMembers.find((p) => p.id === c.created_by);
+  const rows = [];
+  rows.push(["Kind", CHAT_KIND_LABEL[c.type] || "Chat"]);
+  if (c.created_at) rows.push(["Started", whenFull(c.created_at)]);
+  if (starter) rows.push(["Started by", starter.id === me ? "You" : starter.name]);
+  if (c.type !== "direct" && c.type !== "support") {
+    rows.push(["People", String(state.chatMembers.length)]);
+  }
+  $("info-panel").innerHTML = "<div class='totals'>" + rows.map(([k, v]) =>
+    "<div><span>" + escapeHtml(k) + "</span><span>" + escapeHtml(v) + "</span></div>").join("") + "</div>";
+}
+
+function renderPrivacy() {
+  const c = state.chat || {};
+  const me = state.session ? state.session.user.id : null;
+  const canLeave = c.type === "group" || c.type === "tournament";
+  const other = state.chatMembers.find((p) => p.id !== me);
+  const parts = [];
+  if (c.type === "direct" && other) {
+    parts.push('<button class="btn small" type="button" id="block-btn">' +
+      (state.iBlockedThem ? "Unblock " : "Block ") + escapeHtml(other.name) + "</button>");
+    parts.push("<p class='note'>Blocking stops their messages reaching you. They are not told.</p>");
+  }
+  if (canLeave) {
+    parts.push('<button class="btn small" type="button" id="leave-btn">Leave this chat</button>');
+    parts.push("<p class='note'>You stop getting its messages. Someone in the group has to add you back.</p>");
+  }
+  parts.push('<button class="btn small" type="button" id="report-btn">Message SportBase support</button>');
+  $("privacy-panel").innerHTML = "<div class='sheet-actions'>" + parts.join("") + "</div>";
+
+  if ($("leave-btn")) $("leave-btn").addEventListener("click", leaveChat);
+  if ($("block-btn")) $("block-btn").addEventListener("click", () => toggleBlock(other));
+  if ($("report-btn")) {
+    $("report-btn").addEventListener("click", () => {
+      closeDetails();
+      show("chats");
+      loadChats();
+      $("support-open").scrollIntoView({ block: "center" });
+    });
+  }
+}
+
+async function leaveChat() {
+  if (!confirm("Leave this chat? You stop getting its messages.")) return;
+  const { error } = await sb.from("conversation_participants").delete()
+    .eq("conversation_id", state.chat.id)
+    .eq("user_id", state.session.user.id);
+  if (error) { alert("Could not leave: " + error.message); return; }
+  closeDetails();
+  show("chats");
+  loadChats();
+}
+
+async function toggleBlock(person) {
+  if (!person) return;
+  const me = state.session.user.id;
+  if (state.iBlockedThem) {
+    const { error } = await sb.from("blocked_users").delete()
+      .eq("blocker_id", me).eq("blocked_id", person.id);
+    if (error) { alert("Could not unblock: " + error.message); return; }
+    state.iBlockedThem = false;
+  } else {
+    if (!confirm("Block " + person.name + "?")) return;
+    const { error } = await sb.from("blocked_users")
+      .insert({ blocker_id: me, blocked_id: person.id });
+    if (error) { alert("Could not block: " + error.message); return; }
+    state.iBlockedThem = true;
+  }
+  renderPrivacy();
+}
+
+async function loadBlockState() {
+  state.iBlockedThem = false;
+  const me = state.session ? state.session.user.id : null;
+  if (!me || !state.chat || state.chat.type !== "direct") return;
+  const other = state.chatMembers.find((p) => p.id !== me);
+  if (!other) return;
+  const { data } = await sb.from("blocked_users").select("id")
+    .eq("blocker_id", me).eq("blocked_id", other.id).maybeSingle();
+  state.iBlockedThem = !!data;
+  renderPrivacy();
+}
+
+async function loadMedia() {
+  const box = $("media-panel");
+  box.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const { data, error } = await sb
+    .from("messages")
+    .select("id, attachment_url, attachment_type, created_at, sender_id")
+    .eq("conversation_id", state.chat.id)
+    .not("attachment_url", "is", null)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  if (error) { box.innerHTML = '<p class="note">' + escapeHtml(error.message) + "</p>"; return; }
+  const rows = data || [];
+  $("media-count").textContent = String(rows.length);
+  if (!rows.length) {
+    box.innerHTML = "<p class='note'>Nothing shared here yet. Photos and files are sent from the phone app.</p>";
+    return;
+  }
+  const pictures = rows.filter((m) => m.attachment_type === "image");
+  const rest = rows.filter((m) => m.attachment_type !== "image");
+  box.innerHTML =
+    (pictures.length
+      ? "<div class='media-grid'>" + pictures.map((m) =>
+        '<img src="' + escapeHtml(m.attachment_url) + '" alt="" loading="lazy" data-shot="' +
+        escapeHtml(m.attachment_url) + '">').join("") + "</div>"
+      : "") +
+    (rest.length
+      ? "<div class='list'>" + rest.map((m) =>
+        '<a class="row flat" href="' + escapeHtml(m.attachment_url) + '" target="_blank" rel="noopener">' +
+        "<span><b>" + escapeHtml(m.attachment_type === "video" ? "Video" : "File") + "</b><small>" +
+        escapeHtml(whenFull(m.created_at)) + "</small></span></a>").join("") + "</div>"
+      : "");
+  box.querySelectorAll("[data-shot]").forEach((img) => {
+    img.addEventListener("click", () => {
+      lightboxShots = pictures.map((m) => m.attachment_url);
+      openLightbox(lightboxShots.indexOf(img.getAttribute("data-shot")));
+    });
+  });
 }
 
 function iRunThisGroup() {
@@ -2188,8 +2323,25 @@ $("chat-members-toggle").addEventListener("click", () => {
   $("chat-members-toggle").setAttribute("aria-expanded", open ? "true" : "false");
 });
 
+function sectionToggle(buttonId, panelId, onFirstOpen) {
+  let loaded = false;
+  $(buttonId).addEventListener("click", () => {
+    const panel = $(panelId);
+    const open = panel.hidden;
+    panel.hidden = !open;
+    $(buttonId).setAttribute("aria-expanded", open ? "true" : "false");
+    if (open && !loaded && onFirstOpen) { loaded = true; onFirstOpen(); }
+  });
+  return { reset: () => { loaded = false; } };
+}
+
+sectionToggle("info-toggle", "info-panel");
+sectionToggle("privacy-toggle", "privacy-panel");
+const mediaSection = sectionToggle("media-toggle", "media-panel", loadMedia);
+
 function openDetails() {
   renderDetails();
+  loadBlockState();
   $("chat-details").hidden = false;
 }
 

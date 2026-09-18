@@ -385,6 +385,11 @@
       <p class="note" id="details-kind"></p>
     </div>
     <div class="sheet-body">
+      <button class="sheet-row" type="button" id="info-toggle" aria-expanded="false">
+        <span>Chat info</span><span class="sheet-chev">&#8964;</span>
+      </button>
+      <div class="sheet-panel" id="info-panel" hidden></div>
+
       <button class="sheet-row" type="button" id="chat-members-toggle" aria-expanded="false">
         <span>Chat members</span>
         <span class="sheet-count" id="members-count"></span>
@@ -394,7 +399,16 @@
         <input id="member-search" type="search" placeholder="Add someone by name" aria-label="Add someone by name" autocomplete="off">
         <div class="members-list" id="member-results"></div>
       </div>
-      <p class="note" id="members-note" hidden></p>
+
+      <button class="sheet-row" type="button" id="media-toggle" aria-expanded="false">
+        <span>Media and files</span><span class="sheet-count" id="media-count"></span>
+      </button>
+      <div class="sheet-panel" id="media-panel" hidden></div>
+
+      <button class="sheet-row" type="button" id="privacy-toggle" aria-expanded="false">
+        <span>Privacy and support</span><span class="sheet-chev">&#8964;</span>
+      </button>
+      <div class="sheet-panel" id="privacy-panel" hidden></div>
     </div>
   </div>
 </div>
