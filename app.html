@@ -383,6 +383,17 @@
 
 <div class="msg-menu" id="msg-menu" hidden></div>
 
+<div class="sheet" id="pinned-sheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="pinned-sheet-title">
+    <button class="icon-btn sheet-x" type="button" id="pinned-sheet-close" aria-label="Close">&times;</button>
+    <div class="sheet-top">
+      <h2 id="pinned-sheet-title">Pinned messages</h2>
+      <p class="note" id="pinned-sheet-count"></p>
+    </div>
+    <div class="sheet-body"><div class="list" id="pinned-list"></div></div>
+  </div>
+</div>
+
 <div class="sheet" id="forward-sheet" hidden>
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="forward-title">
     <button class="icon-btn sheet-x" type="button" id="forward-close" aria-label="Close">&times;</button>

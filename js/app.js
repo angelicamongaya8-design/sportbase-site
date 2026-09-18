@@ -327,6 +327,7 @@ function show(view) {
   if ($("foot-home")) $("foot-home").hidden = signedIn;
   if ($("chat-details")) $("chat-details").hidden = true;
   if ($("forward-sheet")) $("forward-sheet").hidden = true;
+  if ($("pinned-sheet")) $("pinned-sheet").hidden = true;
   if ($("msg-menu")) $("msg-menu").hidden = true;
   if ($("reply-strip") && view !== "chat") { $("reply-strip").hidden = true; state.replyTo = null; }
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
@@ -2359,6 +2360,10 @@ function closeDetails() {
   $("chat-details").hidden = true;
 }
 
+$("pinned-sheet-close").addEventListener("click", closePinnedList);
+$("pinned-sheet").addEventListener("click", (e) => {
+  if (e.target.id === "pinned-sheet") closePinnedList();
+});
 $("reply-cancel").addEventListener("click", cancelReply);
 $("forward-close").addEventListener("click", () => { $("forward-sheet").hidden = true; });
 $("forward-sheet").addEventListener("click", (e) => {
@@ -2371,6 +2376,7 @@ $("chat-details").addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !$("chat-details").hidden) closeDetails();
+  if (e.key === "Escape" && !$("pinned-sheet").hidden) closePinnedList();
 });
 
 const REACTIONS = ["❤️", "😂", "😮", "😢", "😡", "👍"];
@@ -2503,35 +2509,59 @@ const PIN_ICON =
   'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
   '<path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2.4 3.2H6.6z"/></svg>';
 
+function whoSaid(m) {
+  const me = state.session ? state.session.user.id : null;
+  if (m.sender_id === me) return "You";
+  return (state.chatKnown[m.sender_id] || {}).name || "SportBase";
+}
+
+function jumpToMessage(id) {
+  closePinnedList();
+  const node = $("msg-" + id);
+  if (!node) return;
+  node.scrollIntoView({ block: "center", behavior: "smooth" });
+  node.classList.add("flash");
+  setTimeout(() => node.classList.remove("flash"), 1600);
+}
+
+function closePinnedList() {
+  $("pinned-sheet").hidden = true;
+}
+
+function openPinnedList() {
+  const pinned = (state.messages || []).filter((m) => m.pinned_at);
+  const box = $("pinned-list");
+  $("pinned-sheet-count").textContent =
+    pinned.length + (pinned.length === 1 ? " message" : " messages");
+  box.innerHTML = pinned
+    .slice()
+    .reverse()
+    .map((m) =>
+      '<button class="row" type="button" data-goto-msg="' + m.id + '">' +
+      '<span class="row-lead">' + personBadge(whoSaid(m), (state.chatKnown[m.sender_id] || {}).avatar, 30) +
+      "<span><b>" + escapeHtml(whoSaid(m)) + "</b><small>" +
+      escapeHtml(messageBody(m)) + "</small></span></span>" +
+      '<span class="pill">' + escapeHtml(whenFull(m.pinned_at)) + "</span></button>")
+    .join("");
+  box.querySelectorAll("[data-goto-msg]").forEach((btn) => {
+    btn.addEventListener("click", () => jumpToMessage(btn.getAttribute("data-goto-msg")));
+  });
+  $("pinned-sheet").hidden = false;
+}
+
 function renderPinned(pinned) {
   const bar = $("pinned-bar");
-  if (!pinned.length) { bar.hidden = true; bar.innerHTML = ""; return; }
+  if (!pinned.length) { bar.hidden = true; bar.innerHTML = ""; closePinnedList(); return; }
   const top = pinned[pinned.length - 1];
-  const me = state.session ? state.session.user.id : null;
-  const who = top.sender_id === me
-    ? "You"
-    : ((state.chatKnown[top.sender_id] || {}).name || "SportBase");
   bar.innerHTML =
     '<span class="pin-icon">' + PIN_ICON + "</span>" +
-    '<button class="pinned-jump" type="button" data-jump="' + top.id + '">' +
-      "<small>" + escapeHtml(who) + "</small>" +
+    '<button class="pinned-jump" type="button" id="pinned-open">' +
+      "<small>" + escapeHtml(whoSaid(top)) + "</small>" +
       "<b>" + escapeHtml(messageBody(top)) + "</b>" +
     "</button>" +
-    (pinned.length > 1
-      ? '<span class="sheet-count">' + pinned.length + " pinned</span>"
-      : "");
+    '<span class="sheet-count">' + pinned.length + " pinned</span>";
   bar.hidden = false;
-  const jump = bar.querySelector("[data-jump]");
-  if (jump) {
-    jump.addEventListener("click", () => {
-      const node = $("msg-" + top.id);
-      if (node) {
-        node.scrollIntoView({ block: "center", behavior: "smooth" });
-        node.classList.add("flash");
-        setTimeout(() => node.classList.remove("flash"), 1600);
-      }
-    });
-  }
+  $("pinned-open").addEventListener("click", openPinnedList);
 }
 
 function closeMessageMenu() {
