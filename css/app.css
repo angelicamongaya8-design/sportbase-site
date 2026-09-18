@@ -226,8 +226,23 @@ a { color: var(--ink); }
 .stars { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--accent); white-space: nowrap; }
 .stars span { color: var(--muted); }
 .gallery { margin-top: 14px; display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 8px; }
-.gallery img { width: 100%; height: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; scroll-snap-align: start; }
+.gallery img { width: 100%; height: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; scroll-snap-align: start; cursor: zoom-in; transition: opacity 0.15s ease; }
+.gallery img:hover { opacity: 0.88; }
 @media (min-width: 721px) { .gallery { grid-auto-columns: 340px; } }
+.lightbox { position: fixed; inset: 0; z-index: 90; background: rgba(0, 0, 0, 0.93); display: flex; align-items: center; justify-content: center; gap: 14px; padding: 24px; }
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: min(1100px, 88vw); max-height: 84vh; object-fit: contain; border-radius: 14px; cursor: zoom-out; }
+.lightbox-close, .lightbox-step { width: 44px; height: 44px; flex: none; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.28); background: rgba(255, 255, 255, 0.1); color: #fff; font: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+.lightbox-close:hover, .lightbox-step:hover { background: rgba(255, 255, 255, 0.22); }
+.lightbox-close { position: absolute; top: 18px; right: 18px; font-size: 26px; }
+.lightbox-count { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.72); }
+@media (max-width: 720px) {
+  .lightbox { padding: 16px; }
+  .lightbox img { max-width: 94vw; }
+  .lightbox-step { position: absolute; bottom: 52px; }
+  #lightbox-prev { left: 22px; }
+  #lightbox-next { right: 22px; }
+}
 .about { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised); padding: 16px; }
 .about p { color: var(--muted); font-size: 14.5px; }
 .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }

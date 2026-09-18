@@ -23,11 +23,34 @@ function fetchWithTimeout(ms) {
   };
 }
 
+const LOCK_WAIT_MS = 3000;
+
+function boundedAuthLock(name, _acquireTimeout, fn) {
+  if (!navigator.locks || !navigator.locks.request) return Promise.resolve().then(fn);
+  return new Promise((resolve, reject) => {
+    let started = false;
+    const run = () => {
+      if (started) return;
+      started = true;
+      return Promise.resolve().then(fn).then(resolve, reject);
+    };
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => { ctrl.abort(); run(); }, LOCK_WAIT_MS);
+    navigator.locks
+      .request(name, { mode: "exclusive", signal: ctrl.signal }, () => {
+        clearTimeout(timer);
+        return run();
+      })
+      .catch(() => { clearTimeout(timer); run(); });
+  });
+}
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
+    lock: boundedAuthLock,
   },
   global: { fetch: fetchWithTimeout(25000) },
 });
@@ -198,6 +221,7 @@ const state = {
   ratings: {},
   reviews: [],
   favs: {},
+  openOrder: null,
 };
 
 const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me", "chats", "chat"];
@@ -293,6 +317,7 @@ function show(view) {
   $("signin-btn").hidden = !(inApp && !signedIn);
   $("account-btn").hidden = !(inApp && signedIn);
   if (!signedIn) closeAccountMenu();
+  if ($("foot-home")) $("foot-home").hidden = signedIn;
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
   document.querySelector('[data-nav="chats"]').hidden = !signedIn;
@@ -834,6 +859,12 @@ async function openVenue(id) {
   renderVenueDetail(venue);
   show("venue");
   renderDays();
+  state.openOrder = null;
+  openOrderAtVenue(venue.id).then((group) => {
+    state.openOrder = group;
+    const go = $("basket-go");
+    if (go && !go.disabled) go.textContent = basketLabel();
+  });
   await loadBoard();
   await loadGear(venue.id);
 }
@@ -846,6 +877,49 @@ const AMENITY = {
 };
 const DAY_NAME = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+let lightboxShots = [];
+let lightboxAt = 0;
+
+function openLightbox(index) {
+  if (!lightboxShots.length) return;
+  lightboxAt = (index + lightboxShots.length) % lightboxShots.length;
+  $("lightbox-img").src = lightboxShots[lightboxAt];
+  $("lightbox-count").textContent = lightboxShots.length > 1
+    ? lightboxAt + 1 + " of " + lightboxShots.length
+    : "";
+  const many = lightboxShots.length > 1;
+  $("lightbox-prev").hidden = !many;
+  $("lightbox-next").hidden = !many;
+  $("lightbox").hidden = false;
+}
+
+function closeLightbox() {
+  $("lightbox").hidden = true;
+  $("lightbox-img").removeAttribute("src");
+}
+
+$("venue-gallery").addEventListener("click", (e) => {
+  const img = e.target.closest("img");
+  if (!img) return;
+  const shots = Array.prototype.slice.call($("venue-gallery").querySelectorAll("img"));
+  lightboxShots = shots.map((node) => node.src);
+  openLightbox(shots.indexOf(img));
+});
+
+$("lightbox").addEventListener("click", (e) => {
+  if (e.target.id === "lightbox" || e.target.id === "lightbox-img") closeLightbox();
+});
+$("lightbox-close").addEventListener("click", closeLightbox);
+$("lightbox-prev").addEventListener("click", (e) => { e.stopPropagation(); openLightbox(lightboxAt - 1); });
+$("lightbox-next").addEventListener("click", (e) => { e.stopPropagation(); openLightbox(lightboxAt + 1); });
+
+document.addEventListener("keydown", (e) => {
+  if ($("lightbox").hidden) return;
+  if (e.key === "Escape") closeLightbox();
+  else if (e.key === "ArrowLeft") openLightbox(lightboxAt - 1);
+  else if (e.key === "ArrowRight") openLightbox(lightboxAt + 1);
+});
+
 function renderVenueDetail(venue) {
   const shots = [venue.photo_url].concat(Array.isArray(venue.photos) ? venue.photos : []).filter(Boolean);
   const seen = [];
@@ -855,6 +929,8 @@ function renderVenueDetail(venue) {
     '<img src="' + escapeHtml(u) + '" alt="" loading="lazy" ' +
     'onerror="this.remove(); if (!this.parentNode || !this.parentNode.children.length) ' +
     'document.getElementById(\'venue-gallery\').hidden = true;">').join("");
+
+  lightboxShots = seen.slice();
 
   $("venue-desc").textContent = venue.description || "";
   $("venue-desc").hidden = !venue.description;
@@ -1123,6 +1199,7 @@ function renderBasket() {
 
 function basketLabel() {
   const n = state.picked.length;
+  if (state.openOrder) return n === 1 ? "Add this hour" : "Add these " + n + " hours";
   return n === 1 ? "Book this hour" : "Book these " + n + " hours";
 }
 
@@ -1204,7 +1281,9 @@ $("basket-go").addEventListener("click", async () => {
   }));
 
   try {
-  const { data: lead, error } = await sb.from("bookings").insert(rows[0]).select("id, group_id").single();
+  const openOrder = await openOrderAtVenue(state.venue ? state.venue.id : null);
+  const firstRow = openOrder ? Object.assign({}, rows[0], { group_id: openOrder }) : rows[0];
+  const { data: lead, error } = await sb.from("bookings").insert(firstRow).select("id, group_id").single();
   if (error || !lead) {
     alert("Booking failed: " + ((error && error.message) || "unknown error"));
     return;
@@ -1269,48 +1348,157 @@ $("bookings-refresh").addEventListener("click", loadBookings);
 $("booking-back").addEventListener("click", () => goBack("bookings"));
 $("venue-back").addEventListener("click", () => { state.picked = []; goBack("browse"); });
 
+const BOOKING_FIELDS =
+  "id, date, start_time, end_time, status, total_amount, rate_at_booking, discount_amount, group_id, courts(name, sport, venues(id, name, address))";
+
+async function openOrderAtVenue(venueId) {
+  if (!state.session || !venueId) return null;
+  const { data } = await sb
+    .from("bookings")
+    .select("group_id, courts!inner(venue_id)")
+    .eq("player_id", state.session.user.id)
+    .eq("status", "pending_payment")
+    .eq("courts.venue_id", venueId)
+    .limit(1);
+  const row = (data || [])[0];
+  return (row && row.group_id) || null;
+}
+
+function slotHours(b) {
+  const from = toMinutes(String(b.start_time).slice(0, 5));
+  const to = toMinutes(String(b.end_time).slice(0, 5));
+  if (from === null || to === null || to <= from) return 0;
+  return (to - from) / 60;
+}
+
+function courtAmount(b) {
+  const rate = Number(b.rate_at_booking || 0);
+  const hours = slotHours(b);
+  if (rate && hours) return rate * hours;
+  return Number(b.total_amount || 0);
+}
+
 async function openBooking(id, justPaid) {
   show("booking");
   const card = $("booking-card");
   card.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
   const { data, error } = await sb
     .from("bookings")
-    .select("id, date, start_time, end_time, status, total_amount, rate_at_booking, group_id, courts(name, sport, venues(name, address))")
+    .select(BOOKING_FIELDS)
     .eq("id", id)
     .maybeSingle();
   if (error || !data) { card.innerHTML = '<div class="empty">Could not open that booking.</div>'; return; }
   state.booking = data;
-  const court = data.courts || {};
-  const venue = (court.venues) || {};
+
+  let group = [data];
+  if (data.group_id) {
+    const { data: siblings } = await sb
+      .from("bookings")
+      .select(BOOKING_FIELDS)
+      .eq("group_id", data.group_id)
+      .order("date", { ascending: true })
+      .order("start_time", { ascending: true });
+    if (siblings && siblings.length) group = siblings;
+  }
+
   const payable = data.status === "pending_payment";
+  const counted = payable ? group.filter((b) => b.status === "pending_payment") : group;
+  const countedIds = counted.map((b) => b.id);
+
+  const { data: gearRows } = await sb
+    .from("equipment_bookings")
+    .select("booking_id, quantity, price, deposit_held, equipment(name)")
+    .in("booking_id", countedIds.length ? countedIds : [data.id]);
+
+  const gear = gearRows || [];
+  const courtsTotal = counted.reduce((sum, b) => sum + courtAmount(b), 0);
+  const gearTotal = gear.reduce((sum, g) => sum + Number(g.price || 0), 0);
+  const depositTotal = gear.reduce((sum, g) => sum + Number(g.deposit_held || 0), 0);
+  const discountTotal = counted.reduce((sum, b) => sum + Number(b.discount_amount || 0), 0);
+  const grandTotal = counted.reduce((sum, b) => sum + Number(b.total_amount || 0), 0);
+
+  const venue = ((data.courts || {}).venues) || {};
+  const manyStatuses = new Set(group.map((b) => b.status)).size > 1;
+
+  const slotLines = counted.map((b) => {
+    const c = b.courts || {};
+    return "<div class='row flat'><span><b>" + escapeHtml(c.name || "Court") +
+      (c.sport ? " · " + escapeHtml(c.sport) : "") + "</b><small>" +
+      prettyDate(b.date) + " · " + String(b.start_time).slice(0, 5) + " to " + String(b.end_time).slice(0, 5) +
+      (manyStatuses ? " · " + escapeHtml(String(b.status).replace(/_/g, " ")) : "") +
+      "</small></span><span class='num'>" + peso(courtAmount(b)) + "</span></div>";
+  }).join("");
+
+  const gearLines = gear.map((g) => {
+    const name = (g.equipment && g.equipment.name) || "Gear";
+    return "<div class='row flat'><span><b>" + escapeHtml(name) +
+      (Number(g.quantity) > 1 ? " &times; " + Number(g.quantity) : "") +
+      "</b><small>Equipment rental</small></span><span class='num'>" +
+      peso(g.price) + "</span></div>";
+  }).join("");
+
+  const breakdownAddsUp =
+    Math.abs(courtsTotal + gearTotal + depositTotal - discountTotal - grandTotal) < 1;
+
+  const totals =
+    "<div class='totals'>" +
+    (breakdownAddsUp
+      ? "<div><span>" + (counted.length === 1 ? "Court" : counted.length + " slots") + "</span><span class='num'>" + peso(courtsTotal) + "</span></div>" +
+        (gearTotal ? "<div><span>Equipment</span><span class='num'>" + peso(gearTotal) + "</span></div>" : "") +
+        (depositTotal ? "<div><span>Refundable deposit</span><span class='num'>" + peso(depositTotal) + "</span></div>" : "") +
+        (discountTotal ? "<div><span>Discount</span><span class='num'>-" + peso(discountTotal) + "</span></div>" : "")
+      : "") +
+    "<div class='sum'><span>" + (payable ? "Total to pay" : "Total") + "</span><span class='num'>" + peso(grandTotal) + "</span></div>" +
+    "</div>";
+
   card.innerHTML =
     '<p class="eyebrow">' + escapeHtml(String(data.status).replace(/_/g, " ")) + "</p>" +
     "<h1 style='font-size:24px;font-weight:700;margin-top:6px'>" + escapeHtml(venue.name || "Venue") + "</h1>" +
-    "<p class='note'>" + escapeHtml(court.name || "Court") + " · " + escapeHtml(court.sport || "") +
-    (venue.address ? "<br>" + escapeHtml(venue.address) : "") + "</p>" +
-    "<div class='tiles'><div class='tile'><small>Date</small><b style='font-size:15px'>" + prettyDate(data.date) + "</b></div>" +
-    "<div class='tile'><small>Hours</small><b style='font-size:15px'>" + String(data.start_time).slice(0, 5) + " to " + String(data.end_time).slice(0, 5) + "</b></div>" +
-    "<div class='tile'><small>Total</small><b>" + peso(data.total_amount) + "</b></div></div>" +
+    (venue.address ? "<p class='note'>" + escapeHtml(venue.address) + "</p>" : "") +
+    "<div class='list'>" + slotLines + gearLines + "</div>" +
+    totals +
     (justPaid ? "<div class='msg'><b>Back from GCash.</b> Waiting for the payment to be confirmed. This page updates itself.</div>" : "") +
     "<div style='margin-top:18px;display:flex;gap:8px;flex-wrap:wrap'>" +
     (payable ? "<button class='btn filled' type='button' id='pay-btn'>Pay with GCash</button>" : "") +
+    (payable ? "<button class='btn' type='button' id='add-more-btn'>Add more hours</button>" : "") +
     (data.status !== "cancelled" && data.status !== "completed" ? "<button class='btn' type='button' id='cancel-btn'>Cancel booking</button>" : "") +
     "</div>" +
+    (payable ? "<p class='note'>Anything else you pick at this venue joins this same order, so you pay once.</p>" : "") +
     "<p class='note'>Payments run through PayMongo, in test mode while the app is being built, so use GCash's test flow, not real money.</p>";
 
   if ($("pay-btn")) $("pay-btn").addEventListener("click", () => payWithGCash(data));
   if ($("cancel-btn")) $("cancel-btn").addEventListener("click", () => cancelBooking(data));
+  if ($("add-more-btn")) {
+    $("add-more-btn").addEventListener("click", async () => {
+      if (venue.id) {
+        navTrail = ["browse"];
+        updateBackLabels();
+        await openVenue(venue.id);
+      } else {
+        goBack("browse");
+      }
+    });
+  }
   if (justPaid) pollStatus(data.id, 0);
 }
 
 async function cancelBooking(booking) {
-  const why = prompt("Why are you cancelling? The venue sees this.");
+  const wholeOrder = booking.status === "pending_payment" && !!booking.group_id;
+  const why = prompt(
+    wholeOrder
+      ? "Why are you cancelling? This cancels every unpaid hour in this order. The venue sees this."
+      : "Why are you cancelling? The venue sees this.",
+  );
   if (why === null) return;
-  const { error } = await sb.from("bookings").update({
+  const patch = {
     status: "cancelled",
     previous_status: booking.status,
     cancellation_reason: why.trim() || null,
-  }).eq("id", booking.id);
+  };
+  const query = wholeOrder
+    ? sb.from("bookings").update(patch).eq("group_id", booking.group_id).eq("status", "pending_payment")
+    : sb.from("bookings").update(patch).eq("id", booking.id);
+  const { error } = await query;
   if (error) alert("Could not cancel: " + error.message);
   openBooking(booking.id);
 }
