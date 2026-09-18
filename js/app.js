@@ -23,11 +23,34 @@ function fetchWithTimeout(ms) {
   };
 }
 
+const LOCK_WAIT_MS = 3000;
+
+function boundedAuthLock(name, _acquireTimeout, fn) {
+  if (!navigator.locks || !navigator.locks.request) return Promise.resolve().then(fn);
+  return new Promise((resolve, reject) => {
+    let started = false;
+    const run = () => {
+      if (started) return;
+      started = true;
+      return Promise.resolve().then(fn).then(resolve, reject);
+    };
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => { ctrl.abort(); run(); }, LOCK_WAIT_MS);
+    navigator.locks
+      .request(name, { mode: "exclusive", signal: ctrl.signal }, () => {
+        clearTimeout(timer);
+        return run();
+      })
+      .catch(() => { clearTimeout(timer); run(); });
+  });
+}
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
+    lock: boundedAuthLock,
   },
   global: { fetch: fetchWithTimeout(25000) },
 });
