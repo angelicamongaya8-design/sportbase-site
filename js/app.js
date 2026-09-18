@@ -1955,13 +1955,14 @@ async function loadChats() {
   state.chatNames = {};
   state.chatPeople = {};
   if (need.length) {
-    const { data: people } = await withTimeout(
-      sb.from("users").select("id, name, email, avatar_url").in("id", need), 8000, { data: null });
+    const peopleRes = await withTimeout(
+      sb.from("users").select("id, name, avatar_url").in("id", need), 8000, { data: null, error: null });
+    if (peopleRes.error) console.warn("Could not read the other people:", peopleRes.error.message);
     const byId = {};
-    (people || []).forEach((u) => {
+    (peopleRes.data || []).forEach((u) => {
       byId[u.id] = {
         id: u.id,
-        name: u.name || (u.email || "").split("@")[0] || "Player",
+        name: u.name || "Player",
         avatar: u.avatar_url || null,
       };
     });
