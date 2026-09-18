@@ -2,14 +2,10 @@ html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; }
 img { max-width: 100%; }
 [hidden] { display: none !important; }
-
-/* install banner */
 .install-live { margin-top: 18px; padding: 14px; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft); }
 .install-live p { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
 .steps-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
 .steps-note b { color: var(--ink); }
-
-/* palette */
 :root {
   --ground: #F2F4F0;
   --raised: #FBFCFA;
@@ -87,13 +83,10 @@ p { margin: 0; }
   text-transform: uppercase;
   color: var(--muted);
 }
-
-/* masthead */
 .masthead {
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 10;
-  /* sticky header */
   background: var(--ground);
   border-bottom: 1px solid var(--line);
 }
@@ -112,7 +105,6 @@ p { margin: 0; }
   gap: 16px;
   padding-block: 14px;
 }
-/* wordmark shrinks */
 .nav-actions { flex: 0 0 auto; }
 .wordmark {
   flex: 0 1 auto;
@@ -145,8 +137,6 @@ p { margin: 0; }
   padding: 5px 11px;
   white-space: nowrap;
 }
-
-/* hero */
 .hero { padding-block: 72px 56px; }
 .hero .wrap {
   display: grid;
@@ -187,7 +177,6 @@ p { margin: 0; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  /* ghost button */
   background: transparent;
   color: var(--ink);
   cursor: pointer;
@@ -195,8 +184,6 @@ p { margin: 0; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-ghost { border-color: var(--line); color: var(--ink); }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-/* feature grid */
 .board {
   background: var(--raised);
   border: 1px solid var(--line);
@@ -290,8 +277,6 @@ p { margin: 0; }
   letter-spacing: 0.04em;
   color: var(--muted);
 }
-
-/* sections */
 section { padding-block: 56px; }
 .band { border-top: 1px solid var(--line); scroll-margin-top: 72px; }
 .sec-head { max-width: 52ch; }
@@ -318,8 +303,6 @@ section { padding-block: 56px; }
   color: var(--muted);
 }
 .sport span { color: var(--ink); font-weight: 500; }
-
-/* steps */
 .steps {
   margin-top: 32px;
   display: grid;
@@ -339,8 +322,6 @@ section { padding-block: 56px; }
   font-weight: 700;
 }
 .step p { margin-top: 6px; color: var(--muted); font-size: 15px; }
-
-/* owner plans */
 .plans {
   margin-top: 28px;
   width: 100%;
@@ -391,8 +372,6 @@ section { padding-block: 56px; }
   color: var(--ink);
   font-weight: 600;
 }
-
-/* closing */
 .closing { padding-block: 64px 40px; }
 .closing h2 { font-size: clamp(24px, 3.2vw, 32px); font-weight: 700; }
 .closing p { margin-top: 12px; color: var(--muted); max-width: 52ch; }
@@ -417,21 +396,15 @@ footer .wrap {
   .steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .hero { padding-block: 48px 40px; }
 }
-
-/* in app */
 .cols { margin-top: 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; }
 .col > h3 { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 600; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 .feats { margin-top: 16px; display: flex; flex-direction: column; gap: 15px; }
 .feat b { font-size: 15px; font-weight: 700; }
 .feat p { margin-top: 3px; color: var(--muted); font-size: 14.5px; }
-
-/* paying */
 .facts { margin-top: 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
 .fact .tag { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .fact h3 { margin-top: 6px; font-size: 16px; font-weight: 700; }
 .fact p.body { margin-top: 6px; color: var(--muted); font-size: 15px; }
-
-/* faq */
 .faq { margin-top: 26px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 40px; }
 .q h3 { font-size: 15px; font-weight: 700; }
 .q p { margin-top: 5px; color: var(--muted); font-size: 14.5px; }
@@ -439,13 +412,10 @@ footer .wrap {
 @media (max-width: 860px) {
   .cols, .facts, .faq { grid-template-columns: minmax(0, 1fr); }
 }
-/* status chip */
 @media (max-width: 520px) {
   .masthead .wrap { gap: 10px; }
   .status-chip { white-space: normal; font-size: 10px; padding: 4px 9px; }
 }
-
-/* install buttons */
 .stores { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
 .btn-store { font-family: Archivo, sans-serif; text-decoration: none; border: 1px solid transparent; border-radius: 12px; padding: 10px 18px 11px; display: inline-flex; align-items: center; gap: 11px; cursor: pointer; }
 .btn-store.solid { background: var(--accent); color: #fff; }
@@ -460,8 +430,6 @@ footer .wrap {
 .linkish { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .btn-chip { font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; border: 0; border-radius: 999px; padding: 8px 16px; background: var(--accent); color: #fff; cursor: pointer; white-space: nowrap; }
 .btn-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-/* dialog */
 .modal[hidden] { display: none !important; }
 .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; }
 .modal-scrim { position: absolute; inset: 0; background: color-mix(in srgb, #000 66%, transparent); }
@@ -474,8 +442,6 @@ footer .wrap {
 .modal-fine { margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 .modal-close { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 17px; line-height: 1; cursor: pointer; }
 .modal-close:hover { color: var(--ink); }
-
-/* nav and theme */
 .mark { width: 26px; height: 26px; flex: 0 0 auto; }
 .nav-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
@@ -483,15 +449,12 @@ footer .wrap {
 .icon-btn svg { width: 16px; height: 16px; }
 .nav-btn { font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 15px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; line-height: 1.2; }
 .nav-btn.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
-/* short label */
 .nav-btn .short { display: none; }
 @media (max-width: 620px) {
   .nav-btn .long { display: none; }
   .nav-btn .short { display: inline; }
 }
 .icon-btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-/* install prompt */
 .prompt[hidden] { display: none !important; }
 .prompt {
   position: fixed;
@@ -516,10 +479,7 @@ footer .wrap {
 @media (max-width: 520px) {
   .prompt { right: 16px; left: 16px; width: auto; }
 }
-
-/* signed in */
 .roleswitch { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
-/* phone screens */
 .role-copy { margin-top: 30px; }
 .role-copy h3 { font-size: 22px; font-weight: 700; }
 .role-copy > p { margin-top: 10px; color: var(--muted); max-width: 680px; }
@@ -533,11 +493,9 @@ footer .wrap {
   gap: 16px; overflow-x: auto; scroll-snap-type: x proximity;
   padding-bottom: 10px; scrollbar-width: thin;
 }
-/* snap scroll */
 @media (max-width: 560px) { .gallery { scroll-snap-type: x mandatory; } }
 .gallery::-webkit-scrollbar { height: 5px; }
 .gallery::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
-/* caption width */
 .gallery figure { margin: 0; scroll-snap-align: start; min-width: 0; }
 .gallery .frame {
   border: 7px solid var(--bezel); border-radius: 30px; overflow: hidden;
@@ -545,14 +503,9 @@ footer .wrap {
   box-shadow: inset 0 0 0 1px var(--line), 0 0 0 1px var(--line), 0 14px 30px rgba(0, 0, 0, 0.26);
 }
 .gallery img { display: block; width: 100%; height: auto; border-radius: 23px; }
-/* caption indent */
-/* caption centred */
 .gallery figcaption { margin-top: 11px; font-size: 13.5px; color: var(--ink);
   line-height: 1.4; max-width: 100%; overflow-wrap: break-word;
   padding-inline: 7px; text-align: center; }
-
-/* sign in shots */
-/* eyebrow spacing */
 .gate { margin-top: 54px; padding-top: 34px; border-top: 1px solid var(--line); }
 .gate-list { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .gate-list div { font-size: 15px; color: var(--muted); line-height: 1.55; }
@@ -580,8 +533,6 @@ footer .wrap {
 #preview .cta-row { margin-top: 16px; justify-content: center; }
 #preview .cta-row .btn { flex: 0 1 auto; min-width: 168px; max-width: 210px; }
 .screen-note { margin-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
-
-/* sign in panel */
 .tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; margin-top: 14px; }
 .tab { flex: 1; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; color: var(--muted); font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
 .tab[aria-selected="true"] { background: var(--accent); color: #fff; }
@@ -600,8 +551,6 @@ footer .wrap {
 @media (max-width: 860px) {
   .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-
-/* install guide */
 .steps-ol { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 11px; }
 .steps-ol li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14.5px; color: var(--muted); }
 .steps-ol li b { color: var(--ink); font-weight: 600; }
@@ -613,8 +562,6 @@ footer .wrap {
 .copy-btn { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; background: transparent; color: var(--ink); cursor: pointer; }
 .copy-btn:hover { border-color: var(--accent); }
 .copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* footer */
 footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 32px 24px; padding-block: 8px 28px; }
 .foot-brand .name { font-family: Archivo, sans-serif; font-weight: 900; font-size: 19px; letter-spacing: -0.03em; color: var(--ink); text-transform: none; }
 .foot-brand p { margin-top: 10px; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; font-size: 14px; letter-spacing: 0; max-width: 34ch; text-transform: none; }
@@ -627,8 +574,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   footer .foot { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot-brand { grid-column: 1 / -1; }
 }
-
-/* live venues */
 .venue-grid { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .vcard { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--raised); display: flex; flex-direction: column; text-decoration: none; color: var(--ink); }
 .vcard:hover { border-color: var(--accent); }
@@ -642,12 +587,8 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
 .vtag.rate { color: var(--accent); border-color: var(--accent); }
 .venue-note { margin-top: 16px; font-size: 14px; color: var(--muted); }
 .skeleton { border: 1px dashed var(--line); border-radius: 16px; min-height: 220px; display: grid; place-items: center; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
-
-/* dialog on phone */
 .modal { overflow-y: auto; padding: 16px; }
 .modal-card { max-height: calc(100dvh - 32px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-/* touch sizes */
 @media (max-width: 720px) {
   .btn, .nav-btn, .btn-store, .icon-btn { box-sizing: border-box; min-height: 44px; }
   .hero { padding-block: 32px 28px; }
@@ -667,7 +608,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .foot-col ul { gap: 11px; }
 }
 @media (max-width: 370px) {
-  /* hide name */
   .brandname { display: none; }
 }
 @media (max-width: 400px) {
@@ -679,8 +619,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .btn-store { padding: 9px 14px 10px; }
   .btn-store strong { font-size: 14px; }
 }
-
-/* sample screens */
 .tabbar button {
   border: 1px solid var(--line); background: transparent; padding: 6px 9px;
   border-radius: 999px; font: inherit; font-family: "IBM Plex Mono", monospace;
@@ -689,8 +627,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
 }
 .tabbar button:hover { border-color: var(--accent); color: var(--accent); }
 .tabbar button[aria-current="page"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
-
-/* phone type */
 @media (max-width: 820px) {
   body { font-size: 16.5px; line-height: 1.6; }
   .lede { font-size: 17px; }
@@ -713,29 +649,21 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .tile b, .row b { font-size: 16px; }
   .row small { font-size: 13.5px; }
 }
-
-/* proof strip */
 .proof { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px 22px; }
 .proof span { display: flex; align-items: center; gap: 7px; font-size: 14.5px; color: var(--muted); }
 .proof b { color: var(--ink); font-weight: 600; }
 .proof .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
 .live-stat { margin-top: 16px; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--muted); }
 .live-stat b { color: var(--ink); }
-
-/* hour price */
 .rates { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .rate { border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 13px 14px; }
 .rate small { display: block; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .rate b { font-size: 19px; font-variant-numeric: tabular-nums; }
 .rate i { display: block; font-style: normal; font-size: 12.5px; color: var(--muted); }
-
-/* last word */
 .closer { border-top: 1px solid var(--line); background: var(--raised); }
 .closer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; padding-block: 34px; }
 .closer h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; }
 .closer p { margin-top: 8px; color: var(--muted); max-width: 46ch; }
-
-/* store notice */
 .notify { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
 .notify p { font-size: 13.5px; color: var(--muted); }
 .notify p b { color: var(--ink); }
@@ -744,8 +672,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
 .notify-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .notify-msg { margin-top: 9px; font-size: 13.5px; color: var(--muted); }
 .notify-msg.good { color: #2F9E63; }
-
-/* plans as cards */
 @media (max-width: 720px) {
   .plans, .plans tbody, .plans tr, .plans th, .plans td { display: block; width: 100%; }
   .plans thead { display: none; }
@@ -759,15 +685,11 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .table-scroll { overflow-x: visible; }
   .closer .wrap { padding-block: 28px; }
 }
-
-/* sport links */
 .sport { text-decoration: none; display: inline-flex; align-items: center; min-height: 36px; }
 .sport:hover { border-color: var(--accent); }
 .sport:hover span { color: var(--accent); }
 .sport:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .sports-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
-
-/* footer on phone */
 @media (max-width: 860px) {
   footer .foot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; padding-block: 4px 24px; }
   .foot-brand { grid-column: 1 / -1; }
@@ -779,9 +701,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .foot-col ul { margin-top: 12px; gap: 13px; }
   .foot-base { flex-direction: column; gap: 6px; padding-block: 16px 4px; }
 }
-
-/* paired buttons */
-/* box sizing */
 .btn, .nav-btn, .btn-store, .sport, .rail-btn { box-sizing: border-box; }
 .cta-row .btn { flex: 1 1 200px; max-width: 262px; justify-content: center; text-align: center; }
 .stores .btn-store { flex: 1 1 200px; max-width: 252px; justify-content: center; }
@@ -793,8 +712,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
 .modal-actions .btn { flex: 1 1 0; justify-content: center; }
 .sports { display: grid; grid-template-columns: repeat(auto-fill, minmax(134px, 1fr)); gap: 8px; }
 .sport { justify-content: center; text-align: center; }
-
-/* section bands */
 .band.alt { background: var(--raised); }
 .sec-head .eyebrow { display: flex; align-items: center; gap: 10px; }
 .sec-head .eyebrow::before {
@@ -802,8 +719,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   background: var(--accent); border-radius: 2px;
 }
 .sec-head { padding-bottom: 18px; border-bottom: 1px solid var(--line); }
-
-/* venue scroller */
 .venue-grid {
   margin-top: 26px;
   display: grid;
@@ -828,7 +743,6 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
 .rail-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .rail-btn:disabled { opacity: 0.32; cursor: default; }
 @media (max-width: 720px) {
-  /* card peek */
   .venue-grid { grid-auto-columns: 78%; }
   .rail-btns { display: none; }
 }
@@ -837,6 +751,4 @@ footer .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, 
   .nav-actions .nav-btn { min-width: 74px; }
   .sports { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
 }
-
-/* build stamp */
 .build { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }

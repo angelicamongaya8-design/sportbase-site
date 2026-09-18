@@ -1,5 +1,3 @@
-/* setup */
-
 document.getElementById("brand-img").src = document.querySelector("link[rel=icon]").href;
 
 const SUPABASE_URL = "https://xbhzofzpsbdrdrdkltbs.supabase.co";
@@ -14,7 +12,6 @@ if (!window.supabase) {
   throw new Error("supabase-js did not load");
 }
 
-/* nothing waits for ever */
 function fetchWithTimeout(ms) {
   return function (input, init) {
     const ctrl = new AbortController();
@@ -32,30 +29,25 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
   },
-  /* a hung refresh holds the auth lock */
   global: { fetch: fetchWithTimeout(25000) },
 });
 
-/* public client */
 const sbPublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
     detectSessionInUrl: false,
-    /* own storage */
     storageKey: "sb-public-" + Math.random().toString(36).slice(2),
   },
   global: { fetch: fetchWithTimeout(25000) },
 });
 
-/* what to say */
 function errorText(err) {
   if (!err) return "Something went wrong.";
   if (err.name === "AbortError") return "That took too long. Check your connection and try again.";
   return err.message || String(err);
 }
 
-/* timeout */
 function withTimeout(promise, ms, fallback) {
   return Promise.race([
     promise,
@@ -63,10 +55,8 @@ function withTimeout(promise, ms, fallback) {
   ]);
 }
 
-/* stored token */
 const AUTH_KEY = "sb-" + SUPABASE_URL.replace(/^https:\/\//, "").split(".")[0] + "-auth-token";
 
-/* is it unreadable */
 function storedTokenIsBroken() {
   let raw;
   try { raw = localStorage.getItem(AUTH_KEY); } catch (e) { return false; }
@@ -79,7 +69,6 @@ function storedTokenIsBroken() {
   }
 }
 
-/* drop it once */
 function dropBrokenToken() {
   let already = false;
   try { already = sessionStorage.getItem("sb-healed") === "1"; } catch (e) {}
@@ -92,23 +81,19 @@ function dropBrokenToken() {
   return true;
 }
 
-/* session read */
 async function sessionNow() {
   const res = await withTimeout(sb.auth.getSession(), 12000, { stuck: true });
   if (res && res.stuck) {
-    /* slow is not broken */
     if (storedTokenIsBroken()) dropBrokenToken();
     return null;
   }
   return (res && res.data && res.data.session) || null;
 }
 
-/* helpers */
 const $ = (id) => document.getElementById(id);
 const peso = (n) => "₱" + Number(n || 0).toLocaleString("en-PH", { maximumFractionDigits: 0 });
 
 function todayKey() {
-  /* venue day */
   return new Intl.DateTimeFormat("en-CA", { timeZone: VENUE_TZ }).format(new Date());
 }
 function addDays(key, n) {
@@ -132,7 +117,6 @@ function prettyDate(key) {
   });
 }
 function toMinutes(t) {
-  /* parse hours */
   if (!t) return null;
   const m = String(t).trim().match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])?/);
   if (!m) return null;
@@ -155,7 +139,6 @@ function escapeHtml(s) {
   ));
 }
 
-/* peak rate */
 function isPeak(venue, dateKey, hour) {
   const start = toMinutes(venue.peak_start);
   const end = toMinutes(venue.peak_end);
@@ -170,7 +153,6 @@ function rateFor(court, venue, dateKey, hour) {
   return isPeak(venue, dateKey, hour) ? court.peak_rate : court.hourly_rate;
 }
 
-/* theme */
 (function () {
   const root = document.documentElement;
   const btn = $("theme-btn");
@@ -197,7 +179,6 @@ function rateFor(court, venue, dateKey, hour) {
   });
 })();
 
-/* state */
 const state = {
   session: null,
   profile: null,
@@ -205,24 +186,22 @@ const state = {
   venue: null,
   dateKey: todayKey(),
   busy: [],
-  picked: [],          // { courtId, courtName, date, hour, rate }
-  gear: [],            // equipment rows for this venue
-  qty: {},             // equipment id -> how many
-  promo: null,         // the applied promotion, if any
+  picked: [],
+  gear: [],
+  qty: {},
+  promo: null,
   bookings: [],
   booking: null,
   chats: [],
   chatNames: {},
-  chat: null,           // the open conversation
-  ratings: {},          // venue id -> { avg, count }
-  reviews: [],          // reviews for the open venue
-  favs: {},             // venue id -> favourite row id
+  chat: null,
+  ratings: {},
+  reviews: [],
+  favs: {},
 };
 
-/* views */
 const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me", "chats", "chat"];
 
-/* back stack */
 let navTrail = [];
 let goingBack = false;
 
@@ -263,7 +242,6 @@ function goBack(fallback) {
   else if (target === "browse") renderVenues();
 }
 
-/* remember view */
 const WHERE = "sb-where";
 function rememberWhere(view) {
   try {
@@ -283,7 +261,6 @@ function readWhere() {
 async function restoreWhere(saved) {
   const w = saved || readWhere();
   if (!w || !w.v) return false;
-  /* skip forms */
   if (w.v === "auth" || w.v === "apply") return false;
   const needsAccount = ["bookings", "booking", "owner", "admin", "me"].indexOf(w.v) > -1;
   if (needsAccount && !state.session) return false;
@@ -312,12 +289,10 @@ function show(view) {
   VIEWS.forEach((v) => { $("view-" + v).hidden = v !== view; });
   const inApp = view !== "auth";
   const signedIn = !!state.session;
-  /* tab bar */
   $("navbar").hidden = !(inApp && signedIn);
   $("signin-btn").hidden = !(inApp && !signedIn);
   $("account-btn").hidden = !(inApp && signedIn);
   if (!signedIn) closeAccountMenu();
-  /* guarded views */
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
   document.querySelector('[data-nav="chats"]').hidden = !signedIn;
@@ -333,7 +308,6 @@ function show(view) {
   window.scrollTo(0, 0);
 }
 
-/* home by role */
 function homeView() {
   const role = (state.profile && state.profile.role) || "player";
   if (role === "owner") return "owner";
@@ -347,8 +321,6 @@ function say(text, kind) {
   box.style.borderLeftColor = kind === "ok" ? "#2F9E63" : "var(--accent)";
 }
 
-/* captcha */
-/* render widget */
 let captchaId = null;
 function captchaReady() {
   if (captchaId !== null || !window.hcaptcha) return;
@@ -366,7 +338,6 @@ function captchaReset() {
   if (captchaId !== null && window.hcaptcha) window.hcaptcha.reset(captchaId);
 }
 
-/* auth */
 let authMode = "in";
 function setAuthMode(mode) {
   authMode = mode;
@@ -408,7 +379,6 @@ $("auth-form").addEventListener("submit", async (e) => {
           options: {
             data: { name },
             captchaToken: token || undefined,
-            /* redirect back */
             emailRedirectTo: window.location.origin + window.location.pathname,
           },
         }),
@@ -450,7 +420,6 @@ document.querySelectorAll("[data-oauth]").forEach((btn) => {
   });
 });
 
-/* sign out */
 async function signOut() {
   try { sessionStorage.removeItem(WHERE); } catch (e) {}
   navTrail = [];
@@ -462,7 +431,6 @@ async function signOut() {
   renderVenues();
 }
 
-/* boot */
 async function loadProfile() {
   const { data } = await sb.rpc("my_profile");
   state.profile = (data && data[0]) || null;
@@ -484,7 +452,6 @@ sb.auth.onAuthStateChange(async (_event, session) => {
     return;
   }
   await loadProfile();
-  /* resume picks */
   if (wantsToApply) { openApply(); }
   else if (wasSignedOut && state.venue && state.picked.length) show("venue");
   else openHome();
@@ -497,14 +464,11 @@ sb.auth.onAuthStateChange(async (_event, session) => {
 });
 
 (async function boot() {
-  /* read first */
   const saved = readWhere();
-  /* public first */
   show("browse");
   const venuesReady = loadVenues();
   state.session = await sessionNow();
 
-  /* form wins */
   const door = new URLSearchParams(window.location.search).get("auth");
   if (!state.session && (door === "in" || door === "up")) {
     setAuthMode(door);
@@ -518,7 +482,6 @@ sb.auth.onAuthStateChange(async (_event, session) => {
   }
   await venuesReady;
 
-  /* deep link */
   const wantedVenue = new URLSearchParams(window.location.search).get("venue");
   if (wantedVenue && state.venues.some((v) => String(v.id) === wantedVenue)) {
     navTrail = ["browse"];
@@ -531,14 +494,11 @@ sb.auth.onAuthStateChange(async (_event, session) => {
   if (state.session) openHome();
 })();
 
-/* service worker */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 
 $("signin-btn").addEventListener("click", () => { setAuthMode("in"); say(""); show("auth"); });
-/* list a venue */
-/* apply form */
 var wantsToApply = new URLSearchParams(window.location.search).get("intent") === "venue";
 
 function applyState(html) {
@@ -549,7 +509,6 @@ function applyState(html) {
 
 async function openApply() {
   wantsToApply = false;
-  /* clear query */
   if (window.location.search.indexOf("intent=") > -1) {
     history.replaceState({}, "", window.location.pathname);
   }
@@ -593,7 +552,6 @@ async function openApply() {
 
 function askForAccountFirst() {
   setAuthMode("up");
-  /* top notice */
   $("auth-heading").textContent = "List your venue";
   $("auth-lede").textContent =
     "It starts with an account, because an application belongs to somebody. " +
@@ -644,7 +602,6 @@ $("apply-form").addEventListener("submit", async (e) => {
 
 $("auth-back").addEventListener("click", () => goBack("browse"));
 
-/* browse */
 async function loadVenues() {
   const list = $("venue-list");
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
@@ -657,7 +614,6 @@ async function loadVenues() {
     { slow: true }
   );
   if (res && res.slow) {
-    /* stop spinner */
     list.innerHTML = '<div class="empty">The courts are taking too long to load. ' +
       '<button class="btn small" type="button" id="venue-retry" style="margin-left:8px">Try again</button></div>';
     const again = $("venue-retry");
@@ -676,7 +632,6 @@ async function loadVenues() {
   sel.innerHTML = '<option value="">Every sport</option>' +
     Array.from(sports).sort().map((s) => '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + "</option>").join("");
 
-  /* sport filter */
   const wanted = new URLSearchParams(window.location.search).get("sport");
   if (wanted) {
     const match = Array.from(sel.options).find(
@@ -695,7 +650,6 @@ function venueShot(v) {
   return v.photo_url || list[0] || null;
 }
 
-/* stars */
 function starLine(venueId) {
   const r = state.ratings[venueId];
   if (!r || !r.count) return '<span class="stars"><span>no reviews yet</span></span>';
@@ -729,7 +683,6 @@ function venueCard(v) {
   const shot = venueShot(v);
   return '<button class="vcard" type="button" data-venue="' + v.id + '">' +
     (shot
-      /* photo fallback */
       ? '<img class="vshot" src="' + escapeHtml(shot) + '" alt="" loading="lazy" ' +
         'onerror="this.outerHTML=\'<div class=&quot;vshot vshot-none&quot;>No photo yet</div>\'">'
       : '<div class="vshot vshot-none">No photo yet</div>') +
@@ -750,7 +703,6 @@ $("venue-sport-clear").addEventListener("click", () => {
 $("venue-search").addEventListener("input", renderVenues);
 $("sport-filter").addEventListener("change", () => { syncSportNote(); renderVenues(); });
 
-/* ratings */
 async function loadRatings() {
   const { data } = await sbPublic.from("reviews").select("venue_id, rating");
   const by = {};
@@ -816,7 +768,6 @@ $("venue-fav").addEventListener("click", async () => {
   renderFavourites();
 });
 
-/* keep sport */
 function currentSport() {
   const sel = $("sport-filter");
   return sel && sel.value ? sel.value : null;
@@ -839,7 +790,6 @@ $("sport-clear").addEventListener("click", () => {
   if (!$("view-venue").hidden && state.venue) openVenue(state.venue.id);
 });
 
-/* one venue */
 async function openVenue(id) {
   const venue = state.venues.find((v) => v.id === id);
   if (!venue) return;
@@ -848,7 +798,6 @@ async function openVenue(id) {
   state.dateKey = todayKey();
   $("venue-name").textContent = venue.name;
   $("venue-address").textContent = [venue.address, venue.city].filter(Boolean).join(", ");
-  /* venue hours */
   $("venue-hours").textContent = venue.opening_time && venue.closing_time
     ? venue.opening_time + " to " + venue.closing_time
     : (venue.business_hours || "hours not set");
@@ -867,7 +816,6 @@ async function openVenue(id) {
   await loadGear(venue.id);
 }
 
-/* venue page */
 const AMENITY = {
   parking: "Parking", canteen: "Canteen", referee: "Referee available",
   water: "Drinking water", covered: "Covered court", lights: "Night lights",
@@ -944,7 +892,6 @@ async function loadReviews(venueId) {
   if (r) $("venue-hours").title = r.avg.toFixed(1) + " out of 5";
 }
 
-/* gear */
 async function loadGear(venueId) {
   const { data } = await sbPublic
     .from("equipment")
@@ -996,7 +943,6 @@ function renderGear() {
   renderTotals();
 }
 
-/* totals */
 function money() {
   const court = state.picked.reduce((sum, p) => sum + (p.rate || 0), 0);
   let rental = 0;
@@ -1027,7 +973,6 @@ function renderTotals() {
     '<div class="sum"><span>Total</span><span class="num">' + peso(m.total) + "</span></div>";
 }
 
-/* promo code */
 $("promo-go").addEventListener("click", async () => {
   const code = $("promo-input").value.trim().toUpperCase();
   const msg = $("promo-msg");
@@ -1057,7 +1002,6 @@ function renderDays() {
   const openDays = (state.venue && state.venue.open_days) || [];
   strip.innerHTML = Array.from({ length: 7 }, (_, i) => {
     const key = addDays(today, i);
-    /* closed days */
     const shut = openDays.length > 0 && !openDays.includes(dayNum(key));
     return '<button class="day" type="button" data-day="' + key + '" aria-pressed="' +
       (key === state.dateKey) + '"' + (shut ? " disabled" : "") + '>' +
@@ -1151,7 +1095,6 @@ function renderBasket() {
   $("basket-detail").textContent = n + (n === 1 ? " hour" : " hours") +
     (gearCount ? " \u00b7 " + gearCount + " item" + (gearCount === 1 ? "" : "s") : "") +
     " \u00b7 " + prettyDate(state.dateKey);
-  /* one hour */
   $("basket-go").textContent = basketLabel();
   syncDock();
 }
@@ -1161,8 +1104,6 @@ function basketLabel() {
   return n === 1 ? "Book this hour" : "Book these " + n + " hours";
 }
 
-/* dock padding */
-/* swipe hint */
 function syncRailHint(listId, hintId) {
   const list = document.getElementById(listId);
   const hint = document.getElementById(hintId);
@@ -1194,7 +1135,6 @@ if (window.visualViewport) {
 }
 window.addEventListener("scroll", syncDock, { passive: true });
 
-/* group hours */
 function mergePicked() {
   const sorted = state.picked.slice().sort((a, b) =>
     a.courtId === b.courtId ? a.hour - b.hour : a.courtId.localeCompare(b.courtId));
@@ -1218,7 +1158,6 @@ function mergePicked() {
 $("basket-go").addEventListener("click", async () => {
   if (!state.picked.length) return;
   if (!state.session) {
-    /* keep picks */
     setAuthMode("in");
     say("<b>Nearly there.</b> Sign in (or make an account) and these hours are booked in your name.", "ok");
     show("auth");
@@ -1236,7 +1175,6 @@ $("basket-go").addEventListener("click", async () => {
     start_time: hour24(r.startHour),
     end_time: hour24(r.endHour),
     status: "pending_payment",
-    /* first booking */
     total_amount: r.amount + (i === 0 ? m.rental + m.deposit - m.discount : 0),
     rate_at_booking: r.rate,
     promotion_id: i === 0 ? (state.promo ? state.promo.id : null) : null,
@@ -1265,7 +1203,6 @@ $("basket-go").addEventListener("click", async () => {
     }));
   if (gearRows.length) {
     const { error: gearError } = await sb.from("equipment_bookings").insert(gearRows);
-    /* gear failed */
     if (gearError) alert("The court is booked, but the gear could not be added: " + gearError.message);
   }
 
@@ -1281,7 +1218,6 @@ $("basket-go").addEventListener("click", async () => {
   }
 });
 
-/* bookings */
 async function loadBookings() {
   const list = $("booking-list");
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
@@ -1366,8 +1302,6 @@ async function pollStatus(id, tries) {
   }, 2500);
 }
 
-/* paying */
-/* payment steps */
 const PAYMONGO_PUBLIC_KEY = "pk_test_HAtbsoq8qJxuj25yrVGwRTDN";
 async function payWithGCash(booking) {
   const btn = $("pay-btn");
@@ -1418,7 +1352,6 @@ async function payWithGCash(booking) {
   }
 }
 
-/* owner */
 async function loadOwner() {
   const list = $("owner-list");
   const key = todayKey();
@@ -1467,7 +1400,6 @@ async function loadOwner() {
   }).join("");
 }
 
-/* admin */
 async function loadAdmin() {
   const list = $("admin-list");
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
@@ -1490,8 +1422,6 @@ async function loadAdmin() {
   }
 }
 
-/* navigation */
-/* account */
 function renderMe() {
   const p = state.profile || {};
   const name = p.name || "Your account";
@@ -1512,7 +1442,6 @@ function renderMe() {
   loadMeStats();
 }
 
-/* account stats */
 async function loadMeStats() {
   $("stat-saved").textContent = String(Object.keys(state.favs).length);
   if (!state.session) return;
@@ -1534,7 +1463,6 @@ async function loadMeStats() {
   $("stat-hours").textContent = hours ? String(Math.round(hours)) : "0";
 }
 
-/* avatar */
 function renderAccountButton() {
   const p = state.profile || {};
   const name = p.name || (state.session && state.session.user.email) || "Your account";
@@ -1577,8 +1505,6 @@ $("menu-venue").addEventListener("click", () => {
 });
 $("menu-signout").addEventListener("click", () => { closeAccountMenu(); signOut(); });
 
-/* edit details */
-/* save profile */
 let photoFile = null;
 
 function fillEditForm() {
@@ -1638,7 +1564,6 @@ $("me-save").addEventListener("click", async () => {
 
   try {
   if (photoFile) {
-    /* avatar upload */
     const ext = (photoFile.type === "image/png") ? "png" : (photoFile.type === "image/webp" ? "webp" : "jpg");
     const path = uid + "/avatar." + ext;
     const up = await sb.storage.from("avatars").upload(path, photoFile, {
@@ -1673,8 +1598,6 @@ $("me-save").addEventListener("click", async () => {
   }
 });
 
-/* messages */
-/* threads */
 function whenShort(iso) {
   const d = new Date(iso);
   const today = new Date();
@@ -1708,7 +1631,6 @@ async function loadChats() {
   ]);
   const convs = convRes.data || [];
 
-  /* thread name */
   const others = {};
   (partRes.data || []).forEach((p) => {
     if (p.user_id === me) return;
@@ -1865,7 +1787,6 @@ $("chat-input").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
-/* home view */
 function openHome() {
   const home = homeView();
   show(home);
@@ -1873,7 +1794,6 @@ function openHome() {
   else if (home === "admin") loadAdmin();
 }
 
-/* stat tiles */
 document.querySelectorAll("[data-goto]").forEach((tile) => {
   tile.addEventListener("click", () => {
     const where = tile.getAttribute("data-goto");
@@ -1882,7 +1802,6 @@ document.querySelectorAll("[data-goto]").forEach((tile) => {
       if (head) head.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    /* reuse the tab */
     const tab = document.querySelector('#navbar [data-nav="' + where + '"]');
     if (tab) tab.click();
   });
@@ -1891,7 +1810,6 @@ document.querySelectorAll("[data-goto]").forEach((tile) => {
 document.querySelectorAll("[data-nav]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const nav = btn.getAttribute("data-nav");
-    /* tab reset */
     goingBack = true;
     show(nav);
     goingBack = false;

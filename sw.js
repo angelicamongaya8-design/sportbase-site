@@ -1,5 +1,3 @@
-/* service worker */
-
 const CACHE = "sportbase-shell-v4";
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -20,10 +18,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  /* documents */
   const isDocument = req.mode === "navigate" || req.destination === "document" || url.pathname.endsWith(".html") || url.pathname.endsWith(".webmanifest");
 
-  /* assets */
   const hit = isDocument
     ? fetch(req, { cache: "reload" })
     : fetch(req, { cache: "no-cache" });

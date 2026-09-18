@@ -1,4 +1,3 @@
-/* role preview */
 (function () {
   var buttons = document.querySelectorAll("[data-role]");
   var panels = document.querySelectorAll("[data-panel]");
@@ -17,9 +16,6 @@
   });
 })();
 
-/* sign in form */
-
-/* theme */
 (function () {
   var root = document.documentElement;
   var btn = document.getElementById("theme-btn");
@@ -51,7 +47,6 @@
   });
 })();
 
-/* install guide */
 (function () {
   var modal = document.getElementById("soon");
   var card = modal.querySelector(".modal-card");
@@ -141,7 +136,6 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
-  /* copy button */
   modal.querySelectorAll("[data-copy]").forEach(function (btn) {
     var label = btn.textContent;
     btn.addEventListener("click", function () {
@@ -161,7 +155,6 @@
     });
   });
 
-  /* prompt delay */
   var prompt = document.getElementById("prompt");
   var WEEK = 7 * 24 * 60 * 60 * 1000;
   var snoozed = false;
@@ -188,7 +181,6 @@
   document.getElementById("prompt-later").addEventListener("click", later);
 })();
 
-/* live venues */
 (function () {
   var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/";
   var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
@@ -240,7 +232,6 @@
     });
 })();
 
-/* sample screens */
 (function () {
   document.querySelectorAll("[data-screen-tab]").forEach(function (tab) {
     tab.addEventListener("click", function () {
@@ -258,7 +249,6 @@
   });
 })();
 
-/* one query */
 (function () {
   var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/";
   var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
@@ -316,7 +306,6 @@
     });
 })();
 
-/* launch list */
 (function () {
   var API = "https://xbhzofzpsbdrdrdkltbs.supabase.co/rest/v1/launch_notify";
   var KEY = "sb_publishable_8VooxzEgXLxbVWrJbgJuYg_sOXfnkQd";
@@ -368,7 +357,6 @@
   wire("tell-email", "tell-go", "tell-msg", "website-cta");
 })();
 
-/* notify form */
 (function () {
   var modal = document.getElementById("tell");
   if (!modal) return;
@@ -399,7 +387,6 @@
   });
 })();
 
-/* install prompt */
 (function () {
   var deferred = null;
   var panel = document.getElementById("install-live");
@@ -412,7 +399,6 @@
     e.preventDefault();
     deferred = e;
     if (panel) panel.hidden = false;
-    /* native install */
     if (promptBtn && howBtn) { promptBtn.hidden = false; howBtn.hidden = true; }
   });
   window.addEventListener("appinstalled", function () {
@@ -454,7 +440,6 @@
     });
   }
 
-  /* service worker */
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").catch(function () {});
@@ -462,7 +447,6 @@
   }
 })();
 
-/* venue rail */
 (function () {
   var rail = document.getElementById("venue-grid");
   if (!rail) return;
