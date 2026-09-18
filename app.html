@@ -220,8 +220,13 @@
       <span class="chip" id="chat-kind" hidden></span>
       <button class="icon-btn" type="button" id="chat-info-btn" aria-label="Chat details" title="Chat details">i</button>
     </div>
+    <div class="pinned-bar" id="pinned-bar" hidden></div>
     <div class="thread" id="thread"></div>
     <div class="empty" id="thread-empty" hidden>Nothing here yet. Say the first thing.</div>
+    <div class="reply-strip" id="reply-strip" hidden>
+      <span><b id="reply-who"></b><small id="reply-text"></small></span>
+      <button class="icon-btn" type="button" id="reply-cancel" aria-label="Cancel reply">&times;</button>
+    </div>
     <div class="composer">
       <textarea id="chat-input" rows="1" placeholder="Write a message" aria-label="Write a message"></textarea>
       <button class="btn filled" type="button" id="chat-send">Send</button>
@@ -375,6 +380,19 @@
     <span class="note build">build 2026-09-16 06:15 UTC</span>
   </div>
 </footer>
+
+<div class="msg-menu" id="msg-menu" hidden></div>
+
+<div class="sheet" id="forward-sheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="forward-title">
+    <button class="icon-btn sheet-x" type="button" id="forward-close" aria-label="Close">&times;</button>
+    <div class="sheet-top">
+      <h2 id="forward-title">Forward to</h2>
+      <p class="note">Pick a conversation. The message is sent as a new one from you.</p>
+    </div>
+    <div class="sheet-body"><div class="list" id="forward-list"></div></div>
+  </div>
+</div>
 
 <div class="sheet" id="chat-details" hidden>
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="details-name">

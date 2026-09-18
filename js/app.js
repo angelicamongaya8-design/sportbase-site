@@ -222,6 +222,13 @@ const state = {
   reviews: [],
   favs: {},
   openOrder: null,
+  messages: [],
+  chatKnown: {},
+  chatMembers: [],
+  chatPeople: {},
+  replyTo: null,
+  forwarding: null,
+  iBlockedThem: false,
 };
 
 const VIEWS = ["auth", "browse", "venue", "bookings", "booking", "owner", "admin", "apply", "me", "chats", "chat"];
@@ -319,6 +326,9 @@ function show(view) {
   if (!signedIn) closeAccountMenu();
   if ($("foot-home")) $("foot-home").hidden = signedIn;
   if ($("chat-details")) $("chat-details").hidden = true;
+  if ($("forward-sheet")) $("forward-sheet").hidden = true;
+  if ($("msg-menu")) $("msg-menu").hidden = true;
+  if ($("reply-strip") && view !== "chat") { $("reply-strip").hidden = true; state.replyTo = null; }
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
   document.querySelector('[data-nav="chats"]').hidden = !signedIn;
@@ -2349,6 +2359,11 @@ function closeDetails() {
   $("chat-details").hidden = true;
 }
 
+$("reply-cancel").addEventListener("click", cancelReply);
+$("forward-close").addEventListener("click", () => { $("forward-sheet").hidden = true; });
+$("forward-sheet").addEventListener("click", (e) => {
+  if (e.target.id === "forward-sheet") $("forward-sheet").hidden = true;
+});
 $("chat-info-btn").addEventListener("click", openDetails);
 $("details-close").addEventListener("click", closeDetails);
 $("chat-details").addEventListener("click", (e) => {
@@ -2358,19 +2373,33 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !$("chat-details").hidden) closeDetails();
 });
 
+const REACTIONS = ["❤️", "😂", "😮", "😢", "😡", "👍"];
+
+function messageBody(m) {
+  if (m.deleted_at) return "Message unsent";
+  if (m.content) return m.content;
+  if (m.attachment_type === "image") return "Photo";
+  if (m.attachment_type === "video") return "Video";
+  if (m.attachment_url) return "File";
+  return "";
+}
+
 async function loadThread() {
   const box = $("thread");
   if (!state.chat) return;
   const { data, error } = await sb
     .from("messages")
-    .select("id, sender_id, content, created_at, deleted_at")
+    .select("id, sender_id, content, created_at, deleted_at, attachment_url, attachment_type, reply_to, pinned_at")
     .eq("conversation_id", state.chat.id)
     .order("created_at", { ascending: true })
     .limit(200);
   if (error) { box.innerHTML = '<div class="empty">' + escapeHtml(error.message) + "</div>"; return; }
-  const rows = data || [];
+  const all = data || [];
+  const hidden = await hiddenMessageIds();
+  const rows = all.filter((m) => hidden.indexOf(m.id) === -1);
+  state.messages = rows;
   $("thread-empty").hidden = rows.length > 0;
-  if (!rows.length) { box.innerHTML = ""; return; }
+  if (!rows.length) { box.innerHTML = ""; renderPinned([]); return; }
 
   const known = {};
   (state.chatMembers || []).forEach((p) => { known[p.id] = p; });
@@ -2382,9 +2411,15 @@ async function loadThread() {
       known[u.id] = { id: u.id, name: u.name || "Player", avatar: u.avatar_url || null };
     });
   }
+  state.chatKnown = known;
+
+  const reactions = await loadReactions(rows.map((m) => m.id));
+  const byId = {};
+  all.forEach((m) => { byId[m.id] = m; });
 
   const me = state.session ? state.session.user.id : null;
   const group = state.chat.type !== "direct" && state.chat.type !== "support";
+
   box.innerHTML = rows.map((m, i) => {
     const mine = m.sender_id === me;
     const person = known[m.sender_id];
@@ -2394,12 +2429,273 @@ async function loadThread() {
     const face = group && !mine && opensRun
       ? personBadge(who, person ? person.avatar : null, 26)
       : "";
-    return '<div class="bubble' + (mine ? " mine" : "") + (m.deleted_at ? " gone" : "") + '">' +
-      '<span class="who2">' + face + "<span>" + escapeHtml(who) + "</span></span><p>" +
-      (m.deleted_at ? "Message unsent" : escapeHtml(m.content || "")) + "</p><time>" +
-      escapeHtml(whenFull(m.created_at)) + "</time></div>";
+
+    let quoted = "";
+    if (m.reply_to) {
+      const parent = byId[m.reply_to];
+      const parentWho = parent
+        ? (parent.sender_id === me ? "You" : ((known[parent.sender_id] || {}).name || "SportBase"))
+        : "";
+      quoted = '<span class="quoted">' +
+        (parent
+          ? "<b>" + escapeHtml(parentWho) + "</b>" + escapeHtml(messageBody(parent)).slice(0, 120)
+          : "The original message is gone") +
+        "</span>";
+    }
+
+    const chips = (reactions[m.id] || []);
+    const reactionRow = chips.length
+      ? '<span class="reacts">' + chips.map((g) =>
+        '<button class="react' + (g.mine ? " on" : "") + '" type="button" data-react="' +
+        m.id + "|" + g.emoji + '">' + g.emoji + (g.count > 1 ? " " + g.count : "") + "</button>").join("") + "</span>"
+      : "";
+
+    return '<div class="bubble' + (mine ? " mine" : "") + (m.deleted_at ? " gone" : "") +
+      '" id="msg-' + m.id + '">' +
+      '<span class="who2">' + face + "<span>" + escapeHtml(who) + "</span>" +
+      (m.pinned_at ? '<span class="pinned-tag">pinned</span>' : "") +
+      '<button class="msg-more" type="button" data-more="' + m.id + '" aria-label="Message actions">&#8943;</button>' +
+      "</span>" + quoted + "<p>" +
+      escapeHtml(messageBody(m)) + "</p><time>" +
+      escapeHtml(whenFull(m.created_at)) + "</time>" + reactionRow + "</div>";
   }).join("");
+
+  box.querySelectorAll("[data-more]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMessageMenu(btn.getAttribute("data-more"), btn);
+    });
+  });
+  box.querySelectorAll("[data-react]").forEach((btn) => {
+    const [id, emoji] = btn.getAttribute("data-react").split("|");
+    btn.addEventListener("click", () => toggleReaction(id, emoji));
+  });
+
+  renderPinned(rows.filter((m) => m.pinned_at));
   box.scrollIntoView({ block: "end" });
+}
+
+async function hiddenMessageIds() {
+  if (!state.session) return [];
+  const { data } = await sb.from("message_hidden").select("message_id")
+    .eq("user_id", state.session.user.id);
+  return (data || []).map((r) => r.message_id);
+}
+
+async function loadReactions(ids) {
+  const out = {};
+  if (!ids.length) return out;
+  const { data } = await sb.from("message_reactions")
+    .select("message_id, user_id, emoji").in("message_id", ids);
+  const me = state.session ? state.session.user.id : null;
+  (data || []).forEach((r) => {
+    const groups = (out[r.message_id] = out[r.message_id] || []);
+    let g = groups.find((x) => x.emoji === r.emoji);
+    if (!g) { g = { emoji: r.emoji, count: 0, mine: false }; groups.push(g); }
+    g.count += 1;
+    if (r.user_id === me) g.mine = true;
+  });
+  return out;
+}
+
+function renderPinned(pinned) {
+  const bar = $("pinned-bar");
+  if (!pinned.length) { bar.hidden = true; bar.innerHTML = ""; return; }
+  const top = pinned[pinned.length - 1];
+  bar.innerHTML = '<button class="pinned-jump" type="button" data-jump="' + top.id + '">' +
+    "<b>Pinned</b> " + escapeHtml(messageBody(top)).slice(0, 90) + "</button>" +
+    (pinned.length > 1 ? '<span class="sheet-count">' + pinned.length + "</span>" : "");
+  bar.hidden = false;
+  const jump = bar.querySelector("[data-jump]");
+  if (jump) {
+    jump.addEventListener("click", () => {
+      const node = $("msg-" + top.id);
+      if (node) {
+        node.scrollIntoView({ block: "center", behavior: "smooth" });
+        node.classList.add("flash");
+        setTimeout(() => node.classList.remove("flash"), 1600);
+      }
+    });
+  }
+}
+
+function closeMessageMenu() {
+  $("msg-menu").hidden = true;
+}
+
+function openMessageMenu(id, anchor) {
+  const m = (state.messages || []).find((x) => x.id === id);
+  if (!m) return;
+  const me = state.session ? state.session.user.id : null;
+  const mine = m.sender_id === me;
+  const menu = $("msg-menu");
+
+  const items = [];
+  if (!m.deleted_at) {
+    items.push('<div class="react-row">' + REACTIONS.map((e) =>
+      '<button class="react" type="button" data-act="react" data-emoji="' + e + '">' + e + "</button>").join("") + "</div>");
+    items.push('<button class="menu-item" type="button" data-act="reply">Reply</button>');
+    items.push('<button class="menu-item" type="button" data-act="forward">Forward</button>');
+    items.push('<button class="menu-item" type="button" data-act="pin">' +
+      (m.pinned_at ? "Unpin" : "Pin") + "</button>");
+  }
+  if (mine && !m.deleted_at) {
+    items.push('<button class="menu-item danger" type="button" data-act="unsend">Unsend</button>');
+  }
+  items.push('<button class="menu-item" type="button" data-act="hide">Remove for you</button>');
+  if (!mine) {
+    items.push('<button class="menu-item danger" type="button" data-act="report">Report</button>');
+  }
+
+  menu.innerHTML = items.join("");
+  menu.hidden = false;
+
+  const spot = anchor.getBoundingClientRect();
+  const width = menu.offsetWidth;
+  let left = spot.right - width;
+  if (left < 10) left = 10;
+  if (left + width > window.innerWidth - 10) left = window.innerWidth - width - 10;
+  let top = spot.bottom + 6;
+  if (top + menu.offsetHeight > window.innerHeight - 10) {
+    top = Math.max(10, spot.top - menu.offsetHeight - 6);
+  }
+  menu.style.left = left + "px";
+  menu.style.top = top + "px";
+
+  menu.querySelectorAll("[data-act]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const act = btn.getAttribute("data-act");
+      closeMessageMenu();
+      if (act === "react") toggleReaction(id, btn.getAttribute("data-emoji"));
+      else if (act === "reply") startReply(m);
+      else if (act === "forward") openForward(m);
+      else if (act === "pin") togglePin(m);
+      else if (act === "unsend") unsendMessage(m);
+      else if (act === "hide") hideForMe(m);
+      else if (act === "report") reportMessage(m);
+    });
+  });
+}
+
+document.addEventListener("click", () => { if (!$("msg-menu").hidden) closeMessageMenu(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("msg-menu").hidden) closeMessageMenu();
+});
+window.addEventListener("resize", closeMessageMenu);
+
+async function toggleReaction(id, emoji) {
+  const me = state.session.user.id;
+  const { data: existing } = await sb.from("message_reactions")
+    .select("id").eq("message_id", id).eq("user_id", me).eq("emoji", emoji).maybeSingle();
+  if (existing) {
+    await sb.from("message_reactions").delete().eq("id", existing.id);
+  } else {
+    const { error } = await sb.from("message_reactions")
+      .insert({ message_id: id, user_id: me, emoji });
+    if (error) { alert("Could not react: " + error.message); return; }
+  }
+  await loadThread();
+}
+
+function startReply(m) {
+  state.replyTo = m;
+  const who = m.sender_id === state.session.user.id
+    ? "yourself"
+    : ((state.chatKnown[m.sender_id] || {}).name || "SportBase");
+  $("reply-strip").hidden = false;
+  $("reply-who").textContent = "Replying to " + who;
+  $("reply-text").textContent = messageBody(m).slice(0, 110);
+  $("chat-input").focus();
+}
+
+function cancelReply() {
+  state.replyTo = null;
+  $("reply-strip").hidden = true;
+}
+
+async function togglePin(m) {
+  const { error } = await sb.rpc("set_message_pin", {
+    p_message_id: m.id,
+    p_pinned: !m.pinned_at,
+  });
+  if (error) { alert("Could not pin: " + error.message); return; }
+  await loadThread();
+}
+
+async function unsendMessage(m) {
+  if (!confirm("Unsend this message? It is removed for everyone, and the text is deleted, not just hidden.")) return;
+  const { error } = await sb.rpc("unsend_message", { p_message_id: m.id });
+  if (error) { alert("Could not unsend: " + error.message); return; }
+  await loadThread();
+}
+
+async function hideForMe(m) {
+  const { error } = await sb.from("message_hidden")
+    .insert({ message_id: m.id, user_id: state.session.user.id });
+  if (error && error.message.indexOf("duplicate") === -1) {
+    alert("Could not remove it: " + error.message);
+    return;
+  }
+  await loadThread();
+}
+
+async function openForward(m) {
+  state.forwarding = m;
+  const box = $("forward-list");
+  $("forward-sheet").hidden = false;
+  box.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  const others = (state.chats || []).filter((c) => c.id !== state.chat.id);
+  if (!others.length) {
+    box.innerHTML = "<p class='note'>You have no other conversation to send this to.</p>";
+    return;
+  }
+  box.innerHTML = others.map((c) =>
+    '<button class="row" type="button" data-to="' + c.id + '"><span><b>' +
+    escapeHtml(chatTitle(c)) + "</b><small>" + escapeHtml(CHAT_KIND_LABEL[c.type] || "Chat") +
+    "</small></span></button>").join("");
+  box.querySelectorAll("[data-to]").forEach((btn) => {
+    btn.addEventListener("click", () => forwardTo(btn.getAttribute("data-to")));
+  });
+}
+
+async function forwardTo(conversationId) {
+  const m = state.forwarding;
+  if (!m) return;
+  const { error } = await sb.from("messages").insert({
+    conversation_id: conversationId,
+    sender_id: state.session.user.id,
+    content: messageBody(m),
+    attachment_url: m.attachment_url || null,
+    attachment_type: m.attachment_type || null,
+  });
+  $("forward-sheet").hidden = true;
+  state.forwarding = null;
+  if (error) { alert("Could not forward: " + error.message); return; }
+  alert("Sent.");
+}
+
+async function reportMessage(m) {
+  const why = prompt("What is wrong with this message? An admin reads this.");
+  if (why === null) return;
+  const who = (state.chatKnown[m.sender_id] || {}).name || "someone";
+  const { data: conv, error } = await sb.from("conversations")
+    .insert({ type: "support", name: "Reporting a message", created_by: state.session.user.id })
+    .select("id").single();
+  if (error || !conv) { alert("Could not report: " + ((error && error.message) || "unknown")); return; }
+  await sb.from("conversation_participants")
+    .insert({ conversation_id: conv.id, user_id: state.session.user.id });
+  const body =
+    "Reporting a message from " + who + ".\n\n" +
+    "What they said: " + messageBody(m) + "\n" +
+    "Sent: " + whenFull(m.created_at) + "\n" +
+    "Message id: " + m.id + "\n\n" +
+    "Why: " + (why.trim() || "not given");
+  await sb.from("messages").insert({
+    conversation_id: conv.id,
+    sender_id: state.session.user.id,
+    content: body,
+  });
+  alert("Sent to SportBase support. You can follow it under Messages.");
 }
 
 async function sendMessage() {
@@ -2414,12 +2710,14 @@ async function sendMessage() {
       conversation_id: state.chat.id,
       sender_id: state.session.user.id,
       content: text,
+      reply_to: state.replyTo ? state.replyTo.id : null,
     });
     if (error) {
       $("chat-note").textContent = "That did not send: " + error.message;
       return;
     }
     input.value = "";
+    cancelReply();
     await loadThread();
   } catch (err) {
     $("chat-note").textContent = "That did not send: " + errorText(err);

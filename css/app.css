@@ -412,6 +412,33 @@ a { color: var(--ink); }
 .bubble p { margin-top: 5px; font-size: 14.5px; white-space: pre-wrap; word-break: break-word; }
 .bubble time { display: block; margin-top: 5px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--muted); }
 .bubble.gone p { color: var(--muted); font-style: italic; }
+.bubble { position: relative; }
+.bubble.flash { outline: 2px solid var(--accent); outline-offset: 2px; }
+.msg-more { margin-left: auto; width: 22px; height: 22px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font: inherit; font-size: 15px; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 0.12s ease; }
+.bubble:hover .msg-more, .msg-more:focus { opacity: 1; }
+@media (hover: none) { .msg-more { opacity: 1; } }
+.pinned-tag { font-family: "IBM Plex Mono", monospace; font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 999px; padding: 1px 6px; }
+.quoted { display: block; margin-top: 6px; padding: 6px 9px; border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--muted) 12%, transparent); font-size: 12.5px; color: var(--muted); }
+.quoted b { display: block; color: var(--ink); font-size: 11.5px; }
+.reacts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.react { border: 1px solid var(--line); border-radius: 999px; background: var(--ground); color: var(--ink); font: inherit; font-size: 12.5px; padding: 2px 8px; cursor: pointer; }
+.react.on { border-color: var(--accent); background: var(--accent-soft); }
+.react:hover { border-color: var(--accent); }
+.msg-menu { position: fixed; z-index: 85; min-width: 190px; border: 1px solid var(--line); border-radius: 12px; background: var(--raised); padding: 6px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
+.msg-menu[hidden] { display: none; }
+.msg-menu .react-row { display: flex; gap: 2px; padding: 2px 2px 6px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.msg-menu .react-row .react { border: 0; background: none; font-size: 17px; padding: 4px 5px; }
+.msg-menu .react-row .react:hover { background: var(--accent-soft); border-radius: 8px; }
+.menu-item { display: block; width: 100%; text-align: left; border: 0; border-radius: 8px; background: none; color: var(--ink); font-family: Archivo, sans-serif; font-weight: 600; font-size: 14px; padding: 9px 11px; cursor: pointer; }
+.menu-item:hover { background: var(--ground); }
+.menu-item.danger { color: #e0574f; }
+.pinned-bar { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 12px; background: var(--accent-soft); }
+.pinned-jump { flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pinned-jump b { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 6px; }
+.reply-strip { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 9px 12px; border: 1px solid var(--line); border-left: 2px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--raised); }
+.reply-strip span { flex: 1; min-width: 0; }
+.reply-strip b { display: block; font-size: 12px; color: var(--accent); }
+.reply-strip small { display: block; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .composer { margin-top: 16px; display: flex; gap: 8px; align-items: flex-end; }
 .composer textarea {
   flex: 1; min-width: 0; min-height: 46px; max-height: 140px; resize: vertical;
