@@ -23,34 +23,11 @@ function fetchWithTimeout(ms) {
   };
 }
 
-const LOCK_WAIT_MS = 3000;
-
-function boundedAuthLock(name, _acquireTimeout, fn) {
-  if (!navigator.locks || !navigator.locks.request) return Promise.resolve().then(fn);
-  return new Promise((resolve, reject) => {
-    let started = false;
-    const run = () => {
-      if (started) return;
-      started = true;
-      return Promise.resolve().then(fn).then(resolve, reject);
-    };
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => { ctrl.abort(); run(); }, LOCK_WAIT_MS);
-    navigator.locks
-      .request(name, { mode: "exclusive", signal: ctrl.signal }, () => {
-        clearTimeout(timer);
-        return run();
-      })
-      .catch(() => { clearTimeout(timer); run(); });
-  });
-}
-
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    lock: boundedAuthLock,
   },
   global: { fetch: fetchWithTimeout(25000) },
 });
@@ -470,7 +447,9 @@ async function handleAuthChange(event, session) {
     state.session = session;
     return;
   }
-  const wasSignedOut = !state.session;
+  const beforeId = state.session && state.session.user ? state.session.user.id : null;
+  const afterId = session && session.user ? session.user.id : null;
+  const wasSignedOut = !beforeId;
   state.session = session;
   if (!session) {
     document.querySelector('[data-nav="owner"]').hidden = true;
@@ -480,6 +459,7 @@ async function handleAuthChange(event, session) {
     renderVenues();
     return;
   }
+  if (beforeId === afterId) return;
   await loadProfile();
   if (wantsToApply) { openApply(); }
   else if (wasSignedOut && state.venue && state.picked.length) show("venue");
@@ -514,6 +494,15 @@ sb.auth.onAuthStateChange((event, session) => {
     return;
   }
   await venuesReady;
+
+  const paid = new URLSearchParams(window.location.search).get("paid");
+  if (paid && state.session) {
+    history.replaceState({}, "", window.location.pathname);
+    await openBooking(paid, true);
+    return;
+  }
+
+  if (currentView() !== "browse") return;
 
   const wantedVenue = new URLSearchParams(window.location.search).get("venue");
   if (wantedVenue && state.venues.some((v) => String(v.id) === wantedVenue)) {
