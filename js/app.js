@@ -442,13 +442,19 @@ async function loadProfile() {
   loadFavourites();
 }
 
-sb.auth.onAuthStateChange(async (_event, session) => {
+async function handleAuthChange(event, session) {
+  if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+    state.session = session;
+    return;
+  }
   const wasSignedOut = !state.session;
   state.session = session;
   if (!session) {
     document.querySelector('[data-nav="owner"]').hidden = true;
     document.querySelector('[data-nav="admin"]').hidden = true;
+    state.profile = null;
     show("browse");
+    renderVenues();
     return;
   }
   await loadProfile();
@@ -461,6 +467,10 @@ sb.auth.onAuthStateChange(async (_event, session) => {
     history.replaceState({}, "", window.location.pathname);
     openBooking(paid, true);
   }
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  setTimeout(() => { handleAuthChange(event, session); }, 0);
 });
 
 (async function boot() {
