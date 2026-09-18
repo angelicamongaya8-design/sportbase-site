@@ -1319,31 +1319,104 @@ $("basket-go").addEventListener("click", async () => {
   }
 });
 
+const BIN_KEEP_DAYS = 30;
+let bookingFilter = "all";
+
+function daysLeftInBin(iso) {
+  const gone = new Date(iso).getTime() + BIN_KEEP_DAYS * 24 * 60 * 60 * 1000;
+  return Math.max(0, Math.ceil((gone - Date.now()) / (24 * 60 * 60 * 1000)));
+}
+
+function bookingLine(b) {
+  const court = b.courts || {};
+  const venue = (court.venues && court.venues.name) || "Venue";
+  return "<b>" + escapeHtml(venue) + " · " + escapeHtml(court.name || "Court") + "</b><small>" +
+    prettyDate(b.date) + ", " + String(b.start_time).slice(0, 5) + " to " + String(b.end_time).slice(0, 5) +
+    "</small>";
+}
+
 async function loadBookings() {
+  if (!state.session) return;
   const list = $("booking-list");
+  const bin = bookingFilter === "bin";
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-  const { data, error } = await sb
-    .from("bookings")
-    .select("id, date, start_time, end_time, status, total_amount, court_id, courts(name, sport, venues(name))")
-    .eq("player_id", state.session.user.id)
-    .is("deleted_at", null)
-    .order("date", { ascending: false });
+  $("bin-note").hidden = !bin;
+
+  const me = state.session.user.id;
+  const columns = "id, date, start_time, end_time, status, total_amount, deleted_at, court_id, courts(name, sport, venues(name))";
+
+  if (bin) {
+    const cutoff = new Date(Date.now() - BIN_KEEP_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    await sb.from("bookings").delete().eq("player_id", me).lt("deleted_at", cutoff);
+  }
+
+  let query = sb.from("bookings").select(columns).eq("player_id", me);
+  query = bin ? query.not("deleted_at", "is", null) : query.is("deleted_at", null);
+  if (!bin && bookingFilter !== "all") query = query.eq("status", bookingFilter);
+  const { data, error } = await query.order("date", { ascending: false });
+
   if (error) { list.innerHTML = '<div class="empty">' + escapeHtml(error.message) + "</div>"; return; }
   state.bookings = data || [];
-  $("booking-empty").hidden = state.bookings.length > 0;
+
+  const empty = $("booking-empty");
+  empty.hidden = state.bookings.length > 0;
+  empty.textContent = bin
+    ? "The recycle bin is empty."
+    : bookingFilter === "all"
+      ? "Nothing booked yet. Pick an hour and it lands here."
+      : "Nothing here under that status.";
+
   list.innerHTML = state.bookings.map((b) => {
-    const court = b.courts || {};
-    const venue = (court.venues && court.venues.name) || "Venue";
-    return '<button class="row" type="button" data-booking="' + b.id + '"><span><b>' +
-      escapeHtml(venue) + " · " + escapeHtml(court.name || "Court") + "</b><small>" +
-      prettyDate(b.date) + ", " + String(b.start_time).slice(0, 5) + " to " + String(b.end_time).slice(0, 5) +
-      "</small></span><span class='pill " + (b.status === "confirmed" ? "ok" : b.status === "pending_payment" ? "go" : "") + "'>" +
-      escapeHtml(String(b.status).replace(/_/g, " ")) + "</span></button>";
+    if (bin) {
+      return '<div class="row flat"><span>' + bookingLine(b) +
+        "<small>Gone for good in " + daysLeftInBin(b.deleted_at) +
+        (daysLeftInBin(b.deleted_at) === 1 ? " day" : " days") + "</small></span>" +
+        '<button class="btn small" type="button" data-restore="' + b.id + '">Restore</button></div>';
+    }
+    const removable = b.status === "cancelled" || b.status === "completed";
+    return '<div class="row flat"><button class="row-open" type="button" data-booking="' + b.id + '">' +
+      "<span>" + bookingLine(b) + "</span></button>" +
+      "<span class='pill " + (b.status === "confirmed" ? "ok" : b.status === "pending_payment" ? "go" : "") + "'>" +
+      escapeHtml(String(b.status).replace(/_/g, " ")) + "</span>" +
+      (removable ? '<button class="btn small" type="button" data-remove="' + b.id + '">Delete</button>' : "") +
+      "</div>";
   }).join("");
+
   list.querySelectorAll("[data-booking]").forEach((b) => {
     b.addEventListener("click", () => openBooking(b.getAttribute("data-booking")));
   });
+  list.querySelectorAll("[data-remove]").forEach((b) => {
+    b.addEventListener("click", () => removeBooking(b.getAttribute("data-remove")));
+  });
+  list.querySelectorAll("[data-restore]").forEach((b) => {
+    b.addEventListener("click", () => restoreBooking(b.getAttribute("data-restore")));
+  });
 }
+
+async function removeBooking(id) {
+  if (!confirm("Move this booking to the recycle bin? It is kept for " + BIN_KEEP_DAYS + " days.")) return;
+  const { error } = await sb.from("bookings")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) { alert("Could not delete: " + error.message); return; }
+  loadBookings();
+}
+
+async function restoreBooking(id) {
+  const { error } = await sb.from("bookings").update({ deleted_at: null }).eq("id", id);
+  if (error) { alert("Could not restore: " + error.message); return; }
+  loadBookings();
+}
+
+document.querySelectorAll("[data-bstatus]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    bookingFilter = btn.getAttribute("data-bstatus");
+    document.querySelectorAll("[data-bstatus]").forEach((other) => {
+      other.classList.toggle("on", other === btn);
+    });
+    loadBookings();
+  });
+});
 $("bookings-refresh").addEventListener("click", loadBookings);
 $("booking-back").addEventListener("click", () => goBack("bookings"));
 $("venue-back").addEventListener("click", () => { state.picked = []; goBack("browse"); });
@@ -1817,6 +1890,38 @@ function whenShort(iso) {
     : d.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
 }
 
+function whenFull(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const time = d.toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" });
+  if (d.toDateString() === now.toDateString()) return time;
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday " + time;
+  const sameYear = d.getFullYear() === now.getFullYear();
+  const date = d.toLocaleDateString(
+    "en-PH",
+    sameYear
+      ? { month: "short", day: "numeric" }
+      : { month: "short", day: "numeric", year: "numeric" },
+  );
+  return date + " · " + time;
+}
+
+function initialsOf(name) {
+  const text = String(name || "").trim();
+  return text ? text.charAt(0).toUpperCase() : "?";
+}
+
+function personBadge(name, url, size) {
+  const px = size || 30;
+  const style = "width:" + px + "px;height:" + px + "px;font-size:" + Math.round(px * 0.42) + "px";
+  const letter = escapeHtml(initialsOf(name));
+  if (!url) return '<span class="avatar" style="' + style + '">' + letter + "</span>";
+  return '<img class="avatar" style="' + style + '" src="' + escapeHtml(url) + '" alt="" ' +
+    'onerror="this.outerHTML=&quot;<span class=\'avatar\' style=\'' + style + '\'>' + letter + '</span>&quot;">';
+}
+
 async function loadChats() {
   const list = $("chat-list");
   list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
@@ -1847,18 +1952,24 @@ async function loadChats() {
     (others[p.conversation_id] = others[p.conversation_id] || []).push(p.user_id);
   });
   const need = [...new Set(Object.values(others).flat())];
+  state.chatNames = {};
+  state.chatPeople = {};
   if (need.length) {
     const { data: people } = await withTimeout(
-      sb.from("users").select("id, name, email").in("id", need), 8000, { data: null });
+      sb.from("users").select("id, name, email, avatar_url").in("id", need), 8000, { data: null });
     const byId = {};
-    (people || []).forEach((u) => { byId[u.id] = u.name || (u.email || "").split("@")[0]; });
-    state.chatNames = {};
-    Object.keys(others).forEach((cid) => {
-      const names = others[cid].map((id) => byId[id]).filter(Boolean);
-      if (names.length) state.chatNames[cid] = names.slice(0, 3).join(", ");
+    (people || []).forEach((u) => {
+      byId[u.id] = {
+        id: u.id,
+        name: u.name || (u.email || "").split("@")[0] || "Player",
+        avatar: u.avatar_url || null,
+      };
     });
-  } else {
-    state.chatNames = {};
+    Object.keys(others).forEach((cid) => {
+      const found = others[cid].map((id) => byId[id]).filter(Boolean);
+      state.chatPeople[cid] = found;
+      if (found.length) state.chatNames[cid] = found.slice(0, 3).map((p) => p.name).join(", ");
+    });
   }
   const last = {};
   (msgRes.data || []).forEach((m) => { if (!last[m.conversation_id]) last[m.conversation_id] = m; });
@@ -1876,8 +1987,16 @@ async function loadChats() {
     const preview = m
       ? (m.deleted_at ? "Message unsent" : String(m.content || "").slice(0, 70))
       : "No message yet";
-    return '<button class="row" type="button" data-chat="' + c.id + '"><span><b>' +
-      escapeHtml(chatTitle(c)) + "</b><small>" + escapeHtml(preview) + "</small></span>" +
+    const people = (state.chatPeople && state.chatPeople[c.id]) || [];
+    const title = chatTitle(c);
+    const face = c.type === "support"
+      ? personBadge("SportBase", null, 36)
+      : personBadge(people.length ? people[0].name : title, people.length ? people[0].avatar : null, 36);
+    const many = c.type !== "direct" && people.length > 1;
+    return '<button class="row" type="button" data-chat="' + c.id + '">' +
+      '<span class="row-lead">' + face + "<span><b>" + escapeHtml(title) + "</b><small>" +
+      (many ? escapeHtml(people.length + 1 + " members") + " &middot; " : "") +
+      escapeHtml(preview) + "</small></span></span>" +
       '<span class="pill' + (c.type === "support" ? " go" : "") + '">' +
       (m ? escapeHtml(whenShort(m.created_at)) : escapeHtml(c.type)) + "</span></button>";
   }).join("");
@@ -1926,6 +2045,7 @@ async function openChat(id) {
   const { data: conv } = await sb.from("conversations").select("id, type, name, created_by").eq("id", id).maybeSingle();
   state.chat = conv || { id: id, type: "direct", name: null };
   $("chat-title").textContent = chatTitle(state.chat);
+  await loadMembers(id);
   $("chat-kind").hidden = state.chat.type !== "support";
   $("chat-kind").textContent = "support";
   $("chat-note").textContent = state.chat.type === "support"
@@ -1934,6 +2054,44 @@ async function openChat(id) {
   rememberWhere("chat");
   await loadThread();
 }
+
+async function loadMembers(conversationId) {
+  const box = $("chat-members");
+  const list = $("chat-members-list");
+  state.chatMembers = [];
+  box.hidden = true;
+  list.hidden = true;
+  $("chat-members-toggle").setAttribute("aria-expanded", "false");
+  if (!state.chat || state.chat.type === "direct" || state.chat.type === "support") return;
+
+  const { data: rows } = await sb
+    .from("conversation_participants")
+    .select("user_id, users(name, avatar_url)")
+    .eq("conversation_id", conversationId);
+
+  const me = state.session ? state.session.user.id : null;
+  state.chatMembers = (rows || []).map((r) => ({
+    id: r.user_id,
+    name: (r.users && r.users.name) || "Player",
+    avatar: (r.users && r.users.avatar_url) || null,
+  }));
+  if (!state.chatMembers.length) return;
+
+  $("chat-members-toggle").textContent = state.chatMembers.length + " members";
+  list.innerHTML = state.chatMembers.map((p) =>
+    '<span class="member">' + personBadge(p.name, p.avatar, 26) + "<span>" +
+    escapeHtml(p.name) + (p.id === me ? " (you)" : "") +
+    (state.chat.created_by && p.id === state.chat.created_by ? " &middot; admin" : "") +
+    "</span></span>").join("");
+  box.hidden = false;
+}
+
+$("chat-members-toggle").addEventListener("click", () => {
+  const list = $("chat-members-list");
+  const open = list.hidden;
+  list.hidden = !open;
+  $("chat-members-toggle").setAttribute("aria-expanded", open ? "true" : "false");
+});
 
 async function loadThread() {
   const box = $("thread");
@@ -1949,20 +2107,32 @@ async function loadThread() {
   $("thread-empty").hidden = rows.length > 0;
   if (!rows.length) { box.innerHTML = ""; return; }
 
+  const known = {};
+  (state.chatMembers || []).forEach((p) => { known[p.id] = p; });
   const senders = Array.from(new Set(rows.map((m) => m.sender_id).filter(Boolean)));
-  const names = {};
-  if (senders.length) {
-    const { data: people } = await sb.from("users").select("id, name").in("id", senders);
-    (people || []).forEach((u) => { names[u.id] = u.name; });
+  const missing = senders.filter((id) => !known[id]);
+  if (missing.length) {
+    const { data: people } = await sb.from("users").select("id, name, avatar_url").in("id", missing);
+    (people || []).forEach((u) => {
+      known[u.id] = { id: u.id, name: u.name || "Player", avatar: u.avatar_url || null };
+    });
   }
+
   const me = state.session ? state.session.user.id : null;
-  box.innerHTML = rows.map((m) => {
+  const group = state.chat.type !== "direct" && state.chat.type !== "support";
+  box.innerHTML = rows.map((m, i) => {
     const mine = m.sender_id === me;
-    const who = mine ? "You" : (names[m.sender_id] || "SportBase");
+    const person = known[m.sender_id];
+    const who = mine ? "You" : (person ? person.name : "SportBase");
+    const previous = i > 0 ? rows[i - 1] : null;
+    const opensRun = !previous || previous.sender_id !== m.sender_id;
+    const face = group && !mine && opensRun
+      ? personBadge(who, person ? person.avatar : null, 26)
+      : "";
     return '<div class="bubble' + (mine ? " mine" : "") + (m.deleted_at ? " gone" : "") + '">' +
-      '<span class="who2">' + escapeHtml(who) + "</span><p>" +
+      '<span class="who2">' + face + "<span>" + escapeHtml(who) + "</span></span><p>" +
       (m.deleted_at ? "Message unsent" : escapeHtml(m.content || "")) + "</p><time>" +
-      escapeHtml(whenShort(m.created_at)) + "</time></div>";
+      escapeHtml(whenFull(m.created_at)) + "</time></div>";
   }).join("");
   box.scrollIntoView({ block: "end" });
 }

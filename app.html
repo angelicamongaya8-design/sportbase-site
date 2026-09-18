@@ -169,6 +169,15 @@
       <h1>Your bookings</h1>
       <button class="btn small" type="button" id="bookings-refresh">Refresh</button>
     </div>
+    <div class="filters scroller" id="booking-tabs">
+      <button class="chipbtn on" type="button" data-bstatus="all">All</button>
+      <button class="chipbtn" type="button" data-bstatus="pending_payment">Pending payment</button>
+      <button class="chipbtn" type="button" data-bstatus="confirmed">Confirmed</button>
+      <button class="chipbtn" type="button" data-bstatus="completed">Completed</button>
+      <button class="chipbtn" type="button" data-bstatus="cancelled">Cancelled</button>
+      <button class="chipbtn" type="button" data-bstatus="bin">Recycle bin</button>
+    </div>
+    <p class="note" id="bin-note" hidden>Deleted bookings are kept for 30 days, then they go for good.</p>
     <div class="list" id="booking-list"></div>
     <div class="empty" id="booking-empty" hidden>Nothing booked yet. Pick an hour and it lands here.</div>
   </section>
@@ -209,6 +218,10 @@
     <div class="shell-head">
       <h1 id="chat-title">Chat</h1>
       <span class="chip" id="chat-kind" hidden></span>
+    </div>
+    <div class="members" id="chat-members" hidden>
+      <button class="btn small" type="button" id="chat-members-toggle" aria-expanded="false">Members</button>
+      <div class="members-list" id="chat-members-list" hidden></div>
     </div>
     <div class="thread" id="thread"></div>
     <div class="empty" id="thread-empty" hidden>Nothing here yet. Say the first thing.</div>
