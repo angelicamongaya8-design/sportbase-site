@@ -112,6 +112,17 @@ a { color: var(--ink); }
 .filters { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
 .filters input, .filters select { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font-family: inherit; font-size: 14px; }
 .filters input { flex: 1; min-width: 180px; }
+.filters.scroller { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+.chipbtn { flex: none; border: 1px solid var(--line); border-radius: 999px; background: var(--raised); color: var(--muted); font-family: Archivo, sans-serif; font-weight: 700; font-size: 13px; padding: 8px 14px; cursor: pointer; white-space: nowrap; }
+.chipbtn:hover { border-color: var(--accent); }
+.chipbtn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.row-open { flex: 1; min-width: 0; display: flex; text-align: left; background: none; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; }
+.row-lead { display: flex; align-items: center; gap: 11px; min-width: 0; flex: 1; }
+.row-lead > span { min-width: 0; }
+.members { margin-top: 12px; }
+.members-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.member { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 4px; background: var(--raised); font-size: 13.5px; }
+.bubble .who2 { display: flex; align-items: center; gap: 7px; }
 .days { margin-top: 16px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .day { border: 1px solid var(--line); border-radius: 12px; background: var(--raised); padding: 9px 12px; cursor: pointer; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .day[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
@@ -275,6 +286,9 @@ a { color: var(--ink); }
 .inapp li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 @media (max-width: 430px) {
   .filters { flex-direction: column; }
+  .filters.scroller { flex-direction: row; }
+  #booking-list .row { flex-wrap: wrap; row-gap: 10px; }
+  #booking-list .row-open { flex: 1 1 100%; }
   .filters input, .filters select { width: 100%; min-width: 0; }
 }
 .who { position: relative; }
