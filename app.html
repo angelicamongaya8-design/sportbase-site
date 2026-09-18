@@ -218,10 +218,7 @@
     <div class="shell-head">
       <h1 id="chat-title">Chat</h1>
       <span class="chip" id="chat-kind" hidden></span>
-    </div>
-    <div class="members" id="chat-members" hidden>
-      <button class="btn small" type="button" id="chat-members-toggle" aria-expanded="false">Members</button>
-      <div class="members-list" id="chat-members-list" hidden></div>
+      <button class="icon-btn" type="button" id="chat-info-btn" aria-label="Chat details" title="Chat details">i</button>
     </div>
     <div class="thread" id="thread"></div>
     <div class="empty" id="thread-empty" hidden>Nothing here yet. Say the first thing.</div>
@@ -378,6 +375,29 @@
     <span class="note build">build 2026-09-16 06:15 UTC</span>
   </div>
 </footer>
+
+<div class="sheet" id="chat-details" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="details-name">
+    <button class="icon-btn sheet-x" type="button" id="details-close" aria-label="Close details">&times;</button>
+    <div class="sheet-top">
+      <span id="details-face"></span>
+      <h2 id="details-name">Chat</h2>
+      <p class="note" id="details-kind"></p>
+    </div>
+    <div class="sheet-body">
+      <button class="sheet-row" type="button" id="chat-members-toggle" aria-expanded="false">
+        <span>Chat members</span>
+        <span class="sheet-count" id="members-count"></span>
+      </button>
+      <div class="members-list" id="chat-members-list" hidden></div>
+      <div class="member-add" id="member-add" hidden>
+        <input id="member-search" type="search" placeholder="Add someone by name" aria-label="Add someone by name" autocomplete="off">
+        <div class="members-list" id="member-results"></div>
+      </div>
+      <p class="note" id="members-note" hidden></p>
+    </div>
+  </div>
+</div>
 
 <div class="lightbox" id="lightbox" hidden>
   <button class="lightbox-close" type="button" id="lightbox-close" aria-label="Close photo">&times;</button>

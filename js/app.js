@@ -318,6 +318,7 @@ function show(view) {
   $("account-btn").hidden = !(inApp && signedIn);
   if (!signedIn) closeAccountMenu();
   if ($("foot-home")) $("foot-home").hidden = signedIn;
+  if ($("chat-details")) $("chat-details").hidden = true;
   document.querySelector('[data-nav="bookings"]').hidden = !signedIn;
   document.querySelector('[data-nav="me"]').hidden = !signedIn;
   document.querySelector('[data-nav="chats"]').hidden = !signedIn;
@@ -2056,42 +2057,153 @@ async function openChat(id) {
   await loadThread();
 }
 
+const CHAT_KIND_LABEL = {
+  direct: "Direct message",
+  group: "Group chat",
+  tournament: "Tournament chat",
+  support: "SportBase support",
+};
+
 async function loadMembers(conversationId) {
-  const box = $("chat-members");
-  const list = $("chat-members-list");
   state.chatMembers = [];
-  box.hidden = true;
-  list.hidden = true;
+  $("chat-members-list").hidden = true;
+  $("chat-members-list").innerHTML = "";
+  $("member-add").hidden = true;
+  $("member-results").innerHTML = "";
   $("chat-members-toggle").setAttribute("aria-expanded", "false");
-  if (!state.chat || state.chat.type === "direct" || state.chat.type === "support") return;
 
   const { data: rows } = await sb
     .from("conversation_participants")
     .select("user_id, users(name, avatar_url)")
     .eq("conversation_id", conversationId);
 
-  const me = state.session ? state.session.user.id : null;
   state.chatMembers = (rows || []).map((r) => ({
     id: r.user_id,
     name: (r.users && r.users.name) || "Player",
     avatar: (r.users && r.users.avatar_url) || null,
   }));
-  if (!state.chatMembers.length) return;
+  renderDetails();
+}
 
-  $("chat-members-toggle").textContent = state.chatMembers.length + " members";
-  list.innerHTML = state.chatMembers.map((p) =>
+function renderDetails() {
+  const me = state.session ? state.session.user.id : null;
+  const kind = (state.chat && state.chat.type) || "direct";
+  const title = chatTitle(state.chat || {});
+  const others = state.chatMembers.filter((p) => p.id !== me);
+  const face = kind === "direct" && others.length
+    ? personBadge(others[0].name, others[0].avatar, 64)
+    : personBadge(title, null, 64);
+
+  $("details-face").innerHTML = face;
+  $("details-name").textContent = title;
+  $("details-kind").textContent = CHAT_KIND_LABEL[kind] || "Chat";
+  const group = kind !== "direct" && kind !== "support";
+  $("chat-members-toggle").hidden = !group;
+  $("members-count").textContent = group ? String(state.chatMembers.length) : "";
+  renderMembers();
+}
+
+function iRunThisGroup() {
+  const me = state.session ? state.session.user.id : null;
+  return !!state.chat && state.chat.type === "group" && !!me && state.chat.created_by === me;
+}
+
+function renderMembers() {
+  const me = state.session ? state.session.user.id : null;
+  const canManage = iRunThisGroup();
+  $("members-count").textContent = String(state.chatMembers.length);
+  $("chat-members-list").innerHTML = state.chatMembers.map((p) =>
     '<span class="member">' + personBadge(p.name, p.avatar, 26) + "<span>" +
     escapeHtml(p.name) + (p.id === me ? " (you)" : "") +
     (state.chat.created_by && p.id === state.chat.created_by ? " &middot; admin" : "") +
-    "</span></span>").join("");
-  box.hidden = false;
+    "</span>" +
+    (canManage && p.id !== me
+      ? '<button class="member-x" type="button" data-drop="' + p.id +
+        '" aria-label="Remove ' + escapeHtml(p.name) + '">&times;</button>'
+      : "") +
+    "</span>").join("");
+  $("member-add").hidden = !canManage || $("chat-members-list").hidden;
+  $("chat-members-list").querySelectorAll("[data-drop]").forEach((btn) => {
+    btn.addEventListener("click", () => dropMember(btn.getAttribute("data-drop")));
+  });
 }
+
+async function dropMember(userId) {
+  const person = state.chatMembers.find((p) => p.id === userId);
+  if (!person) return;
+  if (!confirm("Remove " + person.name + " from this group? They stop seeing new messages here.")) return;
+  const { error } = await sb.from("conversation_participants").delete()
+    .eq("conversation_id", state.chat.id)
+    .eq("user_id", userId);
+  if (error) { alert("Could not remove them: " + error.message); return; }
+  state.chatMembers = state.chatMembers.filter((p) => p.id !== userId);
+  renderMembers();
+}
+
+async function addMember(person) {
+  const { error } = await sb.from("conversation_participants")
+    .insert({ conversation_id: state.chat.id, user_id: person.id });
+  if (error) { alert("Could not add them: " + error.message); return; }
+  state.chatMembers = state.chatMembers.concat([person]);
+  $("member-search").value = "";
+  $("member-results").innerHTML = "";
+  renderMembers();
+}
+
+let memberSearchTimer = null;
+
+async function searchPeople(text) {
+  const box = $("member-results");
+  const needle = text.trim();
+  if (needle.length < 2) { box.innerHTML = ""; return; }
+  const { data, error } = await sb.from("users")
+    .select("id, name, avatar_url")
+    .ilike("name", "%" + needle + "%")
+    .limit(8);
+  if (error) { box.innerHTML = '<span class="note">' + escapeHtml(error.message) + "</span>"; return; }
+  const already = state.chatMembers.map((p) => p.id);
+  const hits = (data || []).filter((u) => already.indexOf(u.id) === -1);
+  if (!hits.length) { box.innerHTML = '<span class="note">Nobody new by that name.</span>'; return; }
+  box.innerHTML = hits.map((u) =>
+    '<button class="member member-pick" type="button" data-add="' + u.id + '">' +
+    personBadge(u.name, u.avatar_url, 26) + "<span>" + escapeHtml(u.name || "Player") + "</span></button>").join("");
+  box.querySelectorAll("[data-add]").forEach((btn) => {
+    const found = hits.find((u) => u.id === btn.getAttribute("data-add"));
+    btn.addEventListener("click", () =>
+      addMember({ id: found.id, name: found.name || "Player", avatar: found.avatar_url || null }));
+  });
+}
+
+$("member-search").addEventListener("input", (e) => {
+  const text = e.target.value;
+  clearTimeout(memberSearchTimer);
+  memberSearchTimer = setTimeout(() => searchPeople(text), 300);
+});
 
 $("chat-members-toggle").addEventListener("click", () => {
   const list = $("chat-members-list");
   const open = list.hidden;
   list.hidden = !open;
+  $("member-add").hidden = !(open && iRunThisGroup());
   $("chat-members-toggle").setAttribute("aria-expanded", open ? "true" : "false");
+});
+
+function openDetails() {
+  renderDetails();
+  $("chat-details").hidden = false;
+}
+
+function closeDetails() {
+  $("chat-details").hidden = true;
+}
+
+$("chat-info-btn").addEventListener("click", openDetails);
+$("details-close").addEventListener("click", closeDetails);
+$("chat-details").addEventListener("click", (e) => {
+  if (e.target.id === "chat-details") closeDetails();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("chat-details").hidden) closeDetails();
 });
 
 async function loadThread() {
